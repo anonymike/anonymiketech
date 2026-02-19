@@ -1,0 +1,184 @@
+@import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /**
+   * Hacker-themed color scheme
+   * All colors use HSL format for consistency with tailwind.config.ts
+  */
+  :root {
+    --background: 0 0% 2%;
+    --foreground: 120 100% 75%;
+
+    --card: 0 0% 5%;
+    --card-foreground: 120 100% 75%;
+
+    --popover: 0 0% 5%;
+    --popover-foreground: 120 100% 75%;
+
+    --primary: 120 100% 50%;
+    --primary-foreground: 0 0% 2%;
+
+    --secondary: 0 0% 8%;
+    --secondary-foreground: 120 100% 75%;
+
+    --muted: 0 0% 8%;
+    --muted-foreground: 120 50% 40%;
+
+    --accent: 0 0% 8%;
+    --accent-foreground: 120 100% 75%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 120 100% 15%;
+    --input: 120 100% 15%;
+    --ring: 120 100% 50%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 120 100% 75%;
+    --sidebar-primary: 120 100% 50%;
+    --sidebar-primary-foreground: 0 0% 2%;
+    --sidebar-accent: 0 0% 8%;
+    --sidebar-accent-foreground: 120 100% 75%;
+    --sidebar-border: 120 100% 15%;
+    --sidebar-ring: 120 100% 50%;
+
+    /* Hacker theme specific colors */
+    --hacker-bg: 0 0% 2%;
+    --hacker-terminal: 0 0% 5%;
+    --hacker-green: 120 100% 50%;
+    --hacker-green-bright: 120 100% 75%;
+    --hacker-green-dim: 120 100% 25%;
+    --hacker-green-glow: 120 100% 50%;
+  }
+
+  .dark {
+    --background: 0 0% 2%;
+    --foreground: 120 100% 75%;
+
+    --card: 0 0% 5%;
+    --card-foreground: 120 100% 75%;
+
+    --popover: 0 0% 5%;
+    --popover-foreground: 120 100% 75%;
+
+    --primary: 120 100% 50%;
+    --primary-foreground: 0 0% 2%;
+
+    --secondary: 0 0% 8%;
+    --secondary-foreground: 120 100% 75%;
+
+    --muted: 0 0% 8%;
+    --muted-foreground: 120 50% 40%;
+
+    --accent: 0 0% 8%;
+    --accent-foreground: 120 100% 75%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 120 100% 15%;
+    --input: 120 100% 15%;
+    --ring: 120 100% 50%;
+
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 120 100% 75%;
+    --sidebar-primary: 120 100% 50%;
+    --sidebar-primary-foreground: 0 0% 2%;
+    --sidebar-accent: 0 0% 8%;
+    --sidebar-accent-foreground: 120 100% 75%;
+    --sidebar-border: 120 100% 15%;
+    --sidebar-ring: 120 100% 50%;
+
+    /* Hacker theme specific colors */
+    --hacker-bg: 0 0% 2%;
+    --hacker-terminal: 0 0% 5%;
+    --hacker-green: 120 100% 50%;
+    --hacker-green-bright: 120 100% 75%;
+    --hacker-green-dim: 120 100% 25%;
+    --hacker-green-glow: 120 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-hacker-bg text-hacker-green font-tech;
+    overflow-x: hidden;
+  }
+
+  /* Custom scrollbar for hacker theme */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--hacker-bg));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--hacker-green-dim));
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--hacker-green));
+  }
+}
+
+@layer components {
+  .matrix-char {
+    color: hsl(var(--hacker-green));
+    text-shadow: 0 0 5px hsl(var(--hacker-green));
+    font-family: "Share Tech Mono", monospace;
+  }
+
+  .glow-text {
+    text-shadow:
+      0 0 5px hsl(var(--hacker-green)),
+      0 0 10px hsl(var(--hacker-green)),
+      0 0 15px hsl(var(--hacker-green));
+  }
+
+  .glow-border {
+    border: 1px solid hsl(var(--hacker-green));
+    box-shadow:
+      0 0 5px hsl(var(--hacker-green)),
+      inset 0 0 5px hsl(var(--hacker-green-dim));
+  }
+
+  .terminal-window {
+    background: hsl(var(--hacker-terminal));
+    border: 1px solid hsl(var(--hacker-green));
+    box-shadow:
+      0 0 10px hsl(var(--hacker-green-dim)),
+      inset 0 0 10px rgba(0, 255, 0, 0.1);
+  }
+
+  /* Hide default Chatbase bubble button only - allow widget to load */
+  #chatbase-bubble-button {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  /* Style the Chatbase chat widget when it appears */
+  iframe[src*="chatbase"] {
+    border-radius: 12px !important;
+    box-shadow: 0 0 20px hsl(var(--hacker-green-dim)) !important;
+    z-index: 45 !important;
+  }
+
+  /* Ensure our custom trigger has higher z-index */
+  .chat-trigger-container {
+    z-index: 50 !important;
+  }
+}
