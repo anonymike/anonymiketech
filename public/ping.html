@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANONYMIKETECH Ping</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .ping-container {
+            max-width: 500px;
+            margin: 50px auto;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 30px;
+            background: rgba(0, 255, 0, 0.05);
+        }
+        .ping-status {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .ping-info {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .timestamp {
+            color: #ffff00;
+            margin-top: 20px;
+        }
+        .blink {
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="ping-container">
+        <div class="ping-status">
+            <span class="blink">●</span> ANONYMIKETECH PING ACTIVE
+        </div>
+        <div class="ping-info">
+            🔒 VPN Connection Status: OK<br>
+            �� Server Response: 200 OK<br>
+            ⚡ Latency: &lt;10ms<br>
+            🌐 Service: anonymiketech.surge.sh
+        </div>
+        <div class="timestamp" id="timestamp">
+            <!-- Timestamp will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // Update timestamp every second
+        function updateTimestamp() {
+            const now = new Date();
+            const timestamp = now.toISOString();
+            document.getElementById('timestamp').textContent = `Last Ping: ${timestamp}`;
+        }
+        
+        // Set initial timestamp and update every second
+        updateTimestamp();
+        setInterval(updateTimestamp, 1000);
+        
+        // Return 200 OK status (for HTTP Injector connectivity check)
+        console.log('ANONYMIKETECH Ping endpoint accessed at:', new Date().toISOString());
+    </script>
+</body>
+</html>
