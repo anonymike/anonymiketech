@@ -7,12 +7,13 @@ import { motion } from "framer-motion"
 import { ShoppingCart, Download, Star, Zap, Lock } from "lucide-react"
 import Link from "next/link"
 import { PremiumApp } from "@/lib/premium-apps-data"
-import { getPremiumApps } from "@/lib/premium-apps-service"
+import { getPremiumAppsFromDB } from "@/lib/supabase-premium-apps-service"
 import PremiumAppPaymentModal from "@/components/PremiumAppPaymentModal"
 import MatrixRain from "@/components/MatrixRain"
 import MobileMenu from "@/components/MobileMenu"
 import BackToTop from "@/components/BackToTop"
 import DesktopNavbar from "@/components/DesktopNavbar"
+import NavbarResponsiveTest from "@/components/NavbarResponsiveTest"
 
 export default function PremiumAppsPage() {
   const [premiumApps, setPremiumApps] = useState<PremiumApp[]>([])
@@ -20,8 +21,11 @@ export default function PremiumAppsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
-    const apps = getPremiumApps()
-    setPremiumApps(apps)
+    const loadApps = async () => {
+      const apps = await getPremiumAppsFromDB()
+      setPremiumApps(apps)
+    }
+    loadApps()
   }, [])
 
   const handleBuyNow = (app: PremiumApp) => {
@@ -54,6 +58,7 @@ export default function PremiumAppsPage() {
       <MatrixRain />
       <MobileMenu />
       <DesktopNavbar />
+      <NavbarResponsiveTest />
 
       {/* Hero Section */}
       <section className="relative border-b border-green-500/30 py-12 sm:py-20 pt-20 md:pt-24">
