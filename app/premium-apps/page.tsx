@@ -2,11 +2,12 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { ShoppingCart, Download, Star, Zap, Lock } from "lucide-react"
 import Link from "next/link"
-import { premiumApps } from "@/lib/premium-apps-data"
+import { PremiumApp } from "@/lib/premium-apps-data"
+import { getPremiumApps } from "@/lib/premium-apps-service"
 import PremiumAppPaymentModal from "@/components/PremiumAppPaymentModal"
 import MatrixRain from "@/components/MatrixRain"
 import MobileMenu from "@/components/MobileMenu"
@@ -14,10 +15,16 @@ import BackToTop from "@/components/BackToTop"
 import DesktopNavbar from "@/components/DesktopNavbar"
 
 export default function PremiumAppsPage() {
-  const [selectedApp, setSelectedApp] = useState<(typeof premiumApps)[0] | null>(null)
+  const [premiumApps, setPremiumApps] = useState<PremiumApp[]>([])
+  const [selectedApp, setSelectedApp] = useState<PremiumApp | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const handleBuyNow = (app: (typeof premiumApps)[0]) => {
+  useEffect(() => {
+    const apps = getPremiumApps()
+    setPremiumApps(apps)
+  }, [])
+
+  const handleBuyNow = (app: PremiumApp) => {
     setSelectedApp(app)
     setIsModalOpen(true)
   }
@@ -114,6 +121,20 @@ export default function PremiumAppsPage() {
                 <div className="absolute inset-0 bg-gradient-to-br from-green-500/0 to-green-500/0 group-hover:from-green-500/10 group-hover:to-green-500/5 transition-all duration-300" />
 
                 <div className="relative p-5 sm:p-6 flex flex-col h-full">
+                  {/* Badges */}
+                  <div className="flex gap-2 mb-3">
+                    {app.isNew && (
+                      <span className="px-2 py-1 text-xs font-bold rounded bg-green-500/20 border border-green-500/50 text-green-400">
+                        NEW
+                      </span>
+                    )}
+                    {app.isOffer && (
+                      <span className="px-2 py-1 text-xs font-bold rounded bg-red-500/20 border border-red-500/50 text-red-400">
+                        OFFER
+                      </span>
+                    )}
+                  </div>
+
                   {/* App Icon */}
                   <div className="text-4xl sm:text-5xl mb-4">{app.icon}</div>
 
@@ -152,7 +173,14 @@ export default function PremiumAppsPage() {
                   {/* Price and Button */}
                   <div className="flex items-center justify-between pt-4 border-t border-green-500/20">
                     <div className="text-lg sm:text-xl font-bold text-green-400 font-mono">
-                      KSH {app.price}
+                      {app.isOffer && app.offerPrice ? (
+                        <div className="flex flex-col">
+                          <span className="line-through text-slate-400 text-sm">KSH {app.price}</span>
+                          <span>KSH {app.offerPrice}</span>
+                        </div>
+                      ) : (
+                        `KSH ${app.price}`
+                      )}
                     </div>
                     <button
                       onClick={() => handleBuyNow(app)}
@@ -247,7 +275,7 @@ export default function PremiumAppsPage() {
           }}
           appName={selectedApp.name}
           appIcon={selectedApp.icon}
-          price={selectedApp.price}
+          price={selectedApp.isOffer && selectedApp.offerPrice ? selectedApp.offerPrice : selectedApp.price}
         />
       )}
 

@@ -25,6 +25,7 @@ export default function AdminSidebar({ activeTab, onTabChange, onLogout }: Admin
   const menuItems = [
     { id: "all", label: "Dashboard", icon: LayoutDashboard },
     { id: "services", label: "Services", icon: Package },
+    { id: "premium-apps", label: "Premium Apps", icon: Package },
     { id: "website", label: "Website Orders", icon: ShoppingCart },
     { id: "social-media", label: "Social Media Orders", icon: ShoppingCart },
     { id: "settings", label: "Settings", icon: Settings },
