@@ -9,6 +9,7 @@ import Link from "next/link"
 import { PremiumApp } from "@/lib/premium-apps-data"
 import { getPremiumAppsFromDB } from "@/lib/supabase-premium-apps-service"
 import PremiumAppPaymentModal from "@/components/PremiumAppPaymentModal"
+import UpdatedAppOverlay from "@/components/UpdatedAppOverlay"
 import MatrixRain from "@/components/MatrixRain"
 import MobileMenu from "@/components/MobileMenu"
 import BackToTop from "@/components/BackToTop"
@@ -19,6 +20,8 @@ export default function PremiumAppsPage() {
   const [premiumApps, setPremiumApps] = useState<PremiumApp[]>([])
   const [selectedApp, setSelectedApp] = useState<PremiumApp | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedAppForOverlay, setSelectedAppForOverlay] = useState<PremiumApp | null>(null)
+  const [isOverlayOpen, setIsOverlayOpen] = useState(false)
 
   useEffect(() => {
     const loadApps = async () => {
@@ -31,6 +34,11 @@ export default function PremiumAppsPage() {
   const handleBuyNow = (app: PremiumApp) => {
     setSelectedApp(app)
     setIsModalOpen(true)
+  }
+
+  const handleFindOut = (app: PremiumApp) => {
+    setSelectedAppForOverlay(app)
+    setIsOverlayOpen(true)
   }
 
   const containerVariants = {
@@ -124,6 +132,21 @@ export default function PremiumAppsPage() {
               >
                 {/* Hover glow effect */}
                 <div className="absolute inset-0 bg-gradient-to-br from-green-500/0 to-green-500/0 group-hover:from-green-500/10 group-hover:to-green-500/5 transition-all duration-300" />
+
+                {/* Find Out Button Overlay - appears for new/updated apps */}
+                {(app.isNew || app.isOffer) && (
+                  <motion.button
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleFindOut(app)}
+                    className="absolute top-4 right-4 z-10 px-3 py-1 text-xs font-bold rounded-full bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/50 hover:shadow-green-500/70 transition-all"
+                  >
+                    Find Out →
+                  </motion.button>
+                )}
 
                 <div className="relative p-5 sm:p-6 flex flex-col h-full">
                   {/* Badges */}
@@ -283,6 +306,16 @@ export default function PremiumAppsPage() {
           price={selectedApp.isOffer && selectedApp.offerPrice ? selectedApp.offerPrice : selectedApp.price}
         />
       )}
+
+      {/* Updated App Overlay */}
+      <UpdatedAppOverlay
+        app={selectedAppForOverlay}
+        isOpen={isOverlayOpen}
+        onClose={() => {
+          setIsOverlayOpen(false)
+          setSelectedAppForOverlay(null)
+        }}
+      />
 
       {/* Footer */}
       <footer className="relative border-t border-green-500/30 bg-black py-8 sm:py-12">

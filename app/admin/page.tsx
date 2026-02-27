@@ -33,6 +33,7 @@ import AdminServicesPanel from "@/components/AdminServicesPanel"
 import AdminSidebar from "@/components/AdminSidebar"
 import AdminImageUpload from "@/components/AdminImageUpload"
 import AdminPremiumAppsPanel from "@/components/AdminPremiumAppsPanel"
+import AdminNavbar from "@/components/AdminNavbar"
 
 interface Order {
   id: number
@@ -256,6 +257,12 @@ export default function AdminDashboard() {
       <BackToTop />
       <MatrixRain />
 
+      {/* Admin Navbar */}
+      <AdminNavbar 
+        activeTab={activeTab}
+        onLogout={() => setIsAuthenticated(false)}
+      />
+
       {/* Sidebar */}
       <AdminSidebar 
         activeTab={activeTab} 
@@ -393,18 +400,26 @@ export default function AdminDashboard() {
               { id: "premium-apps", label: "Premium Apps", icon: Package },
             ].map((tab) => {
               const Icon = tab.icon
+              const isActive = activeTab === tab.id
               return (
                 <motion.button
                   key={tab.id}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98, y: 0 }}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all whitespace-nowrap ${
-                    activeTab === tab.id
+                  className={`relative flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all whitespace-nowrap ${
+                    isActive
                       ? "bg-gradient-to-r from-emerald-500 to-cyan-500 text-white shadow-lg shadow-emerald-500/30"
-                      : "bg-slate-800/50 border border-slate-700 text-slate-300 hover:bg-slate-800"
+                      : "bg-slate-800/50 border border-slate-700 text-slate-300 hover:bg-slate-800 hover:border-slate-600"
                   }`}
                 >
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeTab"
+                      className="absolute inset-0 rounded-xl bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 -z-10"
+                      transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                    />
+                  )}
                   <Icon className="w-5 h-5" />
                   {tab.label}
                 </motion.button>
