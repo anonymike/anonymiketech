@@ -12,9 +12,15 @@ import {
   Badge,
   DollarSign,
   Sparkles,
+  Loader,
 } from 'lucide-react'
 import { PremiumApp } from '@/lib/premium-apps-data'
-import { getPremiumApps, createPremiumApp, updatePremiumApp, deletePremiumApp } from '@/lib/premium-apps-service'
+import {
+  getPremiumAppsFromDB,
+  createPremiumAppInDB,
+  updatePremiumAppInDB,
+  deletePremiumAppFromDB,
+} from '@/lib/supabase-premium-apps-service'
 
 export default function AdminPremiumAppsPanel() {
   const [apps, setApps] = useState<PremiumApp[]>([])
@@ -26,9 +32,21 @@ export default function AdminPremiumAppsPanel() {
 
   // Load apps on mount
   useEffect(() => {
-    const loadedApps = getPremiumApps()
-    setApps(loadedApps)
+    loadApps()
   }, [])
+
+  const loadApps = async () => {
+    setLoading(true)
+    try {
+      const loadedApps = await getPremiumAppsFromDB()
+      setApps(loadedApps)
+    } catch (error) {
+      console.error('Error loading apps:', error)
+      setMessage({ type: 'error', text: 'Failed to load apps' })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const resetForm = () => {
     setFormData({
@@ -54,37 +72,40 @@ export default function AdminPremiumAppsPanel() {
     setEditingId(app.id)
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setLoading(true)
     try {
       if (editingId) {
-        const updated = updatePremiumApp(editingId, formData)
-        if (updated) {
-          setApps(getPremiumApps())
-          setMessage({ type: 'success', text: 'App updated successfully!' })
-        }
+        await updatePremiumAppInDB(editingId, formData)
+        setMessage({ type: 'success', text: 'App updated successfully!' })
       } else {
-        const newApp = createPremiumApp(formData as Omit<PremiumApp, 'id'>)
-        setApps(getPremiumApps())
+        await createPremiumAppInDB(formData as Omit<PremiumApp, 'id'>)
         setMessage({ type: 'success', text: 'App created successfully!' })
       }
-      setTimeout(() => {
+      setTimeout(async () => {
+        await loadApps()
         resetForm()
         setMessage(null)
-      }, 2000)
+      }, 1000)
     } catch (error) {
+      console.error('Error saving app:', error)
       setMessage({ type: 'error', text: 'Error saving app. Please try again.' })
     } finally {
       setLoading(false)
     }
   }
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this app?')) {
-      deletePremiumApp(id)
-      setApps(getPremiumApps())
-      setMessage({ type: 'success', text: 'App deleted successfully!' })
-      setTimeout(() => setMessage(null), 2000)
+      try {
+        await deletePremiumAppFromDB(id)
+        await loadApps()
+        setMessage({ type: 'success', text: 'App deleted successfully!' })
+        setTimeout(() => setMessage(null), 2000)
+      } catch (error) {
+        console.error('Error deleting app:', error)
+        setMessage({ type: 'error', text: 'Error deleting app. Please try again.' })
+      }
     }
   }
 

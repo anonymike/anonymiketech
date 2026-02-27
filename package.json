@@ -43,6 +43,7 @@
     "@radix-ui/react-tooltip": "latest",
     "@react-three/drei": "latest",
     "@react-three/fiber": "latest",
+    "@supabase/supabase-js": "^2.98.0",
     "@tanstack/react-query": "latest",
     "@types/debug": "latest",
     "@vercel/blob": "2.2.0",
