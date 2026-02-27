@@ -32,6 +32,7 @@ import BackToTop from "@/components/BackToTop"
 import AdminServicesPanel from "@/components/AdminServicesPanel"
 import AdminSidebar from "@/components/AdminSidebar"
 import AdminImageUpload from "@/components/AdminImageUpload"
+import AdminPremiumAppsPanel from "@/components/AdminPremiumAppsPanel"
 
 interface Order {
   id: number
@@ -64,7 +65,7 @@ export default function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
-  const [activeTab, setActiveTab] = useState<"all" | "website" | "social-media" | "services">("all")
+  const [activeTab, setActiveTab] = useState<"all" | "website" | "social-media" | "services" | "premium-apps">("all")
   // Password change state
   const [showPasswordChange, setShowPasswordChange] = useState(false)
   const [currentPw, setCurrentPw] = useState("")
@@ -222,7 +223,7 @@ export default function AdminDashboard() {
   }
 
   const getStats = () => {
-    const tabOrders = activeTab === "all" ? orders : orders.filter((o) => o.orderType === activeTab)
+    const tabOrders = activeTab === "all" || activeTab === "premium-apps" ? orders : orders.filter((o) => o.orderType === activeTab)
     return {
       totalRevenue: tabOrders.reduce((sum, order) => sum + order.totalPrice, 0),
       totalOrders: tabOrders.length,
@@ -389,6 +390,7 @@ export default function AdminDashboard() {
               { id: "website", label: "Website Development", icon: Globe },
               { id: "social-media", label: "Social Media Boosting", icon: Share2 },
               { id: "services", label: "Services Management", icon: Package },
+              { id: "premium-apps", label: "Premium Apps", icon: Package },
             ].map((tab) => {
               const Icon = tab.icon
               return (
@@ -743,6 +745,22 @@ export default function AdminDashboard() {
               className="bg-slate-900/50 border border-slate-700 rounded-2xl p-8 backdrop-blur-sm mt-8"
             >
               <AdminServicesPanel />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Premium Apps Management Tab */}
+        <AnimatePresence mode="wait">
+          {activeTab === "premium-apps" && (
+            <motion.div
+              key="premium-apps"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.3 }}
+              className="bg-hacker-terminal/30 border border-hacker-green/30 rounded-2xl p-8 backdrop-blur-sm mt-8"
+            >
+              <AdminPremiumAppsPanel />
             </motion.div>
           )}
         </AnimatePresence>
