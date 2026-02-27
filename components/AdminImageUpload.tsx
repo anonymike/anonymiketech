@@ -117,14 +117,14 @@ export default function AdminImageUpload({ onImageUpdate }: AdminImageUploadProp
         </div>
       ) : (
         <>
-          {/* Current Image Display */}
+          {/* Current Image Display - Circular */}
           {adminImage ? (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               className="relative group"
             >
-              <div className="relative w-32 h-32 rounded-lg overflow-hidden border-2 border-emerald-400/50 hover:border-emerald-400 transition-all">
+              <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-emerald-400/60 hover:border-emerald-400 transition-all shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-500/50">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={adminImage}
@@ -136,9 +136,9 @@ export default function AdminImageUpload({ onImageUpdate }: AdminImageUploadProp
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={handleRemoveImage}
-                className="absolute -top-2 -right-2 p-1 bg-red-500 hover:bg-red-600 rounded-full text-white transition-all shadow-lg"
+                className="absolute -top-3 -right-3 p-1.5 bg-red-500 hover:bg-red-600 rounded-full text-white transition-all shadow-lg border-2 border-slate-900"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </motion.button>
             </motion.div>
           ) : (

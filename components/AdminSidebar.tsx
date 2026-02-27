@@ -34,6 +34,15 @@ export default function AdminSidebar({ activeTab, onTabChange, onLogout }: Admin
   const handleTabChange = (tabId: string) => {
     onTabChange(tabId)
     setIsOpen(false)
+    
+    // Scroll to section after a small delay to allow state update
+    setTimeout(() => {
+      const sectionId = `section-${tabId}`
+      const element = document.getElementById(sectionId)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }, 100)
   }
 
   return (
