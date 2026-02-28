@@ -32,7 +32,14 @@ export async function getPremiumAppsFromDB(): Promise<PremiumApp[]> {
       .select('*')
       .order('created_at', { ascending: false })
 
-    if (error) throw error
+    if (error) {
+      // If table doesn't exist, return empty array and log the error
+      if (error.code === 'PGRST205' || error.message?.includes('Could not find the table')) {
+        console.warn('Premium apps table not found. Please create it in Supabase using the setup script.')
+        return []
+      }
+      throw error
+    }
     return data || []
   } catch (error) {
     console.error('Error fetching premium apps:', error)
@@ -81,7 +88,13 @@ export async function createPremiumAppInDB(app: Omit<PremiumApp, 'id'>): Promise
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      if (error.code === 'PGRST205' || error.message?.includes('Could not find the table')) {
+        console.error('Premium apps table does not exist. Please create it in Supabase using the setup script.')
+        return null
+      }
+      throw error
+    }
     return data ? formatDBPremiumApp(data) : null
   } catch (error) {
     console.error('Error creating premium app:', error)
