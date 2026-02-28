@@ -66,6 +66,12 @@ export default function AdminDashboard() {
   const [confirmPw, setConfirmPw] = useState("")
   const [pwChangeLoading, setPwChangeLoading] = useState(false)
   const [pwChangeMsg, setPwChangeMsg] = useState<{ type: "success" | "error"; text: string } | null>(null)
+  const [orders, setOrders] = useState<Order[]>([])
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>([])
+  const [searchTerm, setSearchTerm] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [loginLoading, setLoginLoading] = useState(false)
+  const [loginError, setLoginError] = useState("")
 
   useEffect(() => {
     // Fetch admin image
