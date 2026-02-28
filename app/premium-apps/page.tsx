@@ -14,7 +14,6 @@ import MatrixRain from "@/components/MatrixRain"
 import MobileMenu from "@/components/MobileMenu"
 import BackToTop from "@/components/BackToTop"
 import DesktopNavbar from "@/components/DesktopNavbar"
-import NavbarResponsiveTest from "@/components/NavbarResponsiveTest"
 
 export default function PremiumAppsPage() {
   const [premiumApps, setPremiumApps] = useState<PremiumApp[]>([])
@@ -66,7 +65,6 @@ export default function PremiumAppsPage() {
       <MatrixRain />
       <MobileMenu />
       <DesktopNavbar />
-      <NavbarResponsiveTest />
 
       {/* Hero Section */}
       <section className="relative border-b border-green-500/30 py-12 sm:py-20 pt-20 md:pt-24">

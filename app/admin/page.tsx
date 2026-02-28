@@ -58,7 +58,7 @@ const getCurrentYear = () => new Date().getFullYear()
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<"all" | "website" | "social-media" | "services" | "premium-apps">("all")
-  const [isAuthenticated, setIsAuthenticated] = useState(true)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [showPasswordChange, setShowPasswordChange] = useState(false)
   const [adminImage, setAdminImage] = useState<string | null>(null)
   const [currentPw, setCurrentPw] = useState("")
