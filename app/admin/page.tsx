@@ -72,6 +72,8 @@ export default function AdminDashboard() {
   const [statusFilter, setStatusFilter] = useState("all")
   const [loginLoading, setLoginLoading] = useState(false)
   const [loginError, setLoginError] = useState("")
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [adminPassword, setAdminPassword] = useState("")
 
   useEffect(() => {
     // Fetch admin image
