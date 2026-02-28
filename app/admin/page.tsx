@@ -57,23 +57,41 @@ interface Order {
 const getCurrentYear = () => new Date().getFullYear()
 
 export default function AdminDashboard() {
-  const [adminPassword, setAdminPassword] = useState("")
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [loginLoading, setLoginLoading] = useState(false)
-  const [loginError, setLoginError] = useState("")
-  const [orders, setOrders] = useState<Order[]>([])
-  const [filteredOrders, setFilteredOrders] = useState<Order[]>([])
-  const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [activeTab, setActiveTab] = useState<"all" | "website" | "social-media" | "services" | "premium-apps">("all")
-  // Password change state
+  const [isAuthenticated, setIsAuthenticated] = useState(true)
   const [showPasswordChange, setShowPasswordChange] = useState(false)
+  const [adminImage, setAdminImage] = useState<string | null>(null)
   const [currentPw, setCurrentPw] = useState("")
   const [newPw, setNewPw] = useState("")
   const [confirmPw, setConfirmPw] = useState("")
   const [pwChangeLoading, setPwChangeLoading] = useState(false)
   const [pwChangeMsg, setPwChangeMsg] = useState<{ type: "success" | "error"; text: string } | null>(null)
+  const [orders, setOrders] = useState<Order[]>([])
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>([])
+  const [searchTerm, setSearchTerm] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [loginLoading, setLoginLoading] = useState(false)
+  const [loginError, setLoginError] = useState("")
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
+  const [adminPassword, setAdminPassword] = useState("")
+
+  useEffect(() => {
+    // Fetch admin image
+    const fetchAdminImage = async () => {
+      try {
+        const res = await fetch("/api/admin/image")
+        if (res.ok) {
+          const data = await res.json()
+          if (data.url) {
+            setAdminImage(data.url)
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch admin image:", err)
+      }
+    }
+    fetchAdminImage()
+  }, [])
 
   useEffect(() => {
     if (!isAuthenticated) return
@@ -261,6 +279,7 @@ export default function AdminDashboard() {
       <AdminNavbar 
         activeTab={activeTab}
         onLogout={() => setIsAuthenticated(false)}
+        adminImage={adminImage}
       />
 
       {/* Sidebar */}
@@ -488,7 +507,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Orders Section */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+        <motion.div id={`section-${activeTab}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
           <div className="rounded-2xl p-8 bg-slate-800/30 border border-slate-700/50 backdrop-blur-sm">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8">
               <div>

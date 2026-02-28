@@ -1,14 +1,10 @@
-import { createClient } from '@supabase/supabase-js'
 import { PremiumApp } from './premium-apps-data'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+import { getSupabaseClient } from './supabase-client'
 
 // Initialize table if it doesn't exist
 export async function initializePremiumAppsTable() {
   try {
+    const supabase = getSupabaseClient()
     // Check if table exists by trying to query it
     const { data, error } = await supabase
       .from('premium_apps')
@@ -27,12 +23,20 @@ export async function initializePremiumAppsTable() {
 // Get all premium apps
 export async function getPremiumAppsFromDB(): Promise<PremiumApp[]> {
   try {
+    const supabase = getSupabaseClient()
     const { data, error } = await supabase
       .from('premium_apps')
       .select('*')
       .order('created_at', { ascending: false })
 
-    if (error) throw error
+    if (error) {
+      // If table doesn't exist, return empty array and log the error
+      if (error.code === 'PGRST205' || error.message?.includes('Could not find the table')) {
+        console.warn('Premium apps table not found. Please create it in Supabase using the setup script.')
+        return []
+      }
+      throw error
+    }
     return data || []
   } catch (error) {
     console.error('Error fetching premium apps:', error)
@@ -60,6 +64,7 @@ export async function getPremiumAppFromDB(id: string): Promise<PremiumApp | null
 // Create premium app
 export async function createPremiumAppInDB(app: Omit<PremiumApp, 'id'>): Promise<PremiumApp | null> {
   try {
+    const supabase = getSupabaseClient()
     const { data, error } = await supabase
       .from('premium_apps')
       .insert([
@@ -81,7 +86,13 @@ export async function createPremiumAppInDB(app: Omit<PremiumApp, 'id'>): Promise
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      if (error.code === 'PGRST205' || error.message?.includes('Could not find the table')) {
+        console.error('Premium apps table does not exist. Please create it in Supabase using the setup script.')
+        return null
+      }
+      throw error
+    }
     return data ? formatDBPremiumApp(data) : null
   } catch (error) {
     console.error('Error creating premium app:', error)
@@ -107,6 +118,7 @@ export async function updatePremiumAppInDB(id: string, updates: Partial<PremiumA
     if (updates.isOffer !== undefined) updateData.is_offer = updates.isOffer
     if (updates.offerPrice !== undefined) updateData.offer_price = updates.offerPrice
 
+    const supabase = getSupabaseClient()
     const { data, error } = await supabase
       .from('premium_apps')
       .update(updateData)
@@ -125,6 +137,7 @@ export async function updatePremiumAppInDB(id: string, updates: Partial<PremiumA
 // Delete premium app
 export async function deletePremiumAppFromDB(id: string): Promise<boolean> {
   try {
+    const supabase = getSupabaseClient()
     const { error } = await supabase
       .from('premium_apps')
       .delete()
