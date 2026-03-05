@@ -12,6 +12,7 @@ import ValentinePopup from "@/components/ValentinePopup"
 import WelcomeModal from "@/components/WelcomeModal"
 import PremiumAppsAnnouncement from "@/components/PremiumAppsAnnouncement"
 import { Toaster } from "@/components/ui/toaster"
+import NavbarWrapper from "@/components/NavbarWrapper"
 
 const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
@@ -167,9 +168,8 @@ export default function RootLayout({
       </head>
       <body className={`font-sans antialiased ${_geist.className}`}>
         <CartProvider>
+          <NavbarWrapper />
           <ValentinePopup />
-          <DesktopNavbar />
-          <MobileMenu />
           {children}
           <ShoppingCart />
           <CookieConsent />
