@@ -24,10 +24,16 @@ export default function PremiumAppsPage() {
 
   useEffect(() => {
     const loadApps = async () => {
+      console.log('[v0] Loading premium apps from DB')
       const apps = await getPremiumAppsFromDB()
+      console.log('[v0] Loaded apps:', apps)
       setPremiumApps(apps)
     }
     loadApps()
+    
+    // Refresh data every 5 seconds to show updates from admin panel
+    const interval = setInterval(loadApps, 5000)
+    return () => clearInterval(interval)
   }, [])
 
   const handleBuyNow = (app: PremiumApp) => {
