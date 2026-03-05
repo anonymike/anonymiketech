@@ -102,49 +102,51 @@ export default function AdminNavbar({ activeTab, onLogout, adminImage }: AdminNa
       <div className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-slate-950/95 border-b border-emerald-500/20 backdrop-blur-lg">
         <div className="h-16 px-4 flex items-center justify-between">
           {/* Left - Logo */}
-          <div className="flex items-center gap-2 flex-1">
+          <div className="flex items-center gap-2">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
               <ShieldAlert className="w-5 h-5 text-white" />
             </div>
-            <div className="flex-1">
+            <div>
               <h1 className="text-sm font-bold text-white leading-tight">ADMIN</h1>
               <p className="text-xs text-emerald-400 font-mono">Panel</p>
             </div>
           </div>
 
           {/* Center - Current Tab */}
-          <div className="text-center mx-2 flex-1">
+          <div className="text-center flex-1 mx-2">
             <p className="text-xs text-emerald-400 font-mono">VIEW</p>
             <p className="text-xs font-bold text-white truncate">{getTabLabel()}</p>
           </div>
 
-          {/* Right - Admin Image on Mobile */}
-          {adminImage && (
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 260, damping: 20 }}
-              className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-400/50 hover:border-emerald-400 transition-all shadow-lg shadow-emerald-500/20"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={adminImage}
-                alt="Admin profile"
-                className="w-full h-full object-cover"
-                crossOrigin="anonymous"
-              />
-            </motion.div>
-          )}
+          {/* Right - Admin Image & Menu Toggle */}
+          <div className="flex items-center gap-2">
+            {adminImage && (
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-400/50 hover:border-emerald-400 transition-all shadow-lg shadow-emerald-500/20"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={adminImage}
+                  alt="Admin profile"
+                  className="w-full h-full object-cover"
+                  crossOrigin="anonymous"
+                />
+              </motion.div>
+            )}
 
-          {/* Right - Menu Toggle */}
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-2 rounded-lg bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/40 text-emerald-400 hover:border-emerald-500/60 transition-all"
-          >
-            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-          </motion.button>
+            {/* Menu Toggle - Details Hamburger */}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 rounded-lg bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/40 text-emerald-400 hover:border-emerald-500/60 transition-all"
+            >
+              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </motion.button>
+          </div>
         </div>
 
         {/* Mobile Menu Dropdown */}
