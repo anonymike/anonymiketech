@@ -75,8 +75,8 @@ export default function MobileMenu({ showAfterIntro = true }: MobileMenuProps) {
     setHideNavbar(isViewingMessage)
   }, [pathname])
 
-  // Don't render navbar when viewing valentine message
-  if (hideNavbar) return null
+  // Don't render navbar when viewing valentine message or on admin page
+  if (hideNavbar || pathname?.startsWith('/admin')) return null
 
   const menuItems = [
     {

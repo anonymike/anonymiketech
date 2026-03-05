@@ -71,6 +71,7 @@ export default function AdminNavbar({ activeTab, onLogout, adminImage }: AdminNa
                   src={adminImage}
                   alt="Admin profile"
                   className="w-full h-full object-cover"
+                  crossOrigin="anonymous"
                 />
               </motion.div>
             )}
@@ -116,6 +117,24 @@ export default function AdminNavbar({ activeTab, onLogout, adminImage }: AdminNa
             <p className="text-xs text-emerald-400 font-mono">VIEW</p>
             <p className="text-xs font-bold text-white truncate">{getTabLabel()}</p>
           </div>
+
+          {/* Right - Admin Image on Mobile */}
+          {adminImage && (
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 260, damping: 20 }}
+              className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-400/50 hover:border-emerald-400 transition-all shadow-lg shadow-emerald-500/20"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={adminImage}
+                alt="Admin profile"
+                className="w-full h-full object-cover"
+                crossOrigin="anonymous"
+              />
+            </motion.div>
+          )}
 
           {/* Right - Menu Toggle */}
           <motion.button
