@@ -47,6 +47,7 @@ export async function getPremiumAppsFromDB(): Promise<PremiumApp[]> {
 // Get single premium app
 export async function getPremiumAppFromDB(id: string): Promise<PremiumApp | null> {
   try {
+    const supabase = getSupabaseClient()
     const { data, error } = await supabase
       .from('premium_apps')
       .select('*')
@@ -54,7 +55,7 @@ export async function getPremiumAppFromDB(id: string): Promise<PremiumApp | null
       .single()
 
     if (error) throw error
-    return data || null
+    return data ? formatDBPremiumApp(data) : null
   } catch (error) {
     console.error('Error fetching premium app:', error)
     return null
@@ -143,7 +144,13 @@ export async function deletePremiumAppFromDB(id: string): Promise<boolean> {
       .delete()
       .eq('id', id)
 
-    if (error) throw error
+    if (error) {
+      if (error.code === 'PGRST205' || error.message?.includes('Could not find the table')) {
+        console.error('Premium apps table does not exist.')
+        return false
+      }
+      throw error
+    }
     return true
   } catch (error) {
     console.error('Error deleting premium app:', error)

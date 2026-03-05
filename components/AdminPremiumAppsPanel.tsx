@@ -68,27 +68,40 @@ export default function AdminPremiumAppsPanel() {
   }
 
   const handleEdit = (app: PremiumApp) => {
+    console.log('[v0] Editing app:', app)
     setFormData(app)
     setEditingId(app.id)
   }
 
   const handleSave = async () => {
+    // Validate required fields
+    if (!formData.name || !formData.description || !formData.longDescription || !formData.category) {
+      setMessage({ type: 'error', text: 'Please fill in all required fields' })
+      return
+    }
+
     setLoading(true)
     try {
+      console.log('[v0] Saving app with data:', formData)
       if (editingId) {
-        await updatePremiumAppInDB(editingId, formData)
+        const result = await updatePremiumAppInDB(editingId, formData)
+        console.log('[v0] Update result:', result)
         setMessage({ type: 'success', text: 'App updated successfully!' })
       } else {
-        await createPremiumAppInDB(formData as Omit<PremiumApp, 'id'>)
+        const result = await createPremiumAppInDB(formData as Omit<PremiumApp, 'id'>)
+        console.log('[v0] Create result:', result)
         setMessage({ type: 'success', text: 'App created successfully!' })
       }
-      setTimeout(async () => {
-        await loadApps()
-        resetForm()
+      // Refresh immediately after save
+      const updatedApps = await getPremiumAppsFromDB()
+      console.log('[v0] Loaded apps after save:', updatedApps)
+      setApps(updatedApps)
+      resetForm()
+      setTimeout(() => {
         setMessage(null)
-      }, 1000)
+      }, 2000)
     } catch (error) {
-      console.error('Error saving app:', error)
+      console.error('[v0] Error saving app:', error)
       setMessage({ type: 'error', text: 'Error saving app. Please try again.' })
     } finally {
       setLoading(false)
@@ -97,14 +110,25 @@ export default function AdminPremiumAppsPanel() {
 
   const handleDelete = async (id: string) => {
     if (confirm('Are you sure you want to delete this app?')) {
+      setLoading(true)
       try {
-        await deletePremiumAppFromDB(id)
-        await loadApps()
-        setMessage({ type: 'success', text: 'App deleted successfully!' })
-        setTimeout(() => setMessage(null), 2000)
+        console.log('[v0] Deleting app with id:', id)
+        const success = await deletePremiumAppFromDB(id)
+        console.log('[v0] Delete success:', success)
+        if (success) {
+          const updatedApps = await getPremiumAppsFromDB()
+          console.log('[v0] Loaded apps after delete:', updatedApps)
+          setApps(updatedApps)
+          setMessage({ type: 'success', text: 'App deleted successfully!' })
+          setTimeout(() => setMessage(null), 2000)
+        } else {
+          setMessage({ type: 'error', text: 'Failed to delete app' })
+        }
       } catch (error) {
-        console.error('Error deleting app:', error)
+        console.error('[v0] Error deleting app:', error)
         setMessage({ type: 'error', text: 'Error deleting app. Please try again.' })
+      } finally {
+        setLoading(false)
       }
     }
   }
@@ -112,9 +136,16 @@ export default function AdminPremiumAppsPanel() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      // Check file size (limit to 1MB)
+      if (file.size > 1024 * 1024) {
+        setMessage({ type: 'error', text: 'Image size must be less than 1MB' })
+        return
+      }
       const reader = new FileReader()
       reader.onloadend = () => {
-        setFormData({ ...formData, image: reader.result as string })
+        const base64String = reader.result as string
+        console.log('[v0] Image uploaded, size:', base64String.length)
+        setFormData({ ...formData, image: base64String })
       }
       reader.readAsDataURL(file)
     }
