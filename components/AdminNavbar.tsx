@@ -1,6 +1,6 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { LogOut, Settings, Menu, X, ShieldAlert } from 'lucide-react'
 import { useState } from 'react'
 
@@ -100,20 +100,20 @@ export default function AdminNavbar({ activeTab, onLogout, adminImage }: AdminNa
 
       {/* Mobile Navbar */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-slate-950/95 border-b border-emerald-500/20 backdrop-blur-lg">
-        <div className="h-16 px-4 flex items-center justify-between">
-          {/* Left - Logo, Admin Image, Text & Menu Toggle */}
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+        <div className="h-16 px-4 flex items-center justify-between gap-2">
+          {/* Left - Logo with Admin Image & Text */}
+          <div className="flex items-center gap-1.5 min-w-0">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/20 flex-shrink-0">
               <ShieldAlert className="w-5 h-5 text-white" />
             </div>
             
-            {/* Admin Image */}
-            {adminImage && (
+            {/* Admin Image - Replace logo if exists */}
+            {adminImage ? (
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-emerald-400/50 hover:border-emerald-400 transition-all shadow-lg shadow-emerald-500/20"
+                className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-emerald-400/50 hover:border-emerald-400 transition-all shadow-lg shadow-emerald-500/20 flex-shrink-0"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -123,55 +123,58 @@ export default function AdminNavbar({ activeTab, onLogout, adminImage }: AdminNa
                   crossOrigin="anonymous"
                 />
               </motion.div>
-            )}
+            ) : null}
 
-            <div>
+            <div className="min-w-0">
               <h1 className="text-sm font-bold text-white leading-tight">ADMIN</h1>
               <p className="text-xs text-emerald-400 font-mono">Panel</p>
             </div>
-
-            {/* Menu Toggle Hamburger */}
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 rounded-lg bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/40 text-emerald-400 hover:border-emerald-500/60 transition-all ml-2"
-            >
-              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            </motion.button>
           </div>
 
           {/* Center - Current Tab */}
-          <div className="text-center flex-1 mx-2">
+          <div className="text-center flex-1 min-w-0 mx-1">
             <p className="text-xs text-emerald-400 font-mono">VIEW</p>
             <p className="text-xs font-bold text-white truncate">{getTabLabel()}</p>
           </div>
 
-          {/* Right - Empty for clean look */}
+          {/* Right - Menu Toggle Hamburger */}
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="p-2 rounded-lg bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/40 text-emerald-400 hover:border-emerald-500/60 transition-all flex-shrink-0"
+          >
+            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </motion.button>
         </div>
 
         {/* Mobile Menu Dropdown */}
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: isMenuOpen ? 1 : 0, height: isMenuOpen ? 'auto' : 0 }}
-          transition={{ duration: 0.3 }}
-          className={`overflow-hidden border-t border-emerald-500/10 bg-slate-900/80 backdrop-blur-sm ${isMenuOpen ? 'block' : 'hidden'}`}
-        >
-          <div className="px-4 py-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                setIsMenuOpen(false)
-                onLogout()
-              }}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-red-500/20 to-red-600/20 border border-red-500/40 text-red-400 hover:border-red-500/60 font-medium text-sm transition-all"
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="border-t border-emerald-500/10 bg-slate-900/80 backdrop-blur-sm"
             >
-              <LogOut size={18} />
-              Logout
-            </motion.button>
-          </div>
-        </motion.div>
+              <div className="px-4 py-3">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => {
+                    setIsMenuOpen(false)
+                    onLogout()
+                  }}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-gradient-to-r from-red-500/20 to-red-600/20 border border-red-500/40 text-red-400 hover:border-red-500/60 font-medium text-sm transition-all"
+                >
+                  <LogOut size={18} />
+                  Logout
+                </motion.button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Spacer for fixed navbar */}
