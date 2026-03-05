@@ -27,7 +27,6 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import MatrixRain from "@/components/MatrixRain"
-import MobileMenu from "@/components/MobileMenu"
 import BackToTop from "@/components/BackToTop"
 import AdminServicesPanel from "@/components/AdminServicesPanel"
 import AdminSidebar from "@/components/AdminSidebar"
@@ -271,7 +270,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white relative flex lg:flex-row flex-col">
-      <MobileMenu />
       <BackToTop />
       <MatrixRain />
 

@@ -9,6 +9,7 @@ export default function NavbarWrapper() {
   
   // Hide navbar on admin routes
   if (pathname?.startsWith('/admin')) {
+    console.log('[v0] Admin route detected, hiding navbar')
     return null
   }
 
