@@ -9,6 +9,7 @@ import Link from "next/link"
 import { PremiumApp } from "@/lib/premium-apps-data"
 import { getPremiumAppsFromDB } from "@/lib/supabase-premium-apps-service"
 import PremiumAppPaymentModal from "@/components/PremiumAppPaymentModal"
+import PremiumAppDetailsModal from "@/components/PremiumAppDetailsModal"
 import UpdatedAppOverlay from "@/components/UpdatedAppOverlay"
 import MatrixRain from "@/components/MatrixRain"
 import MobileMenu from "@/components/MobileMenu"
@@ -21,6 +22,8 @@ export default function PremiumAppsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedAppForOverlay, setSelectedAppForOverlay] = useState<PremiumApp | null>(null)
   const [isOverlayOpen, setIsOverlayOpen] = useState(false)
+  const [selectedAppForDetails, setSelectedAppForDetails] = useState<PremiumApp | null>(null)
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
 
   useEffect(() => {
     const loadApps = async () => {
@@ -44,6 +47,11 @@ export default function PremiumAppsPage() {
   const handleFindOut = (app: PremiumApp) => {
     setSelectedAppForOverlay(app)
     setIsOverlayOpen(true)
+  }
+
+  const handleReadMore = (app: PremiumApp) => {
+    setSelectedAppForDetails(app)
+    setIsDetailsModalOpen(true)
   }
 
   const containerVariants = {
@@ -202,8 +210,8 @@ export default function PremiumAppsPage() {
                     {app.downloads}+ downloads
                   </div>
 
-                  {/* Price and Button */}
-                  <div className="flex items-center justify-between pt-4 border-t border-green-500/20">
+                  {/* Price and Buttons */}
+                  <div className="flex flex-col gap-3 pt-4 border-t border-green-500/20">
                     <div className="text-lg sm:text-xl font-bold text-green-400 font-mono">
                       {app.isOffer && app.offerPrice ? (
                         <div className="flex flex-col">
@@ -214,13 +222,21 @@ export default function PremiumAppsPage() {
                         `KSH ${app.price}`
                       )}
                     </div>
-                    <button
-                      onClick={() => handleBuyNow(app)}
-                      className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded border border-green-500 bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-colors font-mono text-xs sm:text-sm"
-                    >
-                      <ShoppingCart size={16} />
-                      <span className="hidden sm:inline">Buy</span>
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleReadMore(app)}
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded border border-slate-500 bg-slate-500/10 text-slate-300 hover:bg-slate-500/20 transition-colors font-mono text-xs sm:text-sm"
+                      >
+                        <span>Read More</span>
+                      </button>
+                      <button
+                        onClick={() => handleBuyNow(app)}
+                        className="flex-1 flex items-center justify-center gap-2 px-3 sm:px-4 py-2 rounded border border-green-500 bg-green-500/10 text-green-400 hover:bg-green-500/20 transition-colors font-mono text-xs sm:text-sm"
+                      >
+                        <ShoppingCart size={16} />
+                        <span className="hidden sm:inline">Buy</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -319,6 +335,16 @@ export default function PremiumAppsPage() {
           setIsOverlayOpen(false)
           setSelectedAppForOverlay(null)
         }}
+      />
+
+      {/* App Details Modal */}
+      <PremiumAppDetailsModal
+        isOpen={isDetailsModalOpen}
+        onClose={() => {
+          setIsDetailsModalOpen(false)
+          setSelectedAppForDetails(null)
+        }}
+        app={selectedAppForDetails}
       />
 
       {/* Footer */}
