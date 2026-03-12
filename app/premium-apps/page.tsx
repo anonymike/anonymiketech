@@ -106,9 +106,9 @@ export default function PremiumAppsPage() {
               </div>
               <div className="border border-green-500/30 rounded p-4 bg-green-500/5">
                 <div className="text-2xl sm:text-3xl font-bold text-green-400 font-mono">
-                  KSH 100
+                  At Affordable price
                 </div>
-                <p className="text-xs sm:text-sm text-slate-400">Per App</p>
+                <p className="text-xs sm:text-sm text-slate-400">Each App Has A Price</p>
               </div>
               <div className="border border-green-500/30 rounded p-4 bg-green-500/5">
                 <div className="text-2xl sm:text-3xl font-bold text-green-400 font-mono">
