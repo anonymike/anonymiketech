@@ -6,8 +6,7 @@ import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { ShoppingCart, Download, Star, Zap, Lock } from "lucide-react"
 import Link from "next/link"
-import { PremiumApp } from "@/lib/premium-apps-data"
-import { getPremiumAppsFromDB } from "@/lib/supabase-premium-apps-service"
+import { PremiumApp, premiumApps } from "@/lib/premium-apps-data"
 import PremiumAppPaymentModal from "@/components/PremiumAppPaymentModal"
 import PremiumAppDetailsModal from "@/components/PremiumAppDetailsModal"
 import UpdatedAppOverlay from "@/components/UpdatedAppOverlay"
@@ -26,32 +25,6 @@ export default function PremiumAppsPage() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
 
   useEffect(() => {
-    const loadApps = async () => {
-      console.log('[v0] Loading premium apps from DB')
-      const apps = await getPremiumAppsFromDB()
-      console.log('[v0] Loaded apps:', apps)
-      setPremiumApps(apps)
-    }
-    
-    // Load apps immediately on mount
-    loadApps()
-    
-    // Set up polling to refresh every 3 seconds
-    const interval = setInterval(loadApps, 3000)
-    
-    // Also refresh when page becomes visible (user switches tabs back)
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        console.log('[v0] Page became visible, refreshing apps')
-        loadApps()
-      }
-    }
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-    
-    return () => {
-      clearInterval(interval)
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
-    }
   }, [])
 
   const handleBuyNow = (app: PremiumApp) => {
