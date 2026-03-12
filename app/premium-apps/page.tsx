@@ -6,7 +6,7 @@ import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { ShoppingCart, Download, Star, Zap, Lock } from "lucide-react"
 import Link from "next/link"
-import { PremiumApp, premiumApps } from "@/lib/premium-apps-data"
+import { PremiumApp, premiumApps as staticPremiumApps } from "@/lib/premium-apps-data"
 import PremiumAppPaymentModal from "@/components/PremiumAppPaymentModal"
 import PremiumAppDetailsModal from "@/components/PremiumAppDetailsModal"
 import UpdatedAppOverlay from "@/components/UpdatedAppOverlay"
@@ -27,8 +27,8 @@ export default function PremiumAppsPage() {
   useEffect(() => {
     // Load apps from static data - new packages first, then existing ones
     const newAppsFirst = [
-      ...premiumApps.filter(app => ["netflix-premium", "youtube-premium", "showmax-premium", "animations-premium", "peacock-premium"].includes(app.id)),
-      ...premiumApps.filter(app => !["netflix-premium", "youtube-premium", "showmax-premium", "animations-premium", "peacock-premium"].includes(app.id))
+      ...staticPremiumApps.filter(app => ["netflix-premium", "youtube-premium", "showmax-premium", "animations-premium", "peacock-premium"].includes(app.id)),
+      ...staticPremiumApps.filter(app => !["netflix-premium", "youtube-premium", "showmax-premium", "animations-premium", "peacock-premium"].includes(app.id))
     ]
     setPremiumApps(newAppsFirst)
   }, [])
