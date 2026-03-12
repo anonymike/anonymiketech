@@ -405,6 +405,16 @@ export default function PremiumAppPaymentModal({
                   </p>
                 </div>
 
+                <div className="rounded border border-blue-500/40 bg-blue-500/10 p-4 space-y-2">
+                  <p className="text-sm font-bold text-blue-300 flex items-center gap-2">
+                    <MessageCircle size={16} />
+                    WhatsApp Validation Required
+                  </p>
+                  <p className="text-xs text-blue-200">
+                    After payment validation, please text your M-Pesa transaction code to WhatsApp: <span className="font-bold">+254782829321</span> for final activation.
+                  </p>
+                </div>
+
                 <div>
                   <label className="block text-sm text-green-400 mb-2 font-mono">
                     Transaction Code
