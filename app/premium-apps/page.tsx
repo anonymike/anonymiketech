@@ -25,8 +25,6 @@ export default function PremiumAppsPage() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
 
   useEffect(() => {
-    // Load apps from static data
-    setPremiumApps(premiumApps)
   }, [])
 
   const handleBuyNow = (app: PremiumApp) => {
