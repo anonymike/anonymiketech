@@ -32,11 +32,26 @@ export default function PremiumAppsPage() {
       console.log('[v0] Loaded apps:', apps)
       setPremiumApps(apps)
     }
+    
+    // Load apps immediately on mount
     loadApps()
     
-    // Refresh data every 5 seconds to show updates from admin panel
-    const interval = setInterval(loadApps, 5000)
-    return () => clearInterval(interval)
+    // Set up polling to refresh every 3 seconds
+    const interval = setInterval(loadApps, 3000)
+    
+    // Also refresh when page becomes visible (user switches tabs back)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        console.log('[v0] Page became visible, refreshing apps')
+        loadApps()
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
   }, [])
 
   const handleBuyNow = (app: PremiumApp) => {
