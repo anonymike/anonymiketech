@@ -25,6 +25,12 @@ export default function PremiumAppsPage() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
 
   useEffect(() => {
+    // Load apps from static data - new packages first, then existing ones
+    const newAppsFirst = [
+      ...premiumApps.filter(app => ["netflix-premium", "youtube-premium", "showmax-premium", "animations-premium", "peacock-premium"].includes(app.id)),
+      ...premiumApps.filter(app => !["netflix-premium", "youtube-premium", "showmax-premium", "animations-premium", "peacock-premium"].includes(app.id))
+    ]
+    setPremiumApps(newAppsFirst)
   }, [])
 
   const handleBuyNow = (app: PremiumApp) => {

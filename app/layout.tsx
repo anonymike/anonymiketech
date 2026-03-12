@@ -8,6 +8,7 @@ import DesktopNavbar from "@/components/DesktopNavbar"
 import MobileMenu from "@/components/MobileMenu"
 import CookieConsent from "@/components/CookieConsent"
 import ChatbotsPromoBanner from "@/components/ChatbotsPromoBanner"
+import PremiumAlertBanner from "@/components/PremiumAlertBanner"
 import ValentinePopup from "@/components/ValentinePopup"
 import WelcomeModal from "@/components/WelcomeModal"
 import PremiumAppsAnnouncement from "@/components/PremiumAppsAnnouncement"
@@ -174,6 +175,7 @@ export default function RootLayout({
           <ShoppingCart />
           <CookieConsent />
           <ChatbotsPromoBanner />
+          <PremiumAlertBanner />
           <WelcomeModal />
           <PremiumAppsAnnouncement />
           <Toaster />
