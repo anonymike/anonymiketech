@@ -6,8 +6,7 @@ import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { ShoppingCart, Download, Star, Zap, Lock } from "lucide-react"
 import Link from "next/link"
-import { PremiumApp } from "@/lib/premium-apps-data"
-import { getPremiumAppsFromDB } from "@/lib/supabase-premium-apps-service"
+import { PremiumApp, premiumApps } from "@/lib/premium-apps-data"
 import PremiumAppPaymentModal from "@/components/PremiumAppPaymentModal"
 import PremiumAppDetailsModal from "@/components/PremiumAppDetailsModal"
 import UpdatedAppOverlay from "@/components/UpdatedAppOverlay"
@@ -26,17 +25,8 @@ export default function PremiumAppsPage() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
 
   useEffect(() => {
-    const loadApps = async () => {
-      console.log('[v0] Loading premium apps from DB')
-      const apps = await getPremiumAppsFromDB()
-      console.log('[v0] Loaded apps:', apps)
-      setPremiumApps(apps)
-    }
-    loadApps()
-    
-    // Refresh data every 5 seconds to show updates from admin panel
-    const interval = setInterval(loadApps, 5000)
-    return () => clearInterval(interval)
+    // Load apps from static data
+    setPremiumApps(premiumApps)
   }, [])
 
   const handleBuyNow = (app: PremiumApp) => {
