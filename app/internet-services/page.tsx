@@ -14,6 +14,8 @@ import OfferModal from "@/components/OfferModal"
 import VPNPackageModal from "@/components/VPNPackageModal"
 import ServerUpgradeAnnouncement from "@/components/ServerUpgradeAnnouncement"
 import ClientConnectionStats from "@/components/ClientConnectionStats"
+import NetworkTopology from "@/components/NetworkTopology"
+import InternetServicesAlertModal from "@/components/InternetServicesAlertModal"
 import { useOfferPricing } from "@/hooks/useOfferPricing"
 import ChatbaseEmbed from "@/components/ChatbaseEmbed"
 
@@ -174,9 +176,63 @@ export default function InternetServices() {
 
   const vpnPlans = [
     {
+      id: "ultra-short-internet",
+      title: "📡 ULTRA SHORT",
+      price: "KES 5",
+      period: "45 minutes",
+      features: [
+        "🌐 Unlimited VPN Data",
+        "⏱️ 45 Minutes Access",
+        "🔒 Full Encryption",
+        "🌍 Global Servers",
+        "⚡ Standard Speed",
+      ],
+    },
+    {
+      id: "short-internet",
+      title: "📡 SHORT BURST",
+      price: "KES 15",
+      period: "2 hours",
+      features: [
+        "🌐 Unlimited VPN Data",
+        "⏱️ 2 Hours Access",
+        "🔒 Military Encryption",
+        "🌍 50+ Servers",
+        "⚡ Fast Speed",
+      ],
+    },
+    {
+      id: "standard-internet",
+      title: "📡 STANDARD PASS",
+      price: "KES 30",
+      period: "6 hours",
+      features: [
+        "🌐 Unlimited VPN Data",
+        "⏱️ 6 Hours Access",
+        "🔒 Advanced Protection",
+        "🌍 Global Network",
+        "⚡ High Speed",
+      ],
+    },
+    {
+      id: "daily-internet",
+      title: "📡 DAILY INTERNET",
+      price: "KES 50",
+      period: "24 hours",
+      popular: true,
+      features: [
+        "🌐 Unlimited VPN Data",
+        "⏱️ 24 Hours Access",
+        "🔒 Zero-Log Policy",
+        "🌍 100+ Servers",
+        "⚡ Premium Speed",
+        "📊 Usage Analytics",
+      ],
+    },
+    {
       id: "trial-plan",
       title: "♻️ 3 DAYS TRIAL",
-      price: "KES 50",
+      price: "KES 100",
       period: "3 days",
       features: [
         "🔒 Trial VPN Access",
@@ -190,10 +246,10 @@ export default function InternetServices() {
     {
       id: "weekly-plan",
       title: "♻️ WEEKLY VPN",
-      price: "KES 100",
+      price: "KES 150",
       period: "week",
       features: [
-        "🔒 Effecient VPN Access",
+        "🔒 Efficient VPN Access",
         "🌍 5 Server Locations",
         "📱 1 Device Connections",
         "⚡ Standard Speed",
@@ -204,7 +260,7 @@ export default function InternetServices() {
     {
       id: "two-weeks-plan",
       title: "♻️ TWO WEEKS VPN",
-      price: "KES 180",
+      price: "KES 200",
       period: "2 weeks",
       features: [
         "🔒 Enhanced VPN Access",
@@ -221,7 +277,6 @@ export default function InternetServices() {
       title: " ♻️ THREE WEEKS VPN",
       price: "KES 260",
       period: "3 weeks",
-      popular: true,
       features: [
         "🔒 Premium VPN Access",
         "🌍 25+ Server Locations",
@@ -236,7 +291,7 @@ export default function InternetServices() {
     {
       id: "monthly-plan",
       title: "♻️ MONTHLY VPN",
-      price: "KES 340",
+      price: "KES 350",
       period: "month",
       features: [
         "🔒 Elite VPN Access",
@@ -264,6 +319,7 @@ export default function InternetServices() {
       <MatrixRain />
 
       <OfferModal />
+      <InternetServicesAlertModal />
 
       <div className="relative z-10">
         <ServiceHero
@@ -281,6 +337,26 @@ export default function InternetServices() {
         </section>
 
         <ClientConnectionStats />
+
+        {/* Network Topology Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="py-16"
+        >
+          <div className="container mx-auto px-4">
+            <div className="mb-12 text-center">
+              <h2 className="text-3xl md:text-4xl font-tech font-bold text-hacker-green mb-4 glow-text">
+                OUR NETWORK INFRASTRUCTURE
+              </h2>
+              <p className="text-hacker-green-dim text-lg">
+                Advanced topology for maximum coverage and reliability
+              </p>
+            </div>
+            <NetworkTopology />
+          </div>
+        </motion.section>
 
         <motion.section
           initial={{ opacity: 0, y: 50 }}
@@ -303,11 +379,21 @@ export default function InternetServices() {
 
         <motion.footer
           initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-          className="py-8 border-t border-hacker-green/20"
+          animate={{ opacity: 1 }}
+          transition={{ delay: 2.5, duration: 1 }}
+          className="container mx-auto px-4 py-8 text-center border-t border-hacker-green/20 mt-12"
         >
-          <div className="container mx-auto px-4 text-center">
+          <div className="glow-border rounded-lg p-6 bg-hacker-terminal/20 backdrop-blur-sm">
+            <p className="font-tech text-hacker-green-dim mb-4">
+              © {getCurrentYear()} ANONYMIKETECH - Digital Innovation & Cyber Excellence
+            </p>
+            <motion.p
+              className="font-tech text-hacker-green mb-4"
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+            >
+              // "In code we trust, in anonymity we thrive" //
+            </motion.p>
             <motion.p
               className="font-tech text-hacker-green-dim hover:text-hacker-green transition-colors duration-300"
               animate={{ opacity: [0.7, 1, 0.7] }}
