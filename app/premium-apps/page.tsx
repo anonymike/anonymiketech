@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { ShoppingCart, Download, Star, Zap, Lock, Film } from "lucide-react"
+import { ShoppingCart, Download, Star, Zap, Lock, Film, Sparkles, ArrowDown } from "lucide-react"
 import Link from "next/link"
 import { PremiumApp, premiumApps as staticPremiumApps } from "@/lib/premium-apps-data"
 import MovieBoxGuideModal from "@/components/MovieBoxGuideModal"
@@ -26,6 +26,8 @@ export default function PremiumAppsPage() {
   const [selectedAppForDetails, setSelectedAppForDetails] = useState<PremiumApp | null>(null)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
   const [isMovieBoxModalOpen, setIsMovieBoxModalOpen] = useState(false)
+  const [isGiftPaymentModalOpen, setIsGiftPaymentModalOpen] = useState(false)
+  const [giftAmount, setGiftAmount] = useState(50)
 
   useEffect(() => {
     const loadApps = async () => {
@@ -75,6 +77,17 @@ export default function PremiumAppsPage() {
   const handleReadMore = (app: PremiumApp) => {
     setSelectedAppForDetails(app)
     setIsDetailsModalOpen(true)
+  }
+
+  const handleGiftUs = (amount: number) => {
+    setGiftAmount(amount)
+    setIsMovieBoxModalOpen(false)
+    setIsGiftPaymentModalOpen(true)
+  }
+
+  const handleScrollToMovieBox = () => {
+    const movieboxElement = document.getElementById('moviebox-section')
+    movieboxElement?.scrollIntoView({ behavior: 'smooth' })
   }
 
   const containerVariants = {
@@ -149,6 +162,46 @@ export default function PremiumAppsPage() {
           </motion.div>
         </div>
       </section>
+
+      {/* MovieBox Hack Promotion Banner */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        onClick={handleScrollToMovieBox}
+        className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 mb-8 cursor-pointer"
+      >
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          className="relative overflow-hidden rounded-lg border border-purple-500/40 bg-gradient-to-r from-purple-900/20 via-pink-900/20 to-purple-900/20 p-6 sm:p-8 hover:border-purple-500/60 transition-all"
+        >
+          {/* Animated gradient background */}
+          <motion.div
+            animate={{ x: [0, 100, 0] }}
+            transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/10 to-transparent"
+          />
+          
+          <div className="relative flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}>
+                <Sparkles size={32} className="text-purple-400" />
+              </motion.div>
+              <div>
+                <h3 className="text-lg sm:text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                  Check out our MovieBox Hack!
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-300 mt-1">
+                  Learn how to save MovieBox movies to your device storage
+                </p>
+              </div>
+            </div>
+            <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}>
+              <ArrowDown size={24} className="text-purple-400" />
+            </motion.div>
+          </div>
+        </motion.div>
+      </motion.div>
 
       {/* Apps Grid */}
       <section className="relative py-12 sm:py-20">
@@ -379,10 +432,11 @@ export default function PremiumAppsPage() {
       <MovieBoxGuideModal
         isOpen={isMovieBoxModalOpen}
         onClose={() => setIsMovieBoxModalOpen(false)}
+        onGiftUs={handleGiftUs}
       />
 
       {/* MovieBox Local Storage Guide Section */}
-      <section className="relative border-t border-green-500/30 bg-gradient-to-b from-slate-900 to-black py-12 sm:py-16">
+      <section id="moviebox-section" className="relative border-t border-green-500/30 bg-gradient-to-b from-slate-900 to-black py-12 sm:py-16">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -410,6 +464,15 @@ export default function PremiumAppsPage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Gift Us Payment Modal */}
+      <PremiumAppPaymentModal
+        isOpen={isGiftPaymentModalOpen}
+        onClose={() => setIsGiftPaymentModalOpen(false)}
+        appName="Support Us - MovieBox Gift"
+        appIcon="❤️"
+        price={giftAmount}
+      />
 
       {/* Footer */}
       <footer className="relative border-t border-green-500/30 bg-black py-8 sm:py-12">

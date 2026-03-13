@@ -8,11 +8,12 @@ import { useState } from "react"
 interface MovieBoxGuideModalProps {
   isOpen: boolean
   onClose: () => void
+  onGiftUs?: (amount: number) => void
 }
 
-export default function MovieBoxGuideModal({ isOpen, onClose }: MovieBoxGuideModalProps) {
+export default function MovieBoxGuideModal({ isOpen, onClose, onGiftUs }: MovieBoxGuideModalProps) {
   const [showDonationModal, setShowDonationModal] = useState(false)
-  const [donationAmount, setDonationAmount] = useState("")
+  const [donationAmount, setDonationAmount] = useState("50")
 
   const steps = [
     {
@@ -47,7 +48,13 @@ export default function MovieBoxGuideModal({ isOpen, onClose }: MovieBoxGuideMod
     },
   ]
 
-  const donationOptions = [100, 200, 500, 1000, 2000, 5000]
+  const donationOptions = [50, 100, 200, 500, 1000]
+
+  const handleGiftClick = () => {
+    if (onGiftUs && donationAmount) {
+      onGiftUs(parseInt(donationAmount))
+    }
+  }
 
   return (
     <AnimatePresence>
@@ -253,10 +260,11 @@ export default function MovieBoxGuideModal({ isOpen, onClose }: MovieBoxGuideMod
                             Cancel
                           </button>
                           <button
-                            disabled={!donationAmount}
+                            onClick={handleGiftClick}
+                            disabled={!donationAmount || parseInt(donationAmount) < 50}
                             className="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:from-purple-600 hover:to-pink-600 transition-all font-mono text-sm font-bold"
                           >
-                            Donate KSH {donationAmount || "0"}
+                            Initiate Payment
                           </button>
                         </div>
                       </div>
