@@ -4,9 +4,10 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { ShoppingCart, Download, Star, Zap, Lock } from "lucide-react"
+import { ShoppingCart, Download, Star, Zap, Lock, Film } from "lucide-react"
 import Link from "next/link"
 import { PremiumApp, premiumApps as staticPremiumApps } from "@/lib/premium-apps-data"
+import MovieBoxGuideModal from "@/components/MovieBoxGuideModal"
 import { getPremiumAppsFromDB } from "@/lib/supabase-premium-apps-service"
 import PremiumAppPaymentModal from "@/components/PremiumAppPaymentModal"
 import PremiumAppDetailsModal from "@/components/PremiumAppDetailsModal"
@@ -24,6 +25,7 @@ export default function PremiumAppsPage() {
   const [isOverlayOpen, setIsOverlayOpen] = useState(false)
   const [selectedAppForDetails, setSelectedAppForDetails] = useState<PremiumApp | null>(null)
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
+  const [isMovieBoxModalOpen, setIsMovieBoxModalOpen] = useState(false)
 
   useEffect(() => {
     const loadApps = async () => {
@@ -372,6 +374,42 @@ export default function PremiumAppsPage() {
           setIsModalOpen(true)
         }}
       />
+
+      {/* MovieBox Guide Modal */}
+      <MovieBoxGuideModal
+        isOpen={isMovieBoxModalOpen}
+        onClose={() => setIsMovieBoxModalOpen(false)}
+      />
+
+      {/* MovieBox Local Storage Guide Section */}
+      <section className="relative border-t border-green-500/30 bg-gradient-to-b from-slate-900 to-black py-12 sm:py-16">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="rounded-lg border border-purple-500/30 bg-purple-500/5 p-8 text-center"
+          >
+            <div className="flex justify-center mb-4">
+              <Film size={40} className="text-purple-400" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-purple-300 mb-4">
+              Save MovieBox to Local Storage
+            </h2>
+            <p className="text-slate-400 mb-6 max-w-2xl mx-auto text-sm sm:text-base">
+              Learn how to download and save your favorite movies and series from MovieBox directly to your device's local storage for offline access.
+            </p>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsMovieBoxModalOpen(true)}
+              className="px-6 sm:px-8 py-3 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold hover:from-purple-400 hover:to-pink-400 transition-all shadow-lg hover:shadow-purple-500/50"
+            >
+              View Guide
+            </motion.button>
+          </motion.div>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer className="relative border-t border-green-500/30 bg-black py-8 sm:py-12">
