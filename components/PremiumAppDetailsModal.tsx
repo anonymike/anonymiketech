@@ -9,14 +9,22 @@ interface PremiumAppDetailsModalProps {
   isOpen: boolean
   onClose: () => void
   app: PremiumApp | null
+  onInitiatePayment?: (app: PremiumApp) => void
 }
 
 export default function PremiumAppDetailsModal({
   isOpen,
   onClose,
   app,
+  onInitiatePayment,
 }: PremiumAppDetailsModalProps) {
   if (!app) return null
+
+  const handleInitiatePayment = () => {
+    if (onInitiatePayment) {
+      onInitiatePayment(app)
+    }
+  }
 
   return (
     <AnimatePresence>
@@ -171,10 +179,10 @@ export default function PremiumAppDetailsModal({
                   Close
                 </button>
                 <button
-                  onClick={onClose}
+                  onClick={handleInitiatePayment}
                   className="flex-1 px-4 py-3 rounded-lg bg-green-500/20 border border-green-500/50 text-green-400 hover:bg-green-500/30 transition-colors font-mono text-sm font-bold"
                 >
-                  Buy Now
+                  Initiate Payment
                 </button>
               </div>
             </div>
