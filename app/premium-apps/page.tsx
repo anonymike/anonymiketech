@@ -7,6 +7,7 @@ import { motion } from "framer-motion"
 import { ShoppingCart, Download, Star, Zap, Lock } from "lucide-react"
 import Link from "next/link"
 import { PremiumApp, premiumApps as staticPremiumApps } from "@/lib/premium-apps-data"
+import { getPremiumAppsFromDB } from "@/lib/supabase-premium-apps-service"
 import PremiumAppPaymentModal from "@/components/PremiumAppPaymentModal"
 import PremiumAppDetailsModal from "@/components/PremiumAppDetailsModal"
 import UpdatedAppOverlay from "@/components/UpdatedAppOverlay"
@@ -25,12 +26,38 @@ export default function PremiumAppsPage() {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
 
   useEffect(() => {
-    // Load apps from static data - new packages first, then existing ones
-    const newAppsFirst = [
-      ...staticPremiumApps.filter(app => ["netflix-premium", "youtube-premium", "showmax-premium", "animations-premium", "peacock-premium"].includes(app.id)),
-      ...staticPremiumApps.filter(app => !["netflix-premium", "youtube-premium", "showmax-premium", "animations-premium", "peacock-premium"].includes(app.id))
-    ]
-    setPremiumApps(newAppsFirst)
+    const loadApps = async () => {
+      try {
+        // Try to load from database first
+        const dbApps = await getPremiumAppsFromDB()
+        if (dbApps && dbApps.length > 0) {
+          console.log("[v0] Loaded apps from database:", dbApps.length)
+          // Combine with static apps, with new packages first
+          const newAppsFirst = [
+            ...staticPremiumApps.filter(app => ["netflix-premium", "youtube-premium", "showmax-premium", "animations-premium", "peacock-premium"].includes(app.id)),
+            ...dbApps
+          ]
+          setPremiumApps(newAppsFirst)
+        } else {
+          // Fallback to static data
+          console.log("[v0] No database apps, using static data")
+          const newAppsFirst = [
+            ...staticPremiumApps.filter(app => ["netflix-premium", "youtube-premium", "showmax-premium", "animations-premium", "peacock-premium"].includes(app.id)),
+            ...staticPremiumApps.filter(app => !["netflix-premium", "youtube-premium", "showmax-premium", "animations-premium", "peacock-premium"].includes(app.id))
+          ]
+          setPremiumApps(newAppsFirst)
+        }
+      } catch (error) {
+        console.log("[v0] Database fetch failed, using static data:", error)
+        // Fallback to static data if database is unavailable
+        const newAppsFirst = [
+          ...staticPremiumApps.filter(app => ["netflix-premium", "youtube-premium", "showmax-premium", "animations-premium", "peacock-premium"].includes(app.id)),
+          ...staticPremiumApps.filter(app => !["netflix-premium", "youtube-premium", "showmax-premium", "animations-premium", "peacock-premium"].includes(app.id))
+        ]
+        setPremiumApps(newAppsFirst)
+      }
+    }
+    loadApps()
   }, [])
 
   const handleBuyNow = (app: PremiumApp) => {
@@ -339,6 +366,11 @@ export default function PremiumAppsPage() {
           setSelectedAppForDetails(null)
         }}
         app={selectedAppForDetails}
+        onInitiatePayment={(app) => {
+          setIsDetailsModalOpen(false)
+          setSelectedApp(app)
+          setIsModalOpen(true)
+        }}
       />
 
       {/* Footer */}
