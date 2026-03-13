@@ -145,7 +145,7 @@ export default function PremiumAppsAnnouncement() {
                 {/* Pricing Info */}
                 <div className="p-2.5 sm:p-3.5 rounded-lg border border-hacker-green/30 bg-hacker-green/5 backdrop-blur-sm mb-5 sm:mb-6">
                   <p className="text-xs sm:text-sm text-center text-hacker-green font-mono font-bold">
-                    KSH 100 each • M-Pesa payment • Instant delivery
+                    Affordable Prices Just for you • M-Pesa payment • Instant delivery
                   </p>
                 </div>
 
