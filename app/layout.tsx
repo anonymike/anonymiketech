@@ -9,7 +9,6 @@ import MobileMenu from "@/components/MobileMenu"
 import CookieConsent from "@/components/CookieConsent"
 import ChatbotsPromoBanner from "@/components/ChatbotsPromoBanner"
 import PremiumAlertBanner from "@/components/PremiumAlertBanner"
-import MovieBoxGuideModalWrapper from "@/components/MovieBoxGuideModalWrapper"
 import ValentinePopup from "@/components/ValentinePopup"
 import WelcomeModal from "@/components/WelcomeModal"
 import PremiumAppsAnnouncement from "@/components/PremiumAppsAnnouncement"
@@ -177,7 +176,6 @@ export default function RootLayout({
           <CookieConsent />
           <ChatbotsPromoBanner />
           <PremiumAlertBanner />
-          <MovieBoxGuideModalWrapper />
           <WelcomeModal />
           <PremiumAppsAnnouncement />
           <Toaster />
