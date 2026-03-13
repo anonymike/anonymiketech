@@ -135,16 +135,28 @@ export default function HeroSection() {
               transition={{ delay: 0.7, duration: 0.8 }}
               className="flex gap-3 md:gap-4 flex-wrap"
             >
-              <a href="/contact">
-                <button className="px-4 md:px-6 py-2 md:py-3 rounded-lg font-tech font-bold text-xs md:text-sm text-hacker-terminal bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 hover:shadow-lg hover:shadow-cyan-500/50 transition-all border-2 border-transparent hover:border-cyan-400">
-                  Get Started
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <a href="/contact">
+                  <button className="px-4 md:px-6 py-2 md:py-3 rounded-lg font-tech font-bold text-xs md:text-sm text-hacker-terminal bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 hover:shadow-lg hover:shadow-cyan-500/50 transition-all border-2 border-transparent hover:border-cyan-400">
+                    Get Started
+                  </button>
+                </a>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault()
+                    const servicesElement = document.getElementById('services')
+                    servicesElement?.scrollIntoView({ behavior: 'smooth' })
+                  }}
+                  className="px-4 md:px-6 py-2 md:py-3 rounded-lg font-tech font-bold text-xs md:text-sm text-cyan-400 border-2 border-cyan-400/50 hover:border-cyan-400 hover:bg-cyan-400/10 hover:shadow-lg hover:shadow-cyan-400/30 transition-all flex items-center gap-2"
+                >
+                  <span>Explore Services</span>
+                  <motion.span animate={{ y: [0, 4, 0] }} transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}>
+                    ↓
+                  </motion.span>
                 </button>
-              </a>
-              <a href="#services">
-                <button className="px-4 md:px-6 py-2 md:py-3 rounded-lg font-tech font-bold text-xs md:text-sm text-cyan-400 border-2 border-cyan-400/50 hover:border-cyan-400 hover:bg-cyan-400/5 transition-all">
-                  Explore Services
-                </button>
-              </a>
+              </motion.div>
             </motion.div>
           </motion.div>
 
@@ -230,16 +242,28 @@ export default function HeroSection() {
             transition={{ delay: 0.7, duration: 0.8 }}
             className="flex gap-3 flex-wrap"
           >
-            <a href="/contact">
-              <button className="px-4 py-2 rounded-lg font-tech font-bold text-xs sm:text-sm text-hacker-terminal bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 hover:shadow-lg hover:shadow-cyan-500/50 transition-all border-2 border-transparent hover:border-cyan-400">
-                Get Started
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <a href="/contact">
+                <button className="px-4 py-2 rounded-lg font-tech font-bold text-xs sm:text-sm text-hacker-terminal bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 hover:shadow-lg hover:shadow-cyan-500/50 transition-all border-2 border-transparent hover:border-cyan-400">
+                  Get Started
+                </button>
+              </a>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <button 
+                onClick={(e) => {
+                  e.preventDefault()
+                  const servicesElement = document.getElementById('services')
+                  servicesElement?.scrollIntoView({ behavior: 'smooth' })
+                }}
+                className="px-4 py-2 rounded-lg font-tech font-bold text-xs sm:text-sm text-cyan-400 border-2 border-cyan-400/50 hover:border-cyan-400 hover:bg-cyan-400/10 hover:shadow-lg hover:shadow-cyan-400/30 transition-all flex items-center gap-2"
+              >
+                <span>Explore Services</span>
+                <motion.span animate={{ y: [0, 4, 0] }} transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}>
+                  ↓
+                </motion.span>
               </button>
-            </a>
-            <a href="#services">
-              <button className="px-4 py-2 rounded-lg font-tech font-bold text-xs sm:text-sm text-cyan-400 border-2 border-cyan-400/50 hover:border-cyan-400 hover:bg-cyan-400/5 transition-all">
-                Explore Services
-              </button>
-            </a>
+            </motion.div>
           </motion.div>
         </div>
       </div>
