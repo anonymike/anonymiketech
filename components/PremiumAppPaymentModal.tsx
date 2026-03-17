@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, Phone, AlertCircle, CheckCircle, Loader2, MessageCircle } from "lucide-react"
+import { X, Phone, AlertCircle, CheckCircle, Loader2, MessageCircle, Send } from "lucide-react"
 
 interface PremiumAppPaymentModalProps {
   isOpen: boolean
@@ -616,9 +616,51 @@ export default function PremiumAppPaymentModal({
                       <span className="text-blue-400">→</span> Download link valid for 30 days
                     </p>
                     <p className="flex items-center gap-2">
-                      <span className="text-blue-400">→</span> Need help? Contact us on WhatsApp
+                      <span className="text-blue-400">→</span> Need help? Contact us via WhatsApp or Telegram
                     </p>
                   </motion.div>
+                </motion.div>
+
+                {/* Contact Admin Section */}
+                <motion.div
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.85 }}
+                  className="rounded-lg border border-purple-500/30 bg-purple-500/5 p-4 space-y-3"
+                >
+                  <p className="text-sm font-bold text-purple-300 text-center">
+                    Contact Admin for Activation
+                  </p>
+                  <p className="text-xs text-slate-400 text-center">
+                    Please reach out via WhatsApp or Telegram to complete your activation
+                  </p>
+                  
+                  {/* Contact buttons row */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <motion.a
+                      href="https://wa.me/254782829321"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="rounded-lg border border-green-500/40 bg-green-500/10 px-3 py-2.5 font-mono text-xs font-bold text-green-300 hover:bg-green-500/20 transition-all hover:border-green-400 flex items-center justify-center gap-2"
+                    >
+                      <MessageCircle size={14} />
+                      WhatsApp
+                    </motion.a>
+                    
+                    <motion.a
+                      href="https://t.me/ANONYMIKEY"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="rounded-lg border border-blue-500/40 bg-blue-500/10 px-3 py-2.5 font-mono text-xs font-bold text-blue-300 hover:bg-blue-500/20 transition-all hover:border-blue-400 flex items-center justify-center gap-2"
+                    >
+                      <Send size={14} />
+                      Telegram
+                    </motion.a>
+                  </div>
                 </motion.div>
 
                 {/* Action buttons */}
@@ -639,14 +681,14 @@ export default function PremiumAppPaymentModal({
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => {
-                      const whatsappMessage = `Hi, I just successfully purchased ${appName} for KSH ${price}. Thank you!`
+                      const whatsappMessage = `Hi, I just successfully purchased ${appName} for KSH ${price}. Please help me activate my purchase. Thank you!`
                       const whatsappUrl = `https://wa.me/254782829321?text=${encodeURIComponent(whatsappMessage)}`
                       window.open(whatsappUrl, "_blank")
                     }}
-                    className="w-full rounded-lg border border-blue-500/40 bg-blue-500/10 px-4 py-2.5 font-mono text-sm text-blue-300 hover:bg-blue-500/20 transition-all hover:border-blue-400 flex items-center justify-center gap-2"
+                    className="w-full rounded-lg border border-green-500/40 bg-green-500/10 px-4 py-2.5 font-mono text-sm text-green-300 hover:bg-green-500/20 transition-all hover:border-green-400 flex items-center justify-center gap-2"
                   >
                     <MessageCircle size={16} />
-                    Share Success on WhatsApp
+                    Chat with Admin on WhatsApp
                   </motion.button>
                 </motion.div>
 
