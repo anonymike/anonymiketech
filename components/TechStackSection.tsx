@@ -89,7 +89,7 @@ export default function TechStackSection({ delay = 5.5 }: { delay?: number }) {
           text: fullCode.substring(0, currentIndex + 1),
           index: currentIndex + 1,
         })
-      }, 20)
+      }, 5)
       return () => clearTimeout(timer)
     }
   }, [selectedTech, displayedCode])
@@ -109,29 +109,32 @@ export default function TechStackSection({ delay = 5.5 }: { delay?: number }) {
         // TECH STACK & EXPERTISE
       </motion.h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {technologies.map((tech, index) => {
-          const isTopRow = index < 4
-          const xOffset = isTopRow ? 50 : -50
-
-          return (
-            <motion.div
-              key={tech.name}
-              initial={{ opacity: 0, scale: 0.5, rotateZ: -10, x: -xOffset }}
-              animate={{ opacity: 1, scale: 1, rotateZ: 0, x: 0 }}
-              transition={{
-                delay: delay + 0.1 * index,
-                type: "spring",
-                stiffness: 100,
-              }}
-              whileHover={{
-                scale: 1.1,
-                boxShadow: "0 0 30px rgba(0, 255, 0, 0.6)",
-                y: -5,
-              }}
-              onClick={() => setSelectedTech(tech.name)}
-              className="relative group cursor-pointer"
-            >
+      <div className="overflow-hidden">
+        {/* Top Row - Moves Right */}
+        <motion.div
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4"
+          animate={{ x: [0, 20, 0] }}
+          transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+        >
+          {technologies.slice(0, 4).map((tech, index) => {
+            return (
+              <motion.div
+                key={tech.name}
+                initial={{ opacity: 0, scale: 0.5, rotateZ: -10, x: -50 }}
+                animate={{ opacity: 1, scale: 1, rotateZ: 0, x: 0 }}
+                transition={{
+                  delay: delay + 0.1 * index,
+                  type: "spring",
+                  stiffness: 100,
+                }}
+                whileHover={{
+                  scale: 1.1,
+                  boxShadow: "0 0 30px rgba(0, 255, 0, 0.6)",
+                  y: -5,
+                }}
+                onClick={() => setSelectedTech(tech.name)}
+                className="relative group cursor-pointer"
+              >
             <div
               className={`glow-border rounded-lg p-6 bg-gradient-to-br ${tech.color} bg-opacity-10 backdrop-blur-sm h-full flex items-center justify-center cursor-pointer`}
             >
@@ -160,8 +163,66 @@ export default function TechStackSection({ delay = 5.5 }: { delay?: number }) {
               />
             </div>
             </motion.div>
-          )
-        })}
+            )
+          })}
+        </motion.div>
+
+        {/* Bottom Row - Moves Left */}
+        <motion.div
+          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          animate={{ x: [0, -20, 0] }}
+          transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+        >
+          {technologies.slice(4, 8).map((tech, index) => {
+            return (
+              <motion.div
+                key={tech.name}
+                initial={{ opacity: 0, scale: 0.5, rotateZ: -10, x: 50 }}
+                animate={{ opacity: 1, scale: 1, rotateZ: 0, x: 0 }}
+                transition={{
+                  delay: delay + 0.1 * index,
+                  type: "spring",
+                  stiffness: 100,
+                }}
+                whileHover={{
+                  scale: 1.1,
+                  boxShadow: "0 0 30px rgba(0, 255, 0, 0.6)",
+                  y: -5,
+                }}
+                onClick={() => setSelectedTech(tech.name)}
+                className="relative group cursor-pointer"
+              >
+              <div
+                className={`glow-border rounded-lg p-6 bg-gradient-to-br ${tech.color} bg-opacity-10 backdrop-blur-sm h-full flex items-center justify-center cursor-pointer`}
+              >
+                <motion.div
+                  animate={{
+                    rotateZ: [0, 5, -5, 0],
+                    y: [0, -5, 0],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Number.POSITIVE_INFINITY,
+                    delay: Math.random() * 2,
+                  }}
+                  className="text-center"
+                >
+                  <div className={`text-5xl mb-3 bg-gradient-to-r ${tech.color} bg-clip-text text-transparent`}>
+                    {tech.icon}
+                  </div>
+                  <h3 className="font-tech font-bold text-hacker-green-bright text-sm">{tech.name}</h3>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileHover={{ opacity: 1 }}
+                  className="absolute inset-0 rounded-lg bg-hacker-green/10 blur-lg -z-10"
+                />
+              </div>
+              </motion.div>
+            )
+          })}
+        </motion.div>
       </div>
 
       {/* Code Modal */}
