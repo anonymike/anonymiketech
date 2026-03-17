@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { X } from "lucide-react"
 
 const technologies = [
@@ -64,6 +64,7 @@ export default function TechStackSection({ delay = 5.5 }: { delay?: number }) {
   const [showContent, setShowContent] = useState(false)
   const [selectedTech, setSelectedTech] = useState<string | null>(null)
   const [displayedCode, setDisplayedCode] = useState<TypeEffect>({ text: "", index: 0 })
+  const codeIndexRef = useRef(0)
 
   useEffect(() => {
     const timer = setTimeout(() => setShowContent(true), delay * 1000)
@@ -73,6 +74,7 @@ export default function TechStackSection({ delay = 5.5 }: { delay?: number }) {
   // Terminal typing effect
   useEffect(() => {
     if (!selectedTech) {
+      codeIndexRef.current = 0
       setDisplayedCode({ text: "", index: 0 })
       return
     }
@@ -81,18 +83,18 @@ export default function TechStackSection({ delay = 5.5 }: { delay?: number }) {
     if (!selectedTechData) return
 
     const fullCode = selectedTechData.code
-    let currentIndex = displayedCode.index
 
-    if (currentIndex < fullCode.length) {
+    if (codeIndexRef.current < fullCode.length) {
       const timer = setTimeout(() => {
+        codeIndexRef.current += 1
         setDisplayedCode({
-          text: fullCode.substring(0, currentIndex + 1),
-          index: currentIndex + 1,
+          text: fullCode.substring(0, codeIndexRef.current),
+          index: codeIndexRef.current,
         })
       }, 5)
       return () => clearTimeout(timer)
     }
-  }, [selectedTech, displayedCode])
+  }, [selectedTech])
 
   return (
     <motion.section
