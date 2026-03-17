@@ -163,7 +163,7 @@ function Globe() {
 
 export default function GlobeAnimation() {
   return (
-    <div className="w-full h-96 md:h-full">
+    <div className="w-full h-96 md:h-full" style={{ boxShadow: "0 0 0px rgba(0, 0, 0, 0)" }}>
       <Canvas
         camera={{
           position: [0, 0, 5],

@@ -166,6 +166,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3, duration: 0.8 }}
             className="flex items-center justify-center h-full min-h-96"
+            style={{ boxShadow: "0 0 0px rgba(0, 0, 0, 0)" }}
           >
             <Suspense
               fallback={
@@ -186,6 +187,7 @@ export default function HeroSection() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.8 }}
           className="absolute inset-0 flex items-center justify-center"
+          style={{ boxShadow: "0 0 0px rgba(0, 0, 0, 0)" }}
         >
           <Suspense
             fallback={
