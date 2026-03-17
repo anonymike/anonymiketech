@@ -29,21 +29,26 @@ export default function Terminal() {
 
     const targetText = terminalLines[currentLine]
     let charIndex = 0
+    let typeInterval: ReturnType<typeof setInterval> | null = null
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
 
-    const typeInterval = setInterval(() => {
+    typeInterval = setInterval(() => {
       if (charIndex <= targetText.length) {
         setCurrentText(targetText.slice(0, charIndex))
         charIndex++
       } else {
-        clearInterval(typeInterval)
-        setTimeout(() => {
+        if (typeInterval) clearInterval(typeInterval)
+        timeoutId = setTimeout(() => {
           setCurrentLine((prev) => prev + 1)
           setCurrentText("")
         }, 800)
       }
     }, 50)
 
-    return () => clearInterval(typeInterval)
+    return () => {
+      if (typeInterval) clearInterval(typeInterval)
+      if (timeoutId) clearTimeout(timeoutId)
+    }
   }, [currentLine])
 
   useEffect(() => {
