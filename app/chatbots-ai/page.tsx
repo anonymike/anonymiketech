@@ -185,6 +185,8 @@ export default function ChatbotsAI() {
           description="Harness the power of artificial intelligence to automate customer interactions, support, and sales. Our AI-driven solutions provide intelligent conversations, instant responses, and actionable insights."
           icon={<Bot />}
           backgroundPattern="<>"
+          ctaText="Get Started Now"
+          onCtaClick={() => setShowAuthModal(true)}
         />
 
         <section className="py-16">
