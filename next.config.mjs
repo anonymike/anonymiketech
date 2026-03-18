@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -11,14 +8,11 @@ const nextConfig = {
     // SEO: Optimize image formats
     formats: ['image/webp', 'image/avif'],
   },
-  swcMinify: true,
   reactStrictMode: true,
   // SEO: Compression for faster load times
   compress: true,
   // SEO: Enable static optimization
   staticPageGenerationTimeout: 120,
-  // SEO: Optimize fonts
-  optimizeFonts: true,
   // SEO: Enable experimental features for better performance
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
