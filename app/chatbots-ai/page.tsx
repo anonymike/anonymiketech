@@ -1,6 +1,7 @@
 "use client"
 
-import { MessageSquare, Zap, Bot, Users, Brain, BarChart3 } from "lucide-react"
+import { useState } from "react"
+import { MessageSquare, Zap, Bot, Users, Brain, BarChart3, ArrowRight } from "lucide-react"
 import { motion } from "framer-motion"
 import MatrixRain from "@/components/MatrixRain"
 import ServiceHero from "@/components/ServiceHero"
@@ -11,8 +12,10 @@ import MobileMenu from "@/components/MobileMenu"
 import BackToTop from "@/components/BackToTop"
 import { getCurrentYear } from "@/utils/getCurrentYear"
 import ChatbaseEmbed from "@/components/ChatbaseEmbed"
+import ChatbotsAuthModal from "@/components/ChatbotsAuthModal"
 
 export default function ChatbotsAI() {
+  const [showAuthModal, setShowAuthModal] = useState(false)
   const capabilities = [
     {
       icon: <MessageSquare className="w-8 h-8" />,
@@ -182,6 +185,8 @@ export default function ChatbotsAI() {
           description="Harness the power of artificial intelligence to automate customer interactions, support, and sales. Our AI-driven solutions provide intelligent conversations, instant responses, and actionable insights."
           icon={<Bot />}
           backgroundPattern="<>"
+          ctaText="Get Started Now"
+          onCtaClick={() => setShowAuthModal(true)}
         />
 
         <section className="py-16">
@@ -395,6 +400,9 @@ export default function ChatbotsAI() {
           </div>
         </motion.footer>
       </div>
+
+      {/* Auth Modal */}
+      <ChatbotsAuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </div>
   )
 }
