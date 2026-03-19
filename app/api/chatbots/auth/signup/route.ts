@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { createChatbotUser } from '@/lib/supabase-chatbots-service'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -48,24 +47,46 @@ export async function POST(request: Request) {
       )
     }
 
-    // Create chatbot user profile
+    // Create chatbot user profile using admin client
     console.log('[v0] Creating chatbot user profile for:', data.user.id)
-    const chatbotUser = await createChatbotUser(
-      data.user.id,
-      email,
-      username,
-      phoneNumber
-    )
+    const { data: chatbotUser, error: profileError } = await supabaseAdmin
+      .from('chatbot_users')
+      .insert([
+        {
+          auth_id: data.user.id,
+          email,
+          username,
+          phone_number: phoneNumber,
+          coin_balance: 0,
+          total_coins_purchased: 0,
+        },
+      ])
+      .select()
+      .single()
 
-    if (!chatbotUser) {
-      console.error('[v0] Failed to create chatbot user profile. Tables may not exist. Check Supabase SQL migration.')
+    if (profileError) {
+      console.error('[v0] Failed to create chatbot user profile:', {
+        message: profileError.message,
+        code: profileError.code,
+        details: profileError.details,
+      })
       // Delete the auth user if profile creation failed
       await supabaseAdmin.auth.admin.deleteUser(data.user.id)
       return NextResponse.json(
-        { error: 'Failed to create user profile. Database tables not initialized. Please run the SQL migration in Supabase.' },
+        { error: `Failed to create user profile: ${profileError.message}` },
         { status: 500 }
       )
     }
+
+    if (!chatbotUser) {
+      console.error('[v0] Profile creation returned no data')
+      await supabaseAdmin.auth.admin.deleteUser(data.user.id)
+      return NextResponse.json(
+        { error: 'Failed to create user profile' },
+        { status: 500 }
+      )
+    }
+
     console.log('[v0] Chatbot user created successfully:', chatbotUser.id)
 
     return NextResponse.json({
