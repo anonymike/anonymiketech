@@ -49,6 +49,7 @@ export async function POST(request: Request) {
     }
 
     // Create chatbot user profile
+    console.log('[v0] Creating chatbot user profile for:', data.user.id)
     const chatbotUser = await createChatbotUser(
       data.user.id,
       email,
@@ -57,13 +58,15 @@ export async function POST(request: Request) {
     )
 
     if (!chatbotUser) {
+      console.error('[v0] Failed to create chatbot user profile. Tables may not exist. Check Supabase SQL migration.')
       // Delete the auth user if profile creation failed
       await supabaseAdmin.auth.admin.deleteUser(data.user.id)
       return NextResponse.json(
-        { error: 'Failed to create user profile' },
+        { error: 'Failed to create user profile. Database tables not initialized. Please run the SQL migration in Supabase.' },
         { status: 500 }
       )
     }
+    console.log('[v0] Chatbot user created successfully:', chatbotUser.id)
 
     return NextResponse.json({
       success: true,

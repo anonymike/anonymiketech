@@ -13,9 +13,11 @@ import BackToTop from "@/components/BackToTop"
 import { getCurrentYear } from "@/utils/getCurrentYear"
 import ChatbaseEmbed from "@/components/ChatbaseEmbed"
 import ChatbotsAuthModal from "@/components/ChatbotsAuthModal"
+import ChatbotsWelcomeAlert from "@/components/ChatbotsWelcomeAlert"
 
 export default function ChatbotsAI() {
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [showWelcome, setShowWelcome] = useState(true)
   const capabilities = [
     {
       icon: <MessageSquare className="w-8 h-8" />,
@@ -200,7 +202,7 @@ export default function ChatbotsAI() {
               // AI CAPABILITIES
             </motion.h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               {capabilities.map((capability, index) => (
                 <motion.div
                   key={index}
@@ -208,15 +210,15 @@ export default function ChatbotsAI() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: index * 0.1 }}
                   whileHover={{ scale: 1.05 }}
-                  className="glow-border rounded-lg p-6 bg-hacker-terminal/50 backdrop-blur-sm text-center group hover:animate-glow-pulse"
+                  className="glow-border rounded-lg p-4 sm:p-6 bg-hacker-terminal/50 backdrop-blur-sm text-center group hover:animate-glow-pulse"
                 >
-                  <div className="text-hacker-green mb-4 flex justify-center group-hover:animate-pulse">
+                  <div className="text-5xl sm:text-6xl text-hacker-green mb-4 flex justify-center group-hover:animate-pulse">
                     {capability.icon}
                   </div>
-                  <h3 className="text-xl font-tech font-bold text-hacker-green-bright mb-3 glow-text">
+                  <h3 className="text-lg sm:text-xl font-tech font-bold text-hacker-green-bright mb-3 glow-text">
                     {capability.title}
                   </h3>
-                  <p className="text-hacker-green-dim leading-relaxed">{capability.description}</p>
+                  <p className="text-sm sm:text-base text-hacker-green-dim leading-relaxed">{capability.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -234,7 +236,7 @@ export default function ChatbotsAI() {
               // USE CASES
             </motion.h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
               {useCases.map((useCase, index) => (
                 <motion.div
                   key={index}
@@ -242,16 +244,16 @@ export default function ChatbotsAI() {
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.8, delay: index * 0.2 }}
                   whileHover={{ scale: 1.02 }}
-                  className="glow-border rounded-lg p-8 bg-hacker-terminal/50 backdrop-blur-sm group"
+                  className="glow-border rounded-lg p-4 sm:p-6 lg:p-8 bg-hacker-terminal/50 backdrop-blur-sm group"
                 >
-                  <h3 className="text-2xl font-tech font-bold text-hacker-green-bright mb-4 glow-text group-hover:animate-flicker">
+                  <h3 className="text-xl sm:text-2xl font-tech font-bold text-hacker-green-bright mb-4 glow-text group-hover:animate-flicker">
                     {useCase.title}
                   </h3>
-                  <p className="text-hacker-green-dim mb-6 leading-relaxed">{useCase.description}</p>
+                  <p className="text-sm sm:text-base text-hacker-green-dim mb-6 leading-relaxed">{useCase.description}</p>
                   <div className="space-y-2">
                     {useCase.features.map((feature, featureIndex) => (
-                      <div key={featureIndex} className="flex items-center gap-2 text-hacker-green-bright">
-                        <span className="text-hacker-green">✓</span>
+                      <div key={featureIndex} className="flex items-center gap-2 text-sm sm:text-base text-hacker-green-bright">
+                        <span className="text-hacker-green font-bold">✓</span>
                         {feature}
                       </div>
                     ))}
@@ -273,91 +275,19 @@ export default function ChatbotsAI() {
               // AI PRICING PLANS
             </motion.h2>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-              {/* Pricing Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-5">
-                {aiPlans.map((plan, index) => (
-                  <PricingCard
-                    key={index}
-                    title={plan.title}
-                    subtitle={plan.subtitle}
-                    price={plan.price}
-                    currency={plan.currency}
-                    period={plan.period}
-                    features={plan.features}
-                    popular={plan.popular}
-                    delay={index * 0.2}
-                  />
-                ))}
-              </div>
-
-              {/* Live Chat Demos */}
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-                className="space-y-4"
-              >
-                <h3 className="text-2xl md:text-3xl font-tech font-bold text-hacker-green-bright glow-text mb-6">
-                  See It In Action
-                </h3>
-                <div className="space-y-4">
-                  <LiveChatDemo title="WhatsApp Bot" category="whatsapp" />
-                  <LiveChatDemo title="Live Chat Widget" category="live-chat" />
-                  <LiveChatDemo title="Telegram Bot" category="telegram" />
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1 }}
-              className="text-4xl md:text-5xl font-tech font-bold text-center mb-16 glow-text"
-            >
-              // HOW IT WORKS
-            </motion.h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              {[
-                {
-                  step: "01",
-                  title: "Setup",
-                  description: "Configure your bot with custom parameters",
-                },
-                {
-                  step: "02",
-                  title: "Train",
-                  description: "Teach AI your business logic and responses",
-                },
-                {
-                  step: "03",
-                  title: "Deploy",
-                  description: "Go live with your intelligent assistant",
-                },
-                {
-                  step: "04",
-                  title: "Monitor",
-                  description: "Track performance and continuously improve",
-                },
-              ].map((process, index) => (
-                <motion.div
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-16">
+              {aiPlans.map((plan, index) => (
+                <PricingCard
                   key={index}
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: index * 0.2 }}
-                  className="text-center"
-                >
-                  <div className="text-6xl font-tech font-bold text-hacker-green/30 mb-4">{process.step}</div>
-                  <h3 className="text-xl font-tech font-bold text-hacker-green-bright mb-3 glow-text">
-                    {process.title}
-                  </h3>
-                  <p className="text-hacker-green-dim leading-relaxed">{process.description}</p>
-                </motion.div>
+                  title={plan.title}
+                  subtitle={plan.subtitle}
+                  price={plan.price}
+                  currency={plan.currency}
+                  period={plan.period}
+                  features={plan.features}
+                  popular={plan.popular}
+                  delay={index * 0.2}
+                />
               ))}
             </div>
           </div>
@@ -367,18 +297,34 @@ export default function ChatbotsAI() {
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
-          className="py-16"
+          className="py-12 sm:py-16 px-4"
         >
-          <div className="container mx-auto px-4">
-            <div className="glow-border rounded-lg p-12 bg-hacker-terminal/30 backdrop-blur-sm text-center">
-              <h3 className="text-3xl md:text-4xl font-tech font-bold text-hacker-green-bright mb-6 glow-text">
-                Ready to Automate Your Business?
+          <div className="container mx-auto">
+            <div className="glow-border rounded-lg p-6 sm:p-8 lg:p-12 bg-hacker-terminal/30 backdrop-blur-sm text-center">
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-tech font-bold text-hacker-green-bright mb-4 sm:mb-6 glow-text">
+                Ready to Deploy Your AI Bot?
               </h3>
-              <p className="text-xl text-hacker-green-dim mb-8 max-w-2xl mx-auto">
-                Deploy intelligent AI chatbots that work 24/7 to transform your customer interactions and boost
-                efficiency.
+              <p className="text-base sm:text-lg lg:text-xl text-hacker-green-dim mb-8 max-w-2xl mx-auto">
+                Join thousands using our platform to automate WhatsApp interactions, boost sales, and improve customer support.
               </p>
-              <ContactButtons />
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowAuthModal(true)}
+                className="relative px-8 sm:px-10 py-3 sm:py-4 font-tech font-bold text-base sm:text-lg text-hacker-bg rounded-lg overflow-hidden group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-hacker-green via-hacker-green-bright to-hacker-green opacity-100 group-hover:opacity-110 transition-all duration-300"></div>
+                <div className="absolute inset-0 bg-hacker-green shadow-lg shadow-hacker-green/80 group-hover:shadow-hacker-green/100 blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+                <span className="relative flex items-center justify-center gap-3 text-hacker-bg font-bold">
+                  Start Your Free Trial
+                  <motion.span
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    →
+                  </motion.span>
+                </span>
+              </motion.button>
             </div>
           </div>
         </motion.section>
@@ -387,11 +333,11 @@ export default function ChatbotsAI() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 1 }}
-          className="py-8 border-t border-hacker-green/20"
+          className="py-6 sm:py-8 border-t border-hacker-green/20 px-4"
         >
-          <div className="container mx-auto px-4 text-center">
+          <div className="container mx-auto text-center">
             <motion.p
-              className="font-tech text-hacker-green-dim hover:text-hacker-green transition-colors duration-300"
+              className="font-tech text-xs sm:text-sm text-hacker-green-dim hover:text-hacker-green transition-colors duration-300"
               animate={{ opacity: [0.7, 1, 0.7] }}
               transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
             >
@@ -403,6 +349,9 @@ export default function ChatbotsAI() {
 
       {/* Auth Modal */}
       <ChatbotsAuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
+
+      {/* Welcome Alert */}
+      {showWelcome && <ChatbotsWelcomeAlert onClose={() => setShowWelcome(false)} />}
     </div>
   )
 }

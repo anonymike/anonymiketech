@@ -88,10 +88,21 @@ export async function createChatbotUser(
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      console.error('[v0] Supabase error inserting chatbot user:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+      })
+      throw error
+    }
     return data
-  } catch (error) {
-    console.error('[v0] Error creating chatbot user:', error)
+  } catch (error: any) {
+    console.error('[v0] Error creating chatbot user:', {
+      message: error?.message,
+      code: error?.code,
+      hint: 'Ensure the chatbot_users table exists in Supabase. Run INITIALIZE_CHATBOTS_DB.md',
+    })
     return null
   }
 }
