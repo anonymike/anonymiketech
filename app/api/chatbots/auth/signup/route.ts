@@ -10,8 +10,11 @@ export async function POST(request: Request) {
   try {
     const { email, password, username, phoneNumber } = await request.json()
 
+    console.log('[v0] Signup attempt for:', email)
+
     // Validate inputs
     if (!email || !password || !username) {
+      console.log('[v0] Missing required fields')
       return NextResponse.json(
         { error: 'Missing required fields: email, password, username' },
         { status: 400 }
@@ -19,6 +22,7 @@ export async function POST(request: Request) {
     }
 
     if (password.length < 6) {
+      console.log('[v0] Password too short')
       return NextResponse.json(
         { error: 'Password must be at least 6 characters' },
         { status: 400 }
@@ -26,6 +30,7 @@ export async function POST(request: Request) {
     }
 
     // Create auth user
+    console.log('[v0] Creating Supabase auth user...')
     const { data, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
@@ -33,7 +38,7 @@ export async function POST(request: Request) {
     })
 
     if (authError) {
-      console.error('[v0] Auth error:', authError)
+      console.error('[v0] Auth creation error:', authError.message)
       return NextResponse.json(
         { error: authError.message || 'Failed to create user' },
         { status: 400 }
@@ -69,11 +74,22 @@ export async function POST(request: Request) {
         message: profileError.message,
         code: profileError.code,
         details: profileError.details,
+        hint: profileError.hint,
       })
       // Delete the auth user if profile creation failed
+      console.log('[v0] Deleting auth user due to profile creation failure')
       await supabaseAdmin.auth.admin.deleteUser(data.user.id)
+      
+      // Provide better error message based on error code
+      let errorMessage = 'Failed to create user profile'
+      if (profileError.code === '42501') {
+        errorMessage = 'Permission denied. RLS policies may be misconfigured.'
+      } else if (profileError.code === 'PGRST205') {
+        errorMessage = 'Database tables not found. Please run the SQL migration.'
+      }
+      
       return NextResponse.json(
-        { error: `Failed to create user profile: ${profileError.message}` },
+        { error: errorMessage },
         { status: 500 }
       )
     }
@@ -98,10 +114,13 @@ export async function POST(request: Request) {
         username: chatbotUser.username,
       },
     }, { status: 201 })
-  } catch (error) {
-    console.error('[v0] Signup error:', error)
+  } catch (error: any) {
+    console.error('[v0] Unexpected signup error:', {
+      message: error?.message,
+      stack: error?.stack,
+    })
     return NextResponse.json(
-      { error: 'Failed to process signup request' },
+      { error: error?.message || 'An unexpected error occurred during signup' },
       { status: 500 }
     )
   }
