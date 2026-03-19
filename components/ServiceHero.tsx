@@ -12,6 +12,8 @@ interface ServiceHeroProps {
   description: string
   icon: ReactNode
   backgroundPattern?: string
+  ctaText?: string
+  onCtaClick?: () => void
 }
 
 export default function ServiceHero({
@@ -20,6 +22,8 @@ export default function ServiceHero({
   description,
   icon,
   backgroundPattern = "01",
+  ctaText,
+  onCtaClick,
 }: ServiceHeroProps) {
   return (
     <section className="relative py-20 overflow-hidden">
@@ -93,6 +97,18 @@ export default function ServiceHero({
           >
             <p className="text-lg text-hacker-green-dim leading-relaxed">{description}</p>
           </motion.div>
+
+          {ctaText && onCtaClick && (
+            <motion.button
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 1 }}
+              onClick={onCtaClick}
+              className="mt-12 px-8 py-3 bg-hacker-green text-hacker-bg font-tech font-bold rounded hover:bg-hacker-green-bright hover:shadow-lg hover:shadow-hacker-green/50 transition-all duration-300 inline-block glow-border"
+            >
+              {ctaText}
+            </motion.button>
+          )}
         </div>
       </div>
     </section>
