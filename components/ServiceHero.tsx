@@ -99,15 +99,37 @@ export default function ServiceHero({
           </motion.div>
 
           {ctaText && onCtaClick && (
-            <motion.button
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 1 }}
-              onClick={onCtaClick}
-              className="mt-12 px-8 py-3 bg-hacker-green text-hacker-bg font-tech font-bold rounded hover:bg-hacker-green-bright hover:shadow-lg hover:shadow-hacker-green/50 transition-all duration-300 inline-block glow-border"
+              className="mt-12"
             >
-              {ctaText}
-            </motion.button>
+              <motion.button
+                onClick={onCtaClick}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+                className="relative px-10 py-4 font-tech font-bold text-lg text-hacker-bg rounded-lg overflow-hidden group cursor-pointer"
+              >
+                {/* Animated background */}
+                <div className="absolute inset-0 bg-gradient-to-r from-hacker-green via-hacker-green-bright to-hacker-green opacity-100 group-hover:opacity-110 transition-all duration-300"></div>
+                <div className="absolute inset-0 bg-hacker-green shadow-lg shadow-hacker-green/80 group-hover:shadow-hacker-green/100 blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+                
+                {/* Glowing border effect */}
+                <div className="absolute inset-0 rounded-lg border-2 border-hacker-green group-hover:border-hacker-green-bright transition-all duration-300"></div>
+                
+                {/* Text content */}
+                <span className="relative flex items-center justify-center gap-3 text-hacker-bg font-bold">
+                  {ctaText}
+                  <motion.span
+                    animate={{ x: [0, 5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    →
+                  </motion.span>
+                </span>
+              </motion.button>
+            </motion.div>
           )}
         </div>
       </div>
