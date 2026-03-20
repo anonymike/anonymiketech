@@ -12,7 +12,7 @@ import MobileMenu from "@/components/MobileMenu"
 import BackToTop from "@/components/BackToTop"
 import { getCurrentYear } from "@/utils/getCurrentYear"
 import ChatbaseEmbed from "@/components/ChatbaseEmbed"
-import ModernChatbotsAuthModal from "@/components/ModernChatbotsAuthModal"
+import ChatbotsAuthModal from "@/components/ChatbotsAuthModal"
 import ChatbotsWelcomeAlert from "@/components/ChatbotsWelcomeAlert"
 
 export default function ChatbotsAI() {
@@ -348,7 +348,7 @@ export default function ChatbotsAI() {
       </div>
 
       {/* Auth Modal */}
-      <ModernChatbotsAuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      <ChatbotsAuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
 
       {/* Welcome Alert */}
       {showWelcome && <ChatbotsWelcomeAlert onClose={() => setShowWelcome(false)} />}
