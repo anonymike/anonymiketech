@@ -174,13 +174,13 @@ export default function ChatbotsAI() {
   ]
 
   return (
-    <div className="min-h-screen bg-hacker-bg text-hacker-green relative">
+    <div className="min-h-screen w-full bg-hacker-bg text-hacker-green relative overflow-x-hidden">
       <ChatbaseEmbed />
       <MobileMenu />
       <BackToTop />
       <MatrixRain />
 
-      <div className="relative z-10">
+      <div className="relative z-10 w-full">
         <ServiceHero
           title="CHATBOTS & AI"
           subtitle="// Intelligent Automation"
@@ -191,13 +191,13 @@ export default function ChatbotsAI() {
           onCtaClick={() => setShowAuthModal(true)}
         />
 
-        <section className="py-16">
-          <div className="container mx-auto px-4">
+        <section className="w-full py-12 sm:py-16 px-4 sm:px-6 lg:px-8 overflow-x-hidden">
+          <div className="container mx-auto">
             <motion.h2
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
-              className="text-4xl md:text-5xl font-tech font-bold text-center mb-16 glow-text"
+              className="text-3xl sm:text-4xl md:text-5xl font-tech font-bold text-center mb-12 sm:mb-16 glow-text text-balance"
             >
               // AI CAPABILITIES
             </motion.h2>
@@ -225,13 +225,13 @@ export default function ChatbotsAI() {
           </div>
         </section>
 
-        <section className="py-16">
-          <div className="container mx-auto px-4">
+        <section className="w-full py-12 sm:py-16 px-4 sm:px-6 lg:px-8 overflow-x-hidden">
+          <div className="container mx-auto">
             <motion.h2
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
-              className="text-4xl md:text-5xl font-tech font-bold text-center mb-16 glow-text"
+              className="text-3xl sm:text-4xl md:text-5xl font-tech font-bold text-center mb-12 sm:mb-16 glow-text text-balance"
             >
               // USE CASES
             </motion.h2>
@@ -264,13 +264,13 @@ export default function ChatbotsAI() {
           </div>
         </section>
 
-        <section className="py-16">
-          <div className="container mx-auto px-4">
+        <section className="w-full py-12 sm:py-16 px-4 sm:px-6 lg:px-8 overflow-x-hidden">
+          <div className="container mx-auto">
             <motion.h2
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
-              className="text-4xl md:text-5xl font-tech font-bold text-center mb-16 glow-text"
+              className="text-3xl sm:text-4xl md:text-5xl font-tech font-bold text-center mb-12 sm:mb-16 glow-text text-balance"
             >
               // AI PRICING PLANS
             </motion.h2>
@@ -297,10 +297,10 @@ export default function ChatbotsAI() {
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
-          className="py-12 sm:py-16 px-4"
+          className="w-full py-12 sm:py-16 px-4 sm:px-6 lg:px-8 overflow-x-hidden"
         >
           <div className="container mx-auto">
-            <div className="glow-border rounded-lg p-6 sm:p-8 lg:p-12 bg-hacker-terminal/30 backdrop-blur-sm text-center">
+            <div className="glow-border rounded-lg p-4 sm:p-6 md:p-8 lg:p-12 bg-hacker-terminal/30 backdrop-blur-sm text-center w-full">
               <h3 className="text-2xl sm:text-3xl lg:text-4xl font-tech font-bold text-hacker-green-bright mb-4 sm:mb-6 glow-text">
                 Ready to Deploy Your AI Bot?
               </h3>

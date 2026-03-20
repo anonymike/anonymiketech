@@ -26,10 +26,10 @@ export default function ServiceHero({
   onCtaClick,
 }: ServiceHeroProps) {
   return (
-    <section className="relative py-20 overflow-hidden">
-      {/* Animated background pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="text-9xl font-tech font-bold text-hacker-green animate-pulse select-none">
+    <section className="relative w-full py-12 sm:py-16 md:py-20 overflow-hidden">
+      {/* Animated background pattern - contained with overflow hidden */}
+      <div className="absolute inset-0 opacity-5 overflow-hidden">
+        <div className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-tech font-bold text-hacker-green animate-pulse select-none whitespace-nowrap">
           {Array.from({ length: 50 }, (_, i) => (
             <span
               key={i}
@@ -45,7 +45,8 @@ export default function ServiceHero({
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+      <div className="w-full px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="container mx-auto w-full">
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -131,6 +132,7 @@ export default function ServiceHero({
               </motion.button>
             </motion.div>
           )}
+        </div>
         </div>
       </div>
     </section>

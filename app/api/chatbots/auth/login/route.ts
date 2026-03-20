@@ -23,10 +23,10 @@ export async function POST(request: Request) {
 
     // Authenticate user with Supabase Auth
     console.log('[v0] Authenticating with Supabase...')
-    const { data, error: authError } = await supabaseAdmin.auth.signInWithPassword(
+    const { data, error: authError } = await supabaseAdmin.auth.signInWithPassword({
       email,
-      password
-    )
+      password,
+    })
 
     if (authError) {
       console.error('[v0] Auth error:', authError.message)
