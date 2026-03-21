@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { LogOut, Coins, Plus, AlertCircle } from "lucide-react"
+import { LogOut, Coins, Plus, AlertCircle, User, Share2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import ChatbotCard from "@/components/ChatbotCard"
 import ChatbotCoinPurchaseModal from "@/components/ChatbotCoinPurchaseModal"
 import ChatbotDeploymentForm from "@/components/ChatbotDeploymentForm"
+import ProfileDashboard from "@/components/ProfileDashboard"
+import ReferralInviteCard from "@/components/ReferralInviteCard"
 
 interface User {
   id: string
@@ -31,7 +33,9 @@ export default function ChatbotsDashboard() {
   const [error, setError] = useState<string | null>(null)
   const [showCoinModal, setShowCoinModal] = useState(false)
   const [showDeployForm, setShowDeployForm] = useState(false)
-  const [activeTab, setActiveTab] = useState<"bots" | "deploy">("bots")
+  const [showProfileModal, setShowProfileModal] = useState(false)
+  const [referralData, setReferralData] = useState({ referralCode: '', invitesCount: 0 })
+  const [activeTab, setActiveTab] = useState<"bots" | "deploy" | "profile" | "referral">("bots")
 
   useEffect(() => {
     fetchUserData()
@@ -66,6 +70,16 @@ export default function ChatbotsDashboard() {
       if (botsResponse.ok) {
         const botsData = await botsResponse.json()
         setBots(botsData.data || [])
+      }
+
+      // Fetch referral info
+      const referralResponse = await fetch("/api/chatbots/referrals/info", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
+      if (referralResponse.ok) {
+        const referralDataResponse = await referralResponse.json()
+        setReferralData(referralDataResponse.data || { referralCode: '', invitesCount: 0 })
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load dashboard")
@@ -124,13 +138,22 @@ export default function ChatbotsDashboard() {
             </h1>
             <p className="text-gray-400">Welcome back, {user?.username}</p>
           </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-red-500/50 text-red-400 hover:bg-red-500/10 transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-            Logout
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowProfileModal(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 transition-colors"
+            >
+              <User className="w-4 h-4" />
+              Profile
+            </button>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-red-500/50 text-red-400 hover:bg-red-500/10 transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
+          </div>
         </motion.div>
 
         {/* User Profile Card */}
@@ -203,6 +226,17 @@ export default function ChatbotsDashboard() {
           >
             Deploy New Bot
           </button>
+          <button
+            onClick={() => setActiveTab("referral")}
+            className={`px-6 py-3 font-semibold transition-all flex items-center gap-2 ${
+              activeTab === "referral"
+                ? "text-cyan-400 border-b-2 border-cyan-400"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            <Share2 className="w-4 h-4" />
+            Referrals
+          </button>
         </motion.div>
 
         {/* Content */}
@@ -232,12 +266,17 @@ export default function ChatbotsDashboard() {
                 </div>
               )}
             </div>
-          ) : (
+          ) : activeTab === "deploy" ? (
             <ChatbotDeploymentForm
               coinBalance={user?.coin_balance || 0}
               onSuccess={handleBotDeployed}
             />
-          )}
+          ) : activeTab === "referral" ? (
+            <ReferralInviteCard
+              referralCode={referralData.referralCode}
+              invitesCount={referralData.invitesCount}
+            />
+          ) : null}
         </motion.div>
       </div>
 
@@ -249,6 +288,12 @@ export default function ChatbotsDashboard() {
           setShowCoinModal(false)
           fetchUserData()
         }}
+      />
+      
+      <ProfileDashboard
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+        authToken={typeof window !== 'undefined' ? localStorage.getItem('chatbot_token') || '' : ''}
       />
     </div>
   )

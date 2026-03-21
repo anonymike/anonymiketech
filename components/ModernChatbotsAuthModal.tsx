@@ -7,9 +7,14 @@ import { Mail, Lock, User, Phone, Eye, EyeOff, ArrowRight, CheckCircle, AlertCir
 interface ModernChatbotsAuthModalProps {
   isOpen: boolean
   onClose: () => void
+  onShowForgotPassword?: () => void
 }
 
-export default function ModernChatbotsAuthModal({ isOpen, onClose }: ModernChatbotsAuthModalProps) {
+export default function ModernChatbotsAuthModal({ 
+  isOpen, 
+  onClose,
+  onShowForgotPassword 
+}: ModernChatbotsAuthModalProps) {
   const [isSignUp, setIsSignUp] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -21,6 +26,7 @@ export default function ModernChatbotsAuthModal({ isOpen, onClose }: ModernChatb
     confirmPassword: '',
     username: '',
     phoneNumber: '',
+    referralCode: '',
   })
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,6 +68,7 @@ export default function ModernChatbotsAuthModal({ isOpen, onClose }: ModernChatb
           password: formData.password,
           username: formData.username,
           phoneNumber: formData.phoneNumber,
+          referralCode: formData.referralCode,
         }),
       })
 
@@ -241,6 +248,25 @@ export default function ModernChatbotsAuthModal({ isOpen, onClose }: ModernChatb
                   </div>
                 )}
 
+                {/* Referral Code - Sign Up Only */}
+                {isSignUp && (
+                  <div>
+                    <label className="block text-sm font-medium text-slate-200 mb-2">Referral Code (Optional)</label>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-cyan-400/50" />
+                      <input
+                        type="text"
+                        name="referralCode"
+                        value={formData.referralCode}
+                        onChange={handleInputChange}
+                        placeholder="Enter a referral code to earn bonus coins"
+                        className="w-full bg-slate-700/50 border border-slate-600 rounded-lg pl-12 pr-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                      />
+                    </div>
+                    <p className="text-xs text-slate-400 mt-1">Join with a friend's code and get 50 bonus coins!</p>
+                  </div>
+                )}
+
                 {/* Password Field */}
                 <div>
                   <label className="block text-sm font-medium text-slate-200 mb-2">Password</label>
@@ -296,6 +322,19 @@ export default function ModernChatbotsAuthModal({ isOpen, onClose }: ModernChatb
                   {!isLoading && <ArrowRight className="w-5 h-5 relative group-hover:translate-x-1 transition-transform" />}
                 </motion.button>
               </form>
+
+              {/* Forgot Password - Sign In Only */}
+              {!isSignUp && (
+                <div className="mt-4 text-center">
+                  <button
+                    type="button"
+                    onClick={onShowForgotPassword}
+                    className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors text-sm"
+                  >
+                    Forgot Password?
+                  </button>
+                </div>
+              )}
 
               {/* Toggle Form */}
               <div className="mt-6 text-center text-slate-400">

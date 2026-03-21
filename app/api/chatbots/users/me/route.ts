@@ -87,8 +87,24 @@ export async function PATCH(request: Request) {
     // Allow only certain fields to be updated
     const allowedUpdates: Record<string, any> = {}
     if (updates.username) allowedUpdates.username = updates.username
+    if (updates.email) allowedUpdates.email = updates.email
     if (updates.phone_number) allowedUpdates.phone_number = updates.phone_number
     if (updates.profile_image) allowedUpdates.profile_image = updates.profile_image
+
+    // If email is being updated, also update it in Supabase Auth
+    if (updates.email && updates.email !== user.email) {
+      const { error: emailError } = await supabaseAdmin.auth.admin.updateUserById(
+        data.user.id,
+        { email: updates.email }
+      )
+      if (emailError) {
+        console.error('[v0] Error updating email in auth:', emailError)
+        return NextResponse.json(
+          { error: 'Failed to update email' },
+          { status: 500 }
+        )
+      }
+    }
 
     const updatedUser = await updateChatbotUserProfile(user.id, allowedUpdates)
     

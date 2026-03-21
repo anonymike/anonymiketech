@@ -457,3 +457,284 @@ export async function updateTransactionStatus(
     return null
   }
 }
+
+// ========================
+// PASSWORD RESET FUNCTIONS
+// ========================
+
+export async function createPasswordResetToken(userId: string): Promise<string | null> {
+  try {
+    const supabase = getSupabaseClient()
+    const token = uuidv4().replace(/-/g, '').substring(0, 32)
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+
+    const { data, error } = await supabase
+      .from('password_reset_tokens')
+      .insert([
+        {
+          user_id: userId,
+          token,
+          expires_at: expiresAt.toISOString(),
+        },
+      ])
+      .select('token')
+      .single()
+
+    if (error) throw error
+    return data?.token || null
+  } catch (error) {
+    console.error('[v0] Error creating password reset token:', error)
+    return null
+  }
+}
+
+export async function validatePasswordResetToken(
+  token: string
+): Promise<{ userId: string; email: string } | null> {
+  try {
+    const supabase = getSupabaseClient()
+    const { data, error } = await supabase
+      .from('password_reset_tokens')
+      .select('user_id, expires_at, used_at, chatbot_users(email)')
+      .eq('token', token)
+      .single()
+
+    if (error) return null
+
+    // Check if token has expired
+    if (new Date(data.expires_at) < new Date()) {
+      console.log('[v0] Password reset token expired')
+      return null
+    }
+
+    // Check if token was already used
+    if (data.used_at) {
+      console.log('[v0] Password reset token already used')
+      return null
+    }
+
+    const chatbotUser = Array.isArray(data.chatbot_users)
+      ? data.chatbot_users[0]
+      : data.chatbot_users
+
+    return {
+      userId: data.user_id,
+      email: chatbotUser?.email,
+    }
+  } catch (error) {
+    console.error('[v0] Error validating password reset token:', error)
+    return null
+  }
+}
+
+export async function markPasswordResetTokenAsUsed(token: string): Promise<boolean> {
+  try {
+    const supabase = getSupabaseClient()
+    const { error } = await supabase
+      .from('password_reset_tokens')
+      .update({ used_at: new Date().toISOString() })
+      .eq('token', token)
+
+    if (error) throw error
+    return true
+  } catch (error) {
+    console.error('[v0] Error marking token as used:', error)
+    return false
+  }
+}
+
+// ========================
+// REFERRAL SYSTEM FUNCTIONS
+// ========================
+
+export function generateReferralCode(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+  let code = ''
+  for (let i = 0; i < 8; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return code
+}
+
+export async function setUserReferralCode(userId: string): Promise<string | null> {
+  try {
+    const supabase = getSupabaseClient()
+    const referralCode = generateReferralCode()
+
+    const { data, error } = await supabase
+      .from('chatbot_users')
+      .update({ referral_code: referralCode })
+      .eq('id', userId)
+      .select('referral_code')
+      .single()
+
+    if (error) throw error
+    return data?.referral_code || null
+  } catch (error) {
+    console.error('[v0] Error setting referral code:', error)
+    return null
+  }
+}
+
+export async function getUserByReferralCode(
+  referralCode: string
+): Promise<ChatbotUser | null> {
+  try {
+    const supabase = getSupabaseClient()
+    const { data, error } = await supabase
+      .from('chatbot_users')
+      .select('*')
+      .eq('referral_code', referralCode)
+      .single()
+
+    if (error?.code === 'PGRST116') {
+      return null
+    }
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('[v0] Error getting user by referral code:', error)
+    return null
+  }
+}
+
+export async function createReferral(
+  referrerId: string,
+  referredUserId: string
+): Promise<boolean> {
+  try {
+    const supabase = getSupabaseClient()
+    const { error: referralError } = await supabase
+      .from('user_referrals')
+      .insert([
+        {
+          referrer_id: referrerId,
+          referred_user_id: referredUserId,
+          reward_coins: 50,
+          status: 'completed',
+        },
+      ])
+
+    if (referralError) throw referralError
+
+    // Update invites count and add coins to referrer
+    const { data: user, error: fetchError } = await supabase
+      .from('chatbot_users')
+      .select('invites_count, coin_balance')
+      .eq('id', referrerId)
+      .single()
+
+    if (fetchError) throw fetchError
+
+    const newInvitesCount = (user?.invites_count || 0) + 1
+    const newCoinBalance = (user?.coin_balance || 0) + 50
+
+    const { error: updateError } = await supabase
+      .from('chatbot_users')
+      .update({
+        invites_count: newInvitesCount,
+        coin_balance: newCoinBalance,
+      })
+      .eq('id', referrerId)
+
+    if (updateError) throw updateError
+    return true
+  } catch (error) {
+    console.error('[v0] Error creating referral:', error)
+    return false
+  }
+}
+
+export async function getInvitedUsers(userId: string): Promise<ChatbotUser[]> {
+  try {
+    const supabase = getSupabaseClient()
+    const { data, error } = await supabase
+      .from('user_referrals')
+      .select('chatbot_users:referred_user_id(*)')
+      .eq('referrer_id', userId)
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+
+    return data
+      ?.map((ref: any) => {
+        const user = Array.isArray(ref.chatbot_users)
+          ? ref.chatbot_users[0]
+          : ref.chatbot_users
+        return user
+      })
+      .filter(Boolean) || []
+  } catch (error) {
+    console.error('[v0] Error getting invited users:', error)
+    return []
+  }
+}
+
+export async function getUserReferralInfo(userId: string): Promise<{
+  referralCode: string | null
+  invitesCount: number
+} | null> {
+  try {
+    const supabase = getSupabaseClient()
+    const { data, error } = await supabase
+      .from('chatbot_users')
+      .select('referral_code, invites_count')
+      .eq('id', userId)
+      .single()
+
+    if (error) throw error
+    return {
+      referralCode: data?.referral_code,
+      invitesCount: data?.invites_count || 0,
+    }
+  } catch (error) {
+    console.error('[v0] Error getting user referral info:', error)
+    return null
+  }
+}
+
+// ========================
+// USER PROFILE UPDATE FUNCTIONS
+// ========================
+
+export async function updateUserEmail(
+  userId: string,
+  newEmail: string
+): Promise<ChatbotUser | null> {
+  try {
+    const supabase = getSupabaseClient()
+    const { data, error } = await supabase
+      .from('chatbot_users')
+      .update({ email: newEmail })
+      .eq('id', userId)
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('[v0] Error updating user email:', error)
+    return null
+  }
+}
+
+export async function updateUserUsername(
+  userId: string,
+  newUsername: string
+): Promise<ChatbotUser | null> {
+  try {
+    const supabase = getSupabaseClient()
+    const { data, error } = await supabase
+      .from('chatbot_users')
+      .update({ username: newUsername })
+      .eq('id', userId)
+      .select()
+      .single()
+
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('[v0] Error updating username:', error)
+    return null
+  }
+}
