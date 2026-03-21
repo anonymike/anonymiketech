@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { createReferral, getUserByReferralCode, setUserReferralCode } from '@/lib/supabase-chatbots-service'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -8,7 +9,7 @@ const supabaseAdmin = createClient(
 
 export async function POST(request: Request) {
   try {
-    const { email, password, username, phoneNumber } = await request.json()
+    const { email, password, username, phoneNumber, referralCode } = await request.json()
 
     console.log('[v0] Signup attempt for:', email)
 
@@ -104,6 +105,25 @@ export async function POST(request: Request) {
     }
 
     console.log('[v0] Chatbot user created successfully:', chatbotUser.id)
+
+    // Generate and set referral code for new user
+    console.log('[v0] Generating referral code for:', chatbotUser.id)
+    await setUserReferralCode(chatbotUser.id)
+
+    // Handle referral reward if referral code was provided
+    if (referralCode) {
+      console.log('[v0] Processing referral code:', referralCode)
+      const referrerUser = await getUserByReferralCode(referralCode)
+      if (referrerUser) {
+        console.log('[v0] Found referrer:', referrerUser.id)
+        const success = await createReferral(referrerUser.id, chatbotUser.id)
+        if (success) {
+          console.log('[v0] Referral reward granted')
+        }
+      } else {
+        console.log('[v0] Invalid referral code')
+      }
+    }
 
     return NextResponse.json({
       success: true,
