@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getChatbotUserByAuthId, recordTransaction } from '@/lib/supabase-chatbots-service'
+import { getChatbotUserByAuthId, recordTransaction, updateCoinBalance } from '@/lib/supabase-chatbots-service'
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseAdmin = createClient(
@@ -105,6 +105,17 @@ export async function POST(request: Request) {
     if (!transaction) {
       return NextResponse.json(
         { error: 'Failed to create transaction' },
+        { status: 500 }
+      )
+    }
+
+    // Add coins immediately (optimistic approach - deduct if payment fails)
+    console.log('[v0] Adding coins to user balance for purchase:', { userId: user.id, coins: coinPackage.coins })
+    const updatedUser = await updateCoinBalance(user.id, coinPackage.coins)
+    if (!updatedUser) {
+      console.error('[v0] Failed to add coins to user balance')
+      return NextResponse.json(
+        { error: 'Failed to add coins to balance' },
         { status: 500 }
       )
     }

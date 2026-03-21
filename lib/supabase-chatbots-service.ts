@@ -434,26 +434,56 @@ export async function getUserTransactions(userId: string): Promise<CoinTransacti
 }
 
 export async function updateTransactionStatus(
-  transactionId: string,
+  transactionIdOrReference: string,
   status: 'pending' | 'completed' | 'failed',
   mPesaReference?: string
 ): Promise<CoinTransaction | null> {
   try {
     const supabase = getSupabaseClient()
-    const { data, error } = await supabase
+    
+    // Try to find by ID first, then by reference
+    let query = supabase
       .from('coin_transactions')
       .update({
         status,
         m_pesa_reference: mPesaReference,
       })
-      .eq('id', transactionId)
-      .select()
-      .single()
+    
+    // Check if it looks like a reference (CHATBOT_COIN_...) or an ID
+    if (transactionIdOrReference.startsWith('CHATBOT_COIN_')) {
+      query = query.eq('m_pesa_checkout_id', transactionIdOrReference)
+    } else {
+      query = query.eq('id', transactionIdOrReference)
+    }
+    
+    const { data, error } = await query.select().single()
 
     if (error) throw error
     return data
   } catch (error) {
     console.error('[v0] Error updating transaction status:', error)
+    return null
+  }
+}
+
+export async function getTransactionByReference(
+  reference: string
+): Promise<CoinTransaction | null> {
+  try {
+    const supabase = getSupabaseClient()
+    const { data, error } = await supabase
+      .from('coin_transactions')
+      .select('*')
+      .eq('m_pesa_checkout_id', reference)
+      .single()
+
+    if (error?.code === 'PGRST116') {
+      return null
+    }
+    if (error) throw error
+    return data
+  } catch (error) {
+    console.error('[v0] Error fetching transaction by reference:', error)
     return null
   }
 }

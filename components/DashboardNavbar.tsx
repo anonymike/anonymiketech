@@ -9,6 +9,7 @@ interface DashboardNavbarProps {
   coinBalance: number
   onLogout: () => void
   onProfileClick: () => void
+  onBuyCoinsClick: () => void
   activeTab: 'bots' | 'deploy' | 'profile' | 'referral'
   onTabChange: (tab: 'bots' | 'deploy' | 'profile' | 'referral') => void
 }
@@ -18,6 +19,7 @@ export default function DashboardNavbar({
   coinBalance,
   onLogout,
   onProfileClick,
+  onBuyCoinsClick,
   activeTab,
   onTabChange,
 }: DashboardNavbarProps) {
@@ -71,6 +73,15 @@ export default function DashboardNavbar({
                 {coinBalance}
               </span>
             </div>
+
+            {/* Buy Coins Button - Desktop */}
+            <button
+              onClick={onBuyCoinsClick}
+              className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-400 hover:to-amber-400 text-black font-semibold text-xs sm:text-sm transition-colors"
+            >
+              <Coins className="w-4 h-4" />
+              <span>Buy Coins</span>
+            </button>
 
             {/* Profile Button - Desktop */}
             <button
@@ -141,6 +152,18 @@ export default function DashboardNavbar({
                 ))}
 
                 <div className="border-t border-slate-700 my-3" />
+
+                {/* Buy Coins Button Mobile */}
+                <button
+                  onClick={() => {
+                    onBuyCoinsClick()
+                    setMobileMenuOpen(false)
+                  }}
+                  className="w-full flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-400 hover:to-amber-400 text-black font-semibold text-sm transition-colors"
+                >
+                  <Coins className="w-4 h-4" />
+                  Buy Coins
+                </button>
 
                 {/* User Actions Mobile */}
                 <button
