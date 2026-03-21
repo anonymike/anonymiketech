@@ -10,6 +10,7 @@ import ChatbotDeploymentForm from "@/components/ChatbotDeploymentForm"
 import ProfileDashboard from "@/components/ProfileDashboard"
 import ReferralInviteCard from "@/components/ReferralInviteCard"
 import DashboardNavbar from "@/components/DashboardNavbar"
+import WhatsAppBotSection from "@/components/WhatsAppBotSection"
 import { BarChart3, Zap, Users, TrendingUp } from "lucide-react"
 
 interface User {
@@ -36,7 +37,7 @@ export default function ChatbotsDashboard() {
   const [showCoinModal, setShowCoinModal] = useState(false)
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [referralData, setReferralData] = useState({ referralCode: '', invitesCount: 0 })
-  const [activeTab, setActiveTab] = useState<"bots" | "deploy" | "profile" | "referral">("bots")
+  const [activeTab, setActiveTab] = useState<"bots" | "deploy" | "whatsapp" | "profile" | "referral">("bots")
 
   useEffect(() => {
     fetchUserData()
@@ -206,11 +207,13 @@ export default function ChatbotsDashboard() {
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-2">
               {activeTab === 'bots' && 'Your Bots'}
               {activeTab === 'deploy' && 'Deploy New Bot'}
+              {activeTab === 'whatsapp' && 'WhatsApp Bots'}
               {activeTab === 'referral' && 'Referral Program'}
             </h1>
             <p className="text-xs sm:text-sm lg:text-base text-gray-400">
               {activeTab === 'bots' && 'Manage and monitor your deployed chatbots'}
               {activeTab === 'deploy' && 'Create and deploy a new AI chatbot'}
+              {activeTab === 'whatsapp' && 'Build and deploy WhatsApp bots with Baileys'}
               {activeTab === 'referral' && 'Invite friends and earn coins'}
             </p>
           </motion.div>
@@ -271,6 +274,10 @@ export default function ChatbotsDashboard() {
                   fetchUserData()
                 }}
               />
+            ) : activeTab === "whatsapp" ? (
+              <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 rounded-xl p-6 sm:p-8">
+                <WhatsAppBotSection token={localStorage.getItem("chatbot_token") || undefined} />
+              </div>
             ) : activeTab === "referral" ? (
               <div className="space-y-6">
                 <ReferralInviteCard
