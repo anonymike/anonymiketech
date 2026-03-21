@@ -7,9 +7,8 @@ import MobileMenu from '@/components/MobileMenu'
 export default function NavbarWrapper() {
   const pathname = usePathname()
   
-  // Hide navbar on admin routes
-  if (pathname?.startsWith('/admin')) {
-    console.log('[v0] Admin route detected, hiding navbar')
+  // Hide navbar on admin routes and dashboard routes
+  if (pathname?.startsWith('/admin') || pathname?.startsWith('/chatbots-ai/dashboard')) {
     return null
   }
 

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getChatbotUserByAuthId, getUserReferralInfo, getInvitedUsers } from '@/lib/supabase-chatbots-service'
+import { getChatbotUserByAuthId, getUserReferralInfo, getInvitedUsers, setUserReferralCode } from '@/lib/supabase-chatbots-service'
 import { createClient } from '@supabase/supabase-js'
 
 const supabaseAdmin = createClient(
@@ -39,13 +39,22 @@ export async function GET(request: Request) {
     }
 
     // Get referral info
-    const referralInfo = await getUserReferralInfo(user.id)
+    let referralInfo = await getUserReferralInfo(user.id)
     
     if (!referralInfo) {
       return NextResponse.json(
         { error: 'Failed to fetch referral info' },
         { status: 500 }
       )
+    }
+
+    // Generate referral code if user doesn't have one
+    if (!referralInfo.referralCode) {
+      console.log('[v0] Generating referral code for user:', user.id)
+      const newCode = await setUserReferralCode(user.id)
+      if (newCode) {
+        referralInfo.referralCode = newCode
+      }
     }
 
     // Get invited users
