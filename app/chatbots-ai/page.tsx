@@ -14,9 +14,11 @@ import { getCurrentYear } from "@/utils/getCurrentYear"
 import ChatbaseEmbed from "@/components/ChatbaseEmbed"
 import ChatbotsAuthModal from "@/components/ChatbotsAuthModal"
 import ChatbotsWelcomeAlert from "@/components/ChatbotsWelcomeAlert"
+import ForgotPasswordModal from "@/components/ForgotPasswordModal"
 
 export default function ChatbotsAI() {
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [showWelcome, setShowWelcome] = useState(true)
   const capabilities = [
     {
@@ -348,7 +350,20 @@ export default function ChatbotsAI() {
       </div>
 
       {/* Auth Modal */}
-      <ChatbotsAuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      <ChatbotsAuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)}
+        onShowForgotPassword={() => {
+          setShowAuthModal(false)
+          setShowForgotPassword(true)
+        }}
+      />
+
+      {/* Forgot Password Modal */}
+      <ForgotPasswordModal
+        isOpen={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+      />
 
       {/* Welcome Alert */}
       {showWelcome && <ChatbotsWelcomeAlert onClose={() => setShowWelcome(false)} />}
