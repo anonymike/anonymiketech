@@ -122,6 +122,7 @@ export default function ChatbotsDashboard() {
         coinBalance={user.coin_balance}
         onLogout={handleLogout}
         onProfileClick={() => setShowProfileModal(true)}
+        onBuyCoinsClick={() => setShowCoinModal(true)}
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />

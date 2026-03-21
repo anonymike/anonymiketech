@@ -118,11 +118,15 @@ export async function POST(request: Request) {
         console.log('[v0] Found referrer:', referrerUser.id)
         const success = await createReferral(referrerUser.id, chatbotUser.id)
         if (success) {
-          console.log('[v0] Referral reward granted')
+          console.log('[v0] Referral reward granted to referrer:', referrerUser.id)
+        } else {
+          console.error('[v0] Failed to grant referral reward')
         }
       } else {
         console.log('[v0] Invalid referral code')
       }
+    } else {
+      console.log('[v0] No referral code provided during signup')
     }
 
     return NextResponse.json({
