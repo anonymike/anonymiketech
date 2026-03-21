@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { LogOut, Coins, Plus, AlertCircle, User, Share2 } from "lucide-react"
+import { AlertCircle } from "lucide-react"
 import { useRouter } from "next/navigation"
 import ChatbotCard from "@/components/ChatbotCard"
 import ChatbotCoinPurchaseModal from "@/components/ChatbotCoinPurchaseModal"
 import ChatbotDeploymentForm from "@/components/ChatbotDeploymentForm"
 import ProfileDashboard from "@/components/ProfileDashboard"
 import ReferralInviteCard from "@/components/ReferralInviteCard"
+import DashboardNavbar from "@/components/DashboardNavbar"
 
 interface User {
   id: string
@@ -32,7 +33,6 @@ export default function ChatbotsDashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showCoinModal, setShowCoinModal] = useState(false)
-  const [showDeployForm, setShowDeployForm] = useState(false)
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [referralData, setReferralData] = useState({ referralCode: '', invitesCount: 0 })
   const [activeTab, setActiveTab] = useState<"bots" | "deploy" | "profile" | "referral">("bots")
@@ -91,13 +91,8 @@ export default function ChatbotsDashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem("chatbot_token")
+    localStorage.removeItem("chatbot_user")
     router.push("/chatbots-ai")
-  }
-
-  const handleBotDeployed = () => {
-    setShowDeployForm(false)
-    setActiveTab("bots")
-    fetchUserData()
   }
 
   if (loading) {
@@ -110,10 +105,28 @@ export default function ChatbotsDashboard() {
     )
   }
 
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-red-400">Failed to load user data</div>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-black to-black text-white p-4 md:p-8">
-      {/* Background */}
-      <div className="absolute inset-0 z-0">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-black to-black text-white flex flex-col">
+      {/* Navbar */}
+      <DashboardNavbar
+        username={user.username}
+        coinBalance={user.coin_balance}
+        onLogout={handleLogout}
+        onProfileClick={() => setShowProfileModal(true)}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
+
+      {/* Background Pattern */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
         <div
           className="absolute inset-0 z-0 opacity-20"
           style={{
@@ -124,160 +137,92 @@ export default function ChatbotsDashboard() {
         ></div>
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex items-center justify-between mb-12"
-        >
-          <div>
-            <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-2">
-              Dashboard
-            </h1>
-            <p className="text-gray-400">Welcome back, {user?.username}</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setShowProfileModal(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 transition-colors"
-            >
-              <User className="w-4 h-4" />
-              Profile
-            </button>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border border-red-500/50 text-red-400 hover:bg-red-500/10 transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-              Logout
-            </button>
-          </div>
-        </motion.div>
-
-        {/* User Profile Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
-        >
-          <div className="p-6 rounded-lg border border-cyan-500/20 bg-gradient-to-br from-cyan-500/10 to-black/50">
-            <p className="text-gray-400 text-sm mb-2">Email</p>
-            <p className="text-xl font-semibold text-white">{user?.email}</p>
-          </div>
-          <div className="p-6 rounded-lg border border-purple-500/20 bg-gradient-to-br from-purple-500/10 to-black/50">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gray-400 text-sm mb-2">Coin Balance</p>
-                <p className="text-3xl font-bold text-purple-400">{user?.coin_balance}</p>
-              </div>
-              <Coins className="w-8 h-8 text-purple-400 opacity-50" />
-            </div>
-          </div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowCoinModal(true)}
-            className="p-6 rounded-lg border border-green-500/20 bg-gradient-to-br from-green-500/10 to-black/50 hover:border-green-500/50 transition-all flex items-center justify-center gap-2 font-semibold text-green-400 hover:text-green-300"
-          >
-            <Plus className="w-5 h-5" />
-            Buy Coins
-          </motion.button>
-        </motion.div>
-
-        {/* Error Message */}
-        {error && (
+      {/* Main Content */}
+      <div className="relative z-10 flex-1 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+        <div className="max-w-7xl mx-auto">
+          {/* Page Header */}
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-4 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 mb-6 flex items-start gap-3"
+            transition={{ duration: 0.5 }}
+            className="mb-8 sm:mb-12"
           >
-            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-            <div>{error}</div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-2">
+              {activeTab === 'bots' && 'Your Bots'}
+              {activeTab === 'deploy' && 'Deploy New Bot'}
+              {activeTab === 'referral' && 'Referral Program'}
+            </h1>
+            <p className="text-xs sm:text-sm lg:text-base text-gray-400">
+              {activeTab === 'bots' && 'Manage and monitor your deployed chatbots'}
+              {activeTab === 'deploy' && 'Create and deploy a new AI chatbot'}
+              {activeTab === 'referral' && 'Invite friends and earn coins'}
+            </p>
           </motion.div>
-        )}
 
-        {/* Tabs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="flex gap-4 mb-8 border-b border-cyan-500/20"
-        >
-          <button
-            onClick={() => setActiveTab("bots")}
-            className={`px-6 py-3 font-semibold transition-all ${
-              activeTab === "bots"
-                ? "text-cyan-400 border-b-2 border-cyan-400"
-                : "text-gray-400 hover:text-white"
-            }`}
-          >
-            Active Bots ({bots.length})
-          </button>
-          <button
-            onClick={() => setActiveTab("deploy")}
-            className={`px-6 py-3 font-semibold transition-all ${
-              activeTab === "deploy"
-                ? "text-cyan-400 border-b-2 border-cyan-400"
-                : "text-gray-400 hover:text-white"
-            }`}
-          >
-            Deploy New Bot
-          </button>
-          <button
-            onClick={() => setActiveTab("referral")}
-            className={`px-6 py-3 font-semibold transition-all flex items-center gap-2 ${
-              activeTab === "referral"
-                ? "text-cyan-400 border-b-2 border-cyan-400"
-                : "text-gray-400 hover:text-white"
-            }`}
-          >
-            <Share2 className="w-4 h-4" />
-            Referrals
-          </button>
-        </motion.div>
+          {/* Error Alert */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg flex items-start gap-3"
+            >
+              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <h3 className="font-semibold text-red-400 text-sm sm:text-base">{error}</h3>
+                <p className="text-xs sm:text-sm text-red-300/80 mt-1">Redirecting to home...</p>
+              </div>
+            </motion.div>
+          )}
 
-        {/* Content */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          key={activeTab}
-        >
-          {activeTab === "bots" ? (
-            <div>
-              {bots.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-gray-400 mb-4">No bots deployed yet</p>
-                  <button
-                    onClick={() => setActiveTab("deploy")}
-                    className="px-6 py-2 rounded-lg bg-cyan-500 text-black font-semibold hover:bg-cyan-400 transition-colors"
-                  >
-                    Deploy Your First Bot
-                  </button>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {bots.map((bot, index) => (
-                    <ChatbotCard key={bot.id} bot={bot} index={index} onUpdate={fetchUserData} />
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : activeTab === "deploy" ? (
-            <ChatbotDeploymentForm
-              coinBalance={user?.coin_balance || 0}
-              onSuccess={handleBotDeployed}
-            />
-          ) : activeTab === "referral" ? (
-            <ReferralInviteCard
-              referralCode={referralData.referralCode}
-              invitesCount={referralData.invitesCount}
-            />
-          ) : null}
-        </motion.div>
+          {/* Content */}
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {activeTab === "bots" ? (
+              <div>
+                {bots.length === 0 ? (
+                  <div className="text-center py-12 sm:py-16">
+                    <p className="text-gray-400 mb-4 text-sm sm:text-base">No bots deployed yet</p>
+                    <button
+                      onClick={() => setActiveTab("deploy")}
+                      className="px-4 sm:px-6 py-2 sm:py-3 rounded-lg bg-cyan-500 text-black font-semibold hover:bg-cyan-400 transition-colors text-xs sm:text-sm"
+                    >
+                      Deploy Your First Bot
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+                    {bots.map((bot, index) => (
+                      <ChatbotCard 
+                        key={bot.id} 
+                        bot={bot} 
+                        index={index} 
+                        onUpdate={fetchUserData} 
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : activeTab === "deploy" ? (
+              <ChatbotDeploymentForm
+                coinBalance={user.coin_balance || 0}
+                onSuccess={() => {
+                  setActiveTab("bots")
+                  fetchUserData()
+                }}
+              />
+            ) : activeTab === "referral" ? (
+              <ReferralInviteCard
+                referralCode={referralData.referralCode}
+                invitesCount={referralData.invitesCount}
+              />
+            ) : null}
+          </motion.div>
+        </div>
       </div>
 
       {/* Modals */}
@@ -289,7 +234,7 @@ export default function ChatbotsDashboard() {
           fetchUserData()
         }}
       />
-      
+
       <ProfileDashboard
         isOpen={showProfileModal}
         onClose={() => setShowProfileModal(false)}

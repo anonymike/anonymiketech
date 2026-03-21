@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Mail, Lock, User, Phone, Eye, EyeOff, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react'
+import { Mail, Lock, User, Phone, Eye, EyeOff, ArrowRight, X } from 'lucide-react'
 
 interface ModernChatbotsAuthModalProps {
   isOpen: boolean
@@ -10,10 +10,10 @@ interface ModernChatbotsAuthModalProps {
   onShowForgotPassword?: () => void
 }
 
-export default function ModernChatbotsAuthModal({ 
-  isOpen, 
+export default function ModernChatbotsAuthModal({
+  isOpen,
   onClose,
-  onShowForgotPassword 
+  onShowForgotPassword,
 }: ModernChatbotsAuthModalProps) {
   const [isSignUp, setIsSignUp] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -80,7 +80,7 @@ export default function ModernChatbotsAuthModal({
         setSuccess('Account created successfully! You can now sign in.')
         setTimeout(() => {
           setIsSignUp(false)
-          setFormData({ email: '', password: '', confirmPassword: '', username: '', phoneNumber: '' })
+          setFormData({ email: '', password: '', confirmPassword: '', username: '', phoneNumber: '', referralCode: '' })
         }, 2000)
       }
     } catch (err) {
@@ -134,194 +134,191 @@ export default function ModernChatbotsAuthModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={onClose}
-        >
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm">
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-700/50"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ duration: 0.3 }}
+            className="w-full max-w-sm sm:max-w-md bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl border border-cyan-500/30 shadow-2xl overflow-hidden mx-auto"
           >
             {/* Header */}
-            <div className="relative h-32 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 overflow-hidden">
-              <div className="absolute inset-0 opacity-30">
-                <div className="absolute top-0 left-0 w-40 h-40 bg-cyan-400 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
-                <div className="absolute top-10 right-0 w-40 h-40 bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-              </div>
-              <div className="relative h-full flex items-center justify-center">
-                <h1 className="text-3xl font-bold text-white text-center">
-                  {isSignUp ? 'Create Account' : 'Sign In'}
-                </h1>
-              </div>
+            <div className="flex items-center justify-between p-4 sm:p-6 bg-gradient-to-r from-cyan-600/20 via-blue-600/20 to-cyan-600/20 border-b border-cyan-500/30">
+              <h2 className="text-xl sm:text-2xl font-bold text-cyan-400">
+                {isSignUp ? 'Create Account' : 'Sign In'}
+              </h2>
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors bg-black/20 rounded-full p-2 backdrop-blur-sm"
+                className="text-gray-400 hover:text-white transition-colors"
               >
-                ✕
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>
 
             {/* Form Container */}
-            <div className="p-8">
-              {/* Error Message */}
+            <form
+              onSubmit={isSignUp ? handleSignUp : handleSignIn}
+              className="p-4 sm:p-6 space-y-4 sm:space-y-5"
+            >
+              {/* Error Alert */}
               {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-3"
-                >
-                  <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-200">{error}</p>
-                </motion.div>
+                <div className="p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300 text-sm">
+                  {error}
+                </div>
               )}
 
-              {/* Success Message */}
+              {/* Success Alert */}
               {success && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-lg flex items-start gap-3"
-                >
-                  <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-green-200">{success}</p>
-                </motion.div>
+                <div className="p-3 bg-green-500/20 border border-green-500/50 rounded-lg text-green-300 text-sm">
+                  {success}
+                </div>
               )}
 
-              {/* Form */}
-              <form onSubmit={isSignUp ? handleSignUp : handleSignIn} className="space-y-4">
-                {/* Email Field */}
+              {/* Email */}
+              <div>
+                <label className="block text-xs sm:text-sm font-medium text-slate-200 mb-2">
+                  Email
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-cyan-400/50" />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="you@example.com"
+                    className="w-full bg-slate-700/50 border border-slate-600 rounded-lg pl-10 sm:pl-12 pr-4 py-2 sm:py-3 text-sm sm:text-base text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                  />
+                </div>
+              </div>
+
+              {/* Username - Sign Up Only */}
+              {isSignUp && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-200 mb-2">Email Address</label>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-200 mb-2">
+                    Username
+                  </label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-cyan-400/50" />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-cyan-400/50" />
                     <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
+                      type="text"
+                      name="username"
+                      value={formData.username}
                       onChange={handleInputChange}
-                      placeholder="your@email.com"
-                      className="w-full bg-slate-700/50 border border-slate-600 rounded-lg pl-12 pr-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                      placeholder="Choose a username"
+                      className="w-full bg-slate-700/50 border border-slate-600 rounded-lg pl-10 sm:pl-12 pr-4 py-2 sm:py-3 text-sm sm:text-base text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                     />
                   </div>
                 </div>
+              )}
 
-                {/* Username - Sign Up Only */}
-                {isSignUp && (
-                  <div>
-                    <label className="block text-sm font-medium text-slate-200 mb-2">Username</label>
-                    <div className="relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-cyan-400/50" />
-                      <input
-                        type="text"
-                        name="username"
-                        value={formData.username}
-                        onChange={handleInputChange}
-                        placeholder="Choose a username"
-                        className="w-full bg-slate-700/50 border border-slate-600 rounded-lg pl-12 pr-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Phone - Sign Up Only */}
-                {isSignUp && (
-                  <div>
-                    <label className="block text-sm font-medium text-slate-200 mb-2">Phone Number (Optional)</label>
-                    <div className="relative">
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-cyan-400/50" />
-                      <input
-                        type="tel"
-                        name="phoneNumber"
-                        value={formData.phoneNumber}
-                        onChange={handleInputChange}
-                        placeholder="+1 (555) 000-0000"
-                        className="w-full bg-slate-700/50 border border-slate-600 rounded-lg pl-12 pr-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Referral Code - Sign Up Only */}
-                {isSignUp && (
-                  <div>
-                    <label className="block text-sm font-medium text-slate-200 mb-2">Referral Code (Optional)</label>
-                    <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-cyan-400/50" />
-                      <input
-                        type="text"
-                        name="referralCode"
-                        value={formData.referralCode}
-                        onChange={handleInputChange}
-                        placeholder="Enter a referral code to earn bonus coins"
-                        className="w-full bg-slate-700/50 border border-slate-600 rounded-lg pl-12 pr-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
-                      />
-                    </div>
-                    <p className="text-xs text-slate-400 mt-1">Join with a friend's code and get 50 bonus coins!</p>
-                  </div>
-                )}
-
-                {/* Password Field */}
+              {/* Phone - Sign Up Only */}
+              {isSignUp && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-200 mb-2">Password</label>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-200 mb-2">
+                    Phone Number (Optional)
+                  </label>
                   <div className="relative">
-                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-cyan-400/50" />
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-cyan-400/50" />
                     <input
-                      type={showPassword ? 'text' : 'password'}
-                      name="password"
-                      value={formData.password}
+                      type="tel"
+                      name="phoneNumber"
+                      value={formData.phoneNumber}
                       onChange={handleInputChange}
-                      placeholder="Min. 6 characters"
-                      className="w-full bg-slate-700/50 border border-slate-600 rounded-lg pl-12 pr-12 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                      placeholder="+1 (555) 000-0000"
+                      className="w-full bg-slate-700/50 border border-slate-600 rounded-lg pl-10 sm:pl-12 pr-4 py-2 sm:py-3 text-sm sm:text-base text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 transition-colors"
-                    >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
                   </div>
                 </div>
+              )}
 
-                {/* Confirm Password - Sign Up Only */}
-                {isSignUp && (
-                  <div>
-                    <label className="block text-sm font-medium text-slate-200 mb-2">Confirm Password</label>
-                    <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-cyan-400/50" />
-                      <input
-                        type="password"
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={handleInputChange}
-                        placeholder="Confirm password"
-                        className="w-full bg-slate-700/50 border border-slate-600 rounded-lg pl-12 pr-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
-                      />
-                    </div>
+              {/* Referral Code - Sign Up Only */}
+              {isSignUp && (
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-200 mb-2">
+                    Referral Code (Optional)
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-cyan-400/50" />
+                    <input
+                      type="text"
+                      name="referralCode"
+                      value={formData.referralCode}
+                      onChange={handleInputChange}
+                      placeholder="Enter a referral code"
+                      className="w-full bg-slate-700/50 border border-slate-600 rounded-lg pl-10 sm:pl-12 pr-4 py-2 sm:py-3 text-sm sm:text-base text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                    />
                   </div>
-                )}
+                  <p className="text-xs text-slate-400 mt-1">
+                    Join with a friend's code and get 50 bonus coins!
+                  </p>
+                </div>
+              )}
 
-                {/* Submit Button */}
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  disabled={isLoading}
-                  className="w-full mt-8 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-slate-600 disabled:to-slate-600 text-white font-bold py-3 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 group relative overflow-hidden"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-400 opacity-0 group-hover:opacity-20 transition-opacity" />
-                  <span className="relative">
-                    {isLoading ? 'Processing...' : isSignUp ? 'Create Account' : 'Sign In'}
-                  </span>
-                  {!isLoading && <ArrowRight className="w-5 h-5 relative group-hover:translate-x-1 transition-transform" />}
-                </motion.button>
-              </form>
+              {/* Password */}
+              <div>
+                <label className="block text-xs sm:text-sm font-medium text-slate-200 mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-cyan-400/50" />
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder="Min. 6 characters"
+                    className="w-full bg-slate-700/50 border border-slate-600 rounded-lg pl-10 sm:pl-12 pr-10 sm:pr-12 py-2 sm:py-3 text-sm sm:text-base text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400 transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />
+                    ) : (
+                      <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password - Sign Up Only */}
+              {isSignUp && (
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-slate-200 mb-2">
+                    Confirm Password
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-cyan-400/50" />
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleInputChange}
+                      placeholder="Confirm password"
+                      className="w-full bg-slate-700/50 border border-slate-600 rounded-lg pl-10 sm:pl-12 pr-4 py-2 sm:py-3 text-sm sm:text-base text-white placeholder-slate-400 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                disabled={isLoading}
+                className="w-full mt-6 sm:mt-8 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 disabled:from-slate-600 disabled:to-slate-600 text-white font-bold py-2.5 sm:py-3 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 group relative overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-400 opacity-0 group-hover:opacity-20 transition-opacity" />
+                <span className="relative text-sm sm:text-base">
+                  {isLoading ? 'Processing...' : isSignUp ? 'Create Account' : 'Sign In'}
+                </span>
+                {!isLoading && (
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 relative group-hover:translate-x-1 transition-transform" />
+                )}
+              </motion.button>
 
               {/* Forgot Password - Sign In Only */}
               {!isSignUp && (
@@ -329,7 +326,7 @@ export default function ModernChatbotsAuthModal({
                   <button
                     type="button"
                     onClick={onShowForgotPassword}
-                    className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors text-sm"
+                    className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors text-xs sm:text-sm"
                   >
                     Forgot Password?
                   </button>
@@ -337,9 +334,10 @@ export default function ModernChatbotsAuthModal({
               )}
 
               {/* Toggle Form */}
-              <div className="mt-6 text-center text-slate-400">
+              <div className="mt-6 text-center text-slate-400 text-xs sm:text-sm">
                 {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
                 <button
+                  type="button"
                   onClick={() => {
                     setIsSignUp(!isSignUp)
                     setError('')
@@ -355,9 +353,9 @@ export default function ModernChatbotsAuthModal({
               <p className="text-xs text-slate-500 text-center mt-4">
                 By continuing, you agree to our Terms of Service and Privacy Policy
               </p>
-            </div>
+            </form>
           </motion.div>
-        </motion.div>
+        </div>
       )}
     </AnimatePresence>
   )
