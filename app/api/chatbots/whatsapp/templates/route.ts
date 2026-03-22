@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { getWhatsappBotTemplates } from '@/lib/whatsapp-bot-service'
+import { getTemplates } from '@/lib/whatsapp-bot-service'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -71,7 +71,7 @@ const DEFAULT_TEMPLATES = [
 
 export async function GET(request: NextRequest) {
   try {
-    const templates = await getWhatsappBotTemplates()
+    const templates = await getTemplates()
 
     return NextResponse.json({
       success: true,
