@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { BotRunnerManager } from '@/lib/whatsapp-bot-runner'
+import { botRunnerManager } from '@/lib/whatsapp-bot-runner'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
   process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 )
-
-const botRunnerManager = BotRunnerManager.getInstance()
 
 export async function GET(request: NextRequest) {
   try {
@@ -100,11 +98,41 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Bot not found' }, { status: 404 })
     }
 
-    const botRunnerManager = BotRunnerManager.getInstance()
-
     if (action === 'connect') {
-      // Initialize bot runner and get QR code
-      const runner = await botRunnerManager.createRunner(bot_id)
+      // Get bot configuration
+      const { data: botConfig } = await supabase
+        .from('whatsapp_bot_config')
+        .select('*')
+        .eq('bot_id', bot_id)
+        .single()
+
+      if (!botConfig) {
+        return NextResponse.json(
+          { error: 'Bot configuration not found' },
+          { status: 404 }
+        )
+      }
+
+      // Get bot details
+      const { data: botDetails } = await supabase
+        .from('whatsapp_bots')
+        .select('phone_number')
+        .eq('id', bot_id)
+        .single()
+
+      if (!botDetails) {
+        return NextResponse.json({ error: 'Bot not found' }, { status: 404 })
+      }
+
+      // Initialize bot runner with proper config
+      const runnerConfig = {
+        botId: bot_id,
+        phoneNumber: botDetails.phone_number,
+        botConfig: botConfig,
+        webhookUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/chatbots/whatsapp/webhook`,
+      }
+
+      const runner = botRunnerManager.createRunner(runnerConfig)
       
       // Wait for QR code (with timeout)
       let qrCode: string | null = null
