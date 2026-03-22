@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import {
-  getWhatsappBot,
-  updateWhatsappBotStatus,
-  createWhatsappDeploymentConfig,
-  getWhatsappDeploymentConfig,
-  updateWhatsappDeploymentConfig,
-  logWhatsappBotActivity,
-  updateWhatsappBotEnvironmentVariables,
+  getBotById,
+  updateBotStatus,
+  createDeploymentConfig,
+  getDeploymentConfig,
+  updateDeploymentConfig,
+  logActivity,
 } from '@/lib/whatsapp-bot-service'
 import { getChatbotUserByAuthId } from '@/lib/supabase-chatbots-service'
 

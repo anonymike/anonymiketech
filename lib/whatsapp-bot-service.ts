@@ -728,3 +728,27 @@ export function decryptCredential(encrypted: string): string {
   // For now, just return base64 decoded value
   return Buffer.from(encrypted, 'base64').toString('utf-8')
 }
+
+export async function updateEnvironmentVariables(
+  deploymentId: string,
+  variables: Array<{ key: string; value: string; encrypted: boolean }>
+): Promise<void> {
+  try {
+    const { error } = await supabase
+      .from('whatsapp_deployment_config')
+      .update({
+        environment_variables: variables,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', deploymentId)
+
+    if (error) throw error
+  } catch (error) {
+    console.error('Error updating environment variables:', error)
+    throw error
+  }
+}
+
+export async function getWhatsappBotTemplates(): Promise<WhatsAppBotTemplate[]> {
+  return getTemplates()
+}

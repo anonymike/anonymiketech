@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { WhatsAppBotService } from '@/lib/whatsapp-bot-service'
-import { WhatsAppBotAI } from '@/lib/whatsapp-bot-ai'
+import { getBotById, logActivity, updateAnalytics } from '@/lib/whatsapp-bot-service'
+import { generateBotResponse } from '@/lib/whatsapp-bot-ai'
 import { BotRunnerManager } from '@/lib/whatsapp-bot-runner'
 
 const supabase = createClient(
