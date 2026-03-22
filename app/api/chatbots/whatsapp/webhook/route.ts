@@ -2,14 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { getBotById, logActivity, updateAnalytics } from '@/lib/whatsapp-bot-service'
 import { generateBotResponse } from '@/lib/whatsapp-bot-ai'
-import { BotRunnerManager } from '@/lib/whatsapp-bot-runner'
+import { botRunnerManager } from '@/lib/whatsapp-bot-runner'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
   process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 )
-
-const botRunnerManager = BotRunnerManager.getInstance()
 
 export async function POST(request: NextRequest) {
   try {
