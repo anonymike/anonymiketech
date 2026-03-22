@@ -10,8 +10,8 @@ interface DashboardNavbarProps {
   onLogout: () => void
   onProfileClick: () => void
   onBuyCoinsClick: () => void
-  activeTab: 'bots' | 'deploy' | 'profile' | 'referral'
-  onTabChange: (tab: 'bots' | 'deploy' | 'profile' | 'referral') => void
+  activeTab: 'bots' | 'deploy' | 'whatsapp' | 'profile' | 'referral'
+  onTabChange: (tab: 'bots' | 'deploy' | 'whatsapp' | 'profile' | 'referral') => void
 }
 
 export default function DashboardNavbar({
@@ -28,10 +28,11 @@ export default function DashboardNavbar({
   const navItems = [
     { id: 'bots' as const, label: 'Bots', icon: Home },
     { id: 'deploy' as const, label: 'Deploy', icon: Share2 },
+    { id: 'whatsapp' as const, label: 'WhatsApp', icon: Share2 },
     { id: 'referral' as const, label: 'Referrals', icon: Share2 },
   ]
 
-  const handleTabClick = (tab: 'bots' | 'deploy' | 'profile' | 'referral') => {
+  const handleTabClick = (tab: 'bots' | 'deploy' | 'whatsapp' | 'profile' | 'referral') => {
     onTabChange(tab)
     setMobileMenuOpen(false)
   }
