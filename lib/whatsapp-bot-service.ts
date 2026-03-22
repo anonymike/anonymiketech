@@ -6,6 +6,28 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || ''
 )
 
+// Helper to handle table not found errors gracefully
+async function ensureTableExists(tableName: string): Promise<boolean> {
+  try {
+    // Try a simple SELECT to check if table exists
+    const { error } = await supabase
+      .from(tableName)
+      .select('1')
+      .limit(1)
+    
+    if (error?.code === 'PGRST205') {
+      // Table doesn't exist
+      console.warn(`[v0] Table '${tableName}' not found. Please run the migration script.`)
+      return false
+    }
+    
+    return true
+  } catch (err) {
+    console.error(`[v0] Error checking table ${tableName}:`, err)
+    return false
+  }
+}
+
 // ============ Type Definitions ============
 
 export interface WhatsAppBotTemplate {
@@ -278,14 +300,22 @@ export async function getBots(userId: string): Promise<WhatsAppBot[]> {
     const { data, error } = await supabase
       .from('whatsapp_bots')
       .select('*')
-      .eq('userId', userId)
-      .order('createdAt', { ascending: false })
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
 
-    if (error) throw error
+    if (error) {
+      if (error.code === 'PGRST205') {
+        // Table doesn't exist yet - return empty array
+        console.log('[v0] WhatsApp bots table not yet initialized. Please run database migration.')
+        return []
+      }
+      throw error
+    }
     return data || []
   } catch (error) {
-    console.error('Error fetching bots:', error)
-    throw error
+    console.error('[v0] Error fetching bots:', error)
+    // Return empty array instead of throwing to allow UI to show "create bot" option
+    return []
   }
 }
 
