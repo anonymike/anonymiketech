@@ -65,10 +65,10 @@ export default function WhatsAppBotCreationForm({
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          templateId: template.id,
-          botName: botName.trim(),
-          phoneNumber: phoneNumber.trim(),
-          deploymentMethod,
+          template_id: template.id,
+          bot_name: botName.trim(),
+          phone_number: phoneNumber.trim(),
+          deployment_method: deploymentMethod,
         }),
       })
 

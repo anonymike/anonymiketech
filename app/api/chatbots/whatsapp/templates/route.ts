@@ -1,11 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import { getTemplates } from '@/lib/whatsapp-bot-service'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-)
 
 const DEFAULT_TEMPLATES = [
   {
@@ -71,55 +64,15 @@ const DEFAULT_TEMPLATES = [
 
 export async function GET(request: NextRequest) {
   try {
-    const templates = await getTemplates()
-
-    return NextResponse.json({
-      success: true,
-      data: templates || DEFAULT_TEMPLATES,
-    })
-  } catch (error) {
-    console.error('[v0] Error fetching WhatsApp bot templates:', error)
-    // Return default templates if database fails
     return NextResponse.json({
       success: true,
       data: DEFAULT_TEMPLATES,
     })
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const authHeader = request.headers.get('Authorization')
-    if (!authHeader?.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const token = authHeader.slice(7)
-    const { data: user, error: userError } = await supabase.auth.getUser(token)
-
-    if (userError || !user?.user) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 })
-    }
-
-    const body = await request.json()
-    const { name, description, icon, system_prompt, welcome_message, commands } = body
-
-    if (!name || !system_prompt) {
-      return NextResponse.json(
-        { error: 'Name and system_prompt are required' },
-        { status: 400 }
-      )
-    }
-
+  } catch (error) {
+    console.error('[v0] Error fetching WhatsApp bot templates:', error)
     return NextResponse.json({
       success: true,
-      message: 'Template creation not yet implemented'
-    }, { status: 201 })
-  } catch (error) {
-    console.error('[v0] Template creation error:', error)
-    return NextResponse.json(
-      { error: 'Failed to create template' },
-      { status: 500 }
-    )
+      data: DEFAULT_TEMPLATES,
+    })
   }
 }
