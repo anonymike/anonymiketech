@@ -64,25 +64,25 @@ export async function POST(request: NextRequest) {
 
     // Parse request body
     const body = await request.json()
-    const { template_id, bot_name, phone_number } = body
+    const { template_id, bot_name, phone_number, credential_id } = body
 
     // Validate required fields
-    if (!template_id || !bot_name || !phone_number) {
+    if (!template_id || !bot_name || !phone_number || !credential_id) {
       return NextResponse.json(
-        { error: 'Missing required fields: template_id, bot_name, phone_number' },
+        { error: 'Missing required fields: template_id, bot_name, phone_number, credential_id' },
         { status: 400 }
       )
     }
 
     // Try to create bot using service
     try {
-      const bot = await whatsappService.createBot({
-        user_id: userId,
+      const bot = await whatsappService.createBot(
+        userId,
         template_id,
         bot_name,
         phone_number,
-        status: 'draft',
-      })
+        credential_id
+      )
 
       return NextResponse.json({
         success: true,

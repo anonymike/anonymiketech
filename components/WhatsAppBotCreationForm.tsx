@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -35,17 +35,42 @@ export default function WhatsAppBotCreationForm({
 }: Props) {
   const [botName, setBotName] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
+  const [credentialId, setCredentialId] = useState('')
   const [deploymentMethod, setDeploymentMethod] =
     useState<'direct_server'>('direct_server')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [credentials, setCredentials] = useState<Array<{ id: string; phoneNumber: string }>>([])
+  const [loadingCredentials, setLoadingCredentials] = useState(true)
+
+  useEffect(() => {
+    fetchCredentials()
+  }, [token])
+
+  const fetchCredentials = async () => {
+    try {
+      setLoadingCredentials(true)
+      const response = await fetch('/api/chatbots/whatsapp/credentials', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setCredentials(data.data || [])
+      }
+    } catch (err) {
+      console.error('[v0] Error fetching credentials:', err)
+    } finally {
+      setLoadingCredentials(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
 
-    if (!botName.trim() || !phoneNumber.trim()) {
-      setError('Please fill in all required fields')
+    if (!botName.trim() || !phoneNumber.trim() || !credentialId) {
+      setError('Please fill in all required fields including selecting a WhatsApp credential')
       return
     }
 
@@ -68,6 +93,7 @@ export default function WhatsAppBotCreationForm({
           template_id: template.id,
           bot_name: botName.trim(),
           phone_number: phoneNumber.trim(),
+          credential_id: credentialId,
           deployment_method: deploymentMethod,
         }),
       })
@@ -138,6 +164,37 @@ export default function WhatsAppBotCreationForm({
         </div>
 
         <div className="space-y-2">
+          <Label htmlFor="credential">Linked WhatsApp Account *</Label>
+          {loadingCredentials ? (
+            <div className="flex items-center justify-center p-3 bg-muted rounded-lg">
+              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            </div>
+          ) : credentials.length === 0 ? (
+            <div className="p-3 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+              <p className="text-sm text-yellow-900 dark:text-yellow-100">
+                No WhatsApp accounts linked. Please link your WhatsApp account first before creating a bot.
+              </p>
+            </div>
+          ) : (
+            <Select value={credentialId} onValueChange={setCredentialId}>
+              <SelectTrigger disabled={loading || credentials.length === 0} className="bg-background">
+                <SelectValue placeholder="Select a linked WhatsApp account" />
+              </SelectTrigger>
+              <SelectContent>
+                {credentials.map((cred) => (
+                  <SelectItem key={cred.id} value={cred.id}>
+                    {cred.phoneNumber}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          <p className="text-xs text-muted-foreground">
+            Select a WhatsApp Business Account that has been linked and verified
+          </p>
+        </div>
+
+        <div className="space-y-2">
           <Label htmlFor="phoneNumber">WhatsApp Phone Number *</Label>
           <Input
             id="phoneNumber"
@@ -149,7 +206,7 @@ export default function WhatsAppBotCreationForm({
             type="tel"
           />
           <p className="text-xs text-muted-foreground">
-            Your WhatsApp Business Account phone number (with country code)
+            Confirm your WhatsApp Business Account phone number (with country code)
           </p>
         </div>
 

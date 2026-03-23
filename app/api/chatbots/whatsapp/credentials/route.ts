@@ -36,7 +36,10 @@ export async function GET(request: NextRequest) {
       updatedAt: cred.updatedAt,
     }))
 
-    return NextResponse.json(safeCredentials)
+    return NextResponse.json({
+      success: true,
+      data: safeCredentials,
+    })
   } catch (error) {
     console.error('Error fetching credentials:', error)
     return NextResponse.json(
@@ -89,11 +92,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
-        id: result.id,
-        phoneNumber: result.phoneNumber,
-        isActive: result.isActive,
-        createdAt: result.createdAt,
-        updatedAt: result.updatedAt,
+        success: true,
+        data: {
+          id: result.id,
+          phoneNumber: result.phoneNumber,
+          isActive: result.isActive,
+          createdAt: result.createdAt,
+          updatedAt: result.updatedAt,
+        },
       },
       { status: 201 }
     )

@@ -38,8 +38,8 @@ export async function GET(
     }
 
     // Verify bot ownership
-    const bot = await getWhatsappBot(params.id)
-    if (!bot || bot.user_id !== user.id) {
+    const bot = await getBotById(params.id, data.user.id)
+    if (!bot) {
       return NextResponse.json(
         { error: 'Bot not found or not owned by user' },
         { status: 404 }
@@ -47,7 +47,7 @@ export async function GET(
     }
 
     // Get config
-    const config = await getWhatsappBotConfig(params.id)
+    const config = await getBotConfig(params.id)
 
     return NextResponse.json({
       success: true,
@@ -87,8 +87,8 @@ export async function POST(
     }
 
     // Verify bot ownership
-    const bot = await getWhatsappBot(params.id)
-    if (!bot || bot.user_id !== user.id) {
+    const bot = await getBotById(params.id, data.user.id)
+    if (!bot) {
       return NextResponse.json(
         { error: 'Bot not found or not owned by user' },
         { status: 404 }
@@ -98,12 +98,12 @@ export async function POST(
     const configData = await request.json()
 
     // Check if config already exists
-    let config = await getWhatsappBotConfig(params.id)
+    let config = await getBotConfig(params.id)
 
     if (config) {
       // Update existing config
-      const success = await updateWhatsappBotConfig(params.id, configData)
-      if (!success) {
+      config = await updateBotConfig(params.id, configData)
+      if (!config) {
         return NextResponse.json(
           { error: 'Failed to update bot config' },
           { status: 500 }
@@ -111,7 +111,7 @@ export async function POST(
       }
     } else {
       // Create new config
-      config = await createWhatsappBotConfig(params.id, configData)
+      config = await createBotConfig(params.id, configData)
       if (!config) {
         return NextResponse.json(
           { error: 'Failed to create bot config' },

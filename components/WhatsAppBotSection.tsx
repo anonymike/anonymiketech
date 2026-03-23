@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AlertCircle, Plus, Settings, Rocket, Loader2 } from 'lucide-react'
 import WhatsAppBotTemplateSelector from './WhatsAppBotTemplateSelector'
 import WhatsAppBotCreationForm from './WhatsAppBotCreationForm'
+import WhatsAppBotLinkingPanel from './WhatsAppBotLinkingPanel'
 import WhatsAppBotConfigPanel from './WhatsAppBotConfigPanel'
 import WhatsAppBotDeploymentPanel from './WhatsAppBotDeploymentPanel'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -32,7 +33,7 @@ interface Props {
   token?: string
 }
 
-type ViewMode = 'list' | 'select_template' | 'create_bot' | 'configure' | 'deploy'
+type ViewMode = 'list' | 'select_template' | 'create_bot' | 'link_account' | 'configure' | 'deploy'
 
 export default function WhatsAppBotSection({ token }: Props) {
   const [viewMode, setViewMode] = useState<ViewMode>('list')
@@ -78,7 +79,7 @@ export default function WhatsAppBotSection({ token }: Props) {
   const handleBotCreated = (botId: string) => {
     setSelectedBotId(botId)
     setIsCreatingBot(false)
-    setViewMode('configure')
+    setViewMode('link_account')
     fetchBots()
   }
 
@@ -291,6 +292,30 @@ export default function WhatsAppBotSection({ token }: Props) {
               onSuccess={handleBotCreated}
               onBack={() => setViewMode('select_template')}
               token={token}
+            />
+          </motion.div>
+        )}
+
+        {/* Link WhatsApp Account */}
+        {viewMode === 'link_account' && selectedBotId && (
+          <motion.div
+            key="link"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="space-y-6"
+          >
+            <Button
+              variant="outline"
+              onClick={handleBackToList}
+              className="mb-4"
+            >
+              ← Back
+            </Button>
+            <WhatsAppBotLinkingPanel
+              botId={selectedBotId}
+              token={token}
+              onLinked={() => setViewMode('configure')}
             />
           </motion.div>
         )}
