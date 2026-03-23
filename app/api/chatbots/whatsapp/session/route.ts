@@ -89,37 +89,64 @@ export async function POST(request: NextRequest) {
 
     // Handle pairing code generation for client WhatsApp linking
     if (action === 'generate_pairing_session') {
-      // Generate a unique pairing code
-      const pairingCode = Math.random().toString(36).substring(2, 10).toUpperCase()
-      
-      // Store pairing session in database
-      const { data: session, error: sessionError } = await supabase
-        .from('whatsapp_pairing_sessions')
-        .insert({
-          user_id: user.user.id,
-          pairing_code: pairingCode,
-          status: 'pending',
-          expires_at: new Date(Date.now() + 60000).toISOString(), // 60 seconds
-        })
-        .select()
-        .single()
+      try {
+        // Generate a unique pairing code
+        const pairingCode = Math.random().toString(36).substring(2, 10).toUpperCase()
+        console.log('[v0] Generating pairing session for user:', user.user.id)
+        
+        // Check if table exists by trying to insert
+        const expiresAt = new Date(Date.now() + 60000).toISOString() // 60 seconds
+        
+        const { data: session, error: sessionError } = await supabase
+          .from('whatsapp_pairing_sessions')
+          .insert({
+            user_id: user.user.id,
+            pairing_code: pairingCode,
+            status: 'pending',
+            expires_at: expiresAt,
+          })
+          .select()
+          .single()
 
-      if (sessionError) {
-        console.error('[v0] Error creating pairing session:', sessionError)
+        if (sessionError) {
+          console.error('[v0] Database error creating pairing session:', {
+            error: sessionError,
+            code: sessionError.code,
+            message: sessionError.message,
+            details: sessionError.details,
+          })
+          
+          // Provide more helpful error messages
+          if (sessionError.code === '42P01') {
+            return NextResponse.json(
+              { error: 'Database is not properly configured. Please contact support.' },
+              { status: 500 }
+            )
+          }
+          
+          return NextResponse.json(
+            { error: 'Failed to create pairing session. Please try again.' },
+            { status: 500 }
+          )
+        }
+
+        console.log('[v0] Pairing session created successfully:', session?.id)
+        
+        return NextResponse.json({
+          success: true,
+          data: {
+            pairingCode,
+            sessionId: session.id,
+            expiresAt: session.expires_at,
+          },
+        })
+      } catch (innerError) {
+        console.error('[v0] Unexpected error in pairing session generation:', innerError)
         return NextResponse.json(
-          { error: 'Failed to create pairing session' },
+          { error: 'An unexpected error occurred. Please try again.' },
           { status: 500 }
         )
       }
-
-      return NextResponse.json({
-        success: true,
-        data: {
-          pairingCode,
-          sessionId: session.id,
-          expiresAt: session.expires_at,
-        },
-      })
     }
 
     // Handle bot-specific actions
