@@ -41,6 +41,7 @@ interface Props {
   botId: string
   token?: string
   onConfigured?: () => void
+  showLinkingPrompt?: boolean
 }
 
 const DEFAULT_CONFIG: BotConfig = {
@@ -74,6 +75,7 @@ export default function WhatsAppBotConfigPanel({
   botId,
   token,
   onConfigured,
+  showLinkingPrompt = false,
 }: Props) {
   const [config, setConfig] = useState<BotConfig>(DEFAULT_CONFIG)
   const [loading, setLoading] = useState(true)
@@ -83,10 +85,39 @@ export default function WhatsAppBotConfigPanel({
   const [newCommand, setNewCommand] = useState('')
   const [newCommandDesc, setNewCommandDesc] = useState('')
   const [newWhitelistItem, setNewWhitelistItem] = useState('')
+  const [isLinked, setIsLinked] = useState(true)
+  const [checkingLinkStatus, setCheckingLinkStatus] = useState(true)
 
   useEffect(() => {
     fetchConfig()
-  }, [botId, token])
+    if (showLinkingPrompt) {
+      checkLinkingStatus()
+    }
+  }, [botId, token, showLinkingPrompt])
+
+  const checkLinkingStatus = async () => {
+    try {
+      setCheckingLinkStatus(true)
+      const response = await fetch(
+        `/api/chatbots/whatsapp/bots/${botId}/status`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+
+      if (response.ok) {
+        const data = await response.json()
+        setIsLinked(data.data.isLinked)
+      } else {
+        setIsLinked(false)
+      }
+    } catch (err) {
+      console.error('[v0] Error checking linking status:', err)
+      setIsLinked(false)
+    } finally {
+      setCheckingLinkStatus(false)
+    }
+  }
 
   const fetchConfig = async () => {
     try {
@@ -216,6 +247,20 @@ export default function WhatsAppBotConfigPanel({
           Customize your bot's behavior, messages, and settings
         </p>
       </div>
+
+      {showLinkingPrompt && !checkingLinkStatus && !isLinked && (
+        <div className="rounded-lg border border-yellow-500/50 bg-yellow-50 dark:bg-yellow-950 p-4 flex gap-3">
+          <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-yellow-900 dark:text-yellow-100">
+              WhatsApp Account Not Linked
+            </p>
+            <p className="text-xs text-yellow-800 dark:text-yellow-200 mt-1">
+              You must link your WhatsApp account before configuring the bot. Please go back and complete the linking process.
+            </p>
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 flex gap-3">
@@ -560,7 +605,7 @@ export default function WhatsAppBotConfigPanel({
       <div className="flex gap-3">
         <Button
           onClick={handleSave}
-          disabled={saving}
+          disabled={saving || (showLinkingPrompt && !isLinked)}
           className="flex-1"
         >
           {saving ? (
