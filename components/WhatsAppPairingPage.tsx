@@ -5,8 +5,9 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { AlertCircle, CheckCircle, Phone, Loader2, Copy, ArrowLeft } from 'lucide-react'
+import { AlertCircle, CheckCircle, Phone, Loader2, Copy, ArrowLeft, Lightbulb } from 'lucide-react'
 import { motion } from 'framer-motion'
+import AlternativePairingModal from './AlternativePairingModal'
 
 interface Props {
   token?: string
@@ -14,7 +15,7 @@ interface Props {
   onBack?: () => void
 }
 
-type PairingStep = 'start' | 'generating' | 'waiting' | 'paste_code' | 'validating' | 'success'
+type PairingStep = 'start' | 'generating' | 'waiting' | 'paste_code' | 'validating' | 'success' | 'error'
 
 export default function WhatsAppPairingPage({
   token,
@@ -28,12 +29,15 @@ export default function WhatsAppPairingPage({
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [retryCount, setRetryCount] = useState(0)
+  const [showAlternatives, setShowAlternatives] = useState(false)
 
   const generatePairingSession = async () => {
     try {
       setLoading(true)
       setError(null)
       setStep('generating')
+      setRetryCount(0)
 
       const response = await fetch('/api/chatbots/whatsapp/session', {
         method: 'POST',
@@ -48,7 +52,8 @@ export default function WhatsAppPairingPage({
 
       if (!response.ok) {
         const data = await response.json()
-        throw new Error(data.error || 'Failed to generate pairing session')
+        const errorMessage = data.error || 'Failed to generate pairing session'
+        throw new Error(errorMessage)
       }
 
       const data = await response.json()
@@ -56,11 +61,17 @@ export default function WhatsAppPairingPage({
       setStep('waiting')
     } catch (err) {
       console.error('[v0] Error generating session:', err)
-      setError(err instanceof Error ? err.message : 'Failed to generate pairing session')
-      setStep('start')
+      const errorMsg = err instanceof Error ? err.message : 'Failed to generate pairing session'
+      setError(errorMsg)
+      setStep('error')
     } finally {
       setLoading(false)
     }
+  }
+
+  const retryPairingSession = async () => {
+    setRetryCount(prev => prev + 1)
+    await generatePairingSession()
   }
 
   const validatePairingCode = async () => {
@@ -123,13 +134,19 @@ export default function WhatsAppPairingPage({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-black to-black text-white flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md"
-      >
-        <Card className="p-8 space-y-6 bg-slate-900/50 border-slate-800">
+    <>
+      <AlternativePairingModal
+        isOpen={showAlternatives}
+        onClose={() => setShowAlternatives(false)}
+      />
+      
+      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-black to-black text-white flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md"
+        >
+          <Card className="p-8 space-y-6 bg-slate-900/50 border-slate-800">
           {/* Header with Back Button */}
           {onBack && (
             <button
@@ -381,8 +398,81 @@ export default function WhatsAppPairingPage({
               </p>
             </motion.div>
           )}
+
+          {/* Step 7: Error */}
+          {step === 'error' && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="space-y-6"
+            >
+              <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-6 space-y-4">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="h-6 w-6 text-red-400 flex-shrink-0 mt-1" />
+                  <div className="space-y-2">
+                    <h3 className="font-semibold text-red-400">
+                      Pairing Failed
+                    </h3>
+                    <p className="text-sm text-red-300">
+                      {error}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <Button
+                  onClick={retryPairingSession}
+                  disabled={loading}
+                  className="w-full bg-blue-600 hover:bg-blue-700 h-12"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Retrying...
+                    </>
+                  ) : (
+                    <>
+                      <span>Try Again</span>
+                      {retryCount > 0 && <span className="ml-2 text-xs">(Attempt {retryCount + 1})</span>}
+                    </>
+                  )}
+                </Button>
+
+                <Button
+                  onClick={() => setShowAlternatives(true)}
+                  variant="outline"
+                  className="w-full gap-2"
+                >
+                  <Lightbulb className="h-4 w-4" />
+                  Try Alternative Method
+                </Button>
+
+                {onBack && (
+                  <Button
+                    onClick={onBack}
+                    variant="ghost"
+                    className="w-full"
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Go Back
+                  </Button>
+                )}
+              </div>
+
+              {retryCount >= 2 && (
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4">
+                  <p className="text-sm text-amber-200">
+                    <strong>Having trouble?</strong> Consider using one of the alternative pairing methods, 
+                    or check that your WhatsApp is properly installed on your phone.
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          )}
         </Card>
       </motion.div>
     </div>
+    </>
   )
 }
