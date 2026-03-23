@@ -78,11 +78,54 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { bot_id, action } = body
+    const { action, bot_id } = body
 
-    if (!bot_id || !action) {
+    if (!action) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Missing required field: action' },
+        { status: 400 }
+      )
+    }
+
+    // Handle pairing code generation for client WhatsApp linking
+    if (action === 'generate_pairing_session') {
+      // Generate a unique pairing code
+      const pairingCode = Math.random().toString(36).substring(2, 10).toUpperCase()
+      
+      // Store pairing session in database
+      const { data: session, error: sessionError } = await supabase
+        .from('whatsapp_pairing_sessions')
+        .insert({
+          user_id: user.user.id,
+          pairing_code: pairingCode,
+          status: 'pending',
+          expires_at: new Date(Date.now() + 60000).toISOString(), // 60 seconds
+        })
+        .select()
+        .single()
+
+      if (sessionError) {
+        console.error('[v0] Error creating pairing session:', sessionError)
+        return NextResponse.json(
+          { error: 'Failed to create pairing session' },
+          { status: 500 }
+        )
+      }
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          pairingCode,
+          sessionId: session.id,
+          expiresAt: session.expires_at,
+        },
+      })
+    }
+
+    // Handle bot-specific actions
+    if (!bot_id) {
+      return NextResponse.json(
+        { error: 'Missing required field: bot_id for this action' },
         { status: 400 }
       )
     }

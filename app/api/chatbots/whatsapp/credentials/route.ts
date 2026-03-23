@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/chatbots/whatsapp/credentials - Add new credentials
+// POST /api/chatbots/whatsapp/credentials - Add new credentials or validate pairing code
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization')
@@ -68,8 +68,83 @@ export async function POST(request: NextRequest) {
 
     // Parse request
     const body = await request.json()
-    const { phoneNumber, credentials } = body
+    const { action, pairing_code, phone_number, phoneNumber, credentials } = body
 
+    // Handle pairing code validation
+    if (action === 'validate_pairing_code') {
+      if (!pairing_code) {
+        return NextResponse.json(
+          { error: 'Missing required field: pairing_code' },
+          { status: 400 }
+        )
+      }
+
+      // Verify pairing session exists and is valid
+      const { data: session, error: sessionError } = await supabase
+        .from('whatsapp_pairing_sessions')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('pairing_code', pairing_code.toUpperCase())
+        .eq('status', 'pending')
+        .gt('expires_at', new Date().toISOString())
+        .single()
+
+      if (sessionError || !session) {
+        return NextResponse.json(
+          { error: 'Invalid or expired pairing code' },
+          { status: 400 }
+        )
+      }
+
+      // Update session status to verified
+      await supabase
+        .from('whatsapp_pairing_sessions')
+        .update({ status: 'verified', verified_at: new Date().toISOString() })
+        .eq('id', session.id)
+
+      // Create credentials for the paired account
+      const credentialData = {
+        method: 'whatsapp_pairing',
+        paired_at: new Date().toISOString(),
+      }
+
+      const encryptedCreds: Record<string, string> = {}
+      for (const [key, value] of Object.entries(credentialData)) {
+        encryptedCreds[key] = whatsappService.encryptCredential(String(value))
+      }
+
+      // Create or update credentials
+      const { data: credential, error: credError } = await supabase
+        .from('whatsapp_credentials')
+        .insert({
+          user_id: userId,
+          phone_number: phone_number || 'verified',
+          credentials: encryptedCreds,
+          is_active: true,
+        })
+        .select()
+        .single()
+
+      if (credError) {
+        console.error('[v0] Error creating credential:', credError)
+        return NextResponse.json(
+          { error: 'Failed to create credential' },
+          { status: 500 }
+        )
+      }
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          id: credential.id,
+          phoneNumber: credential.phone_number,
+          isActive: credential.is_active,
+          message: 'WhatsApp account successfully paired',
+        },
+      })
+    }
+
+    // Original credentials creation logic
     if (!phoneNumber || !credentials) {
       return NextResponse.json(
         { error: 'Missing required fields: phoneNumber, credentials' },
@@ -104,9 +179,9 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Error creating credentials:', error)
+    console.error('Error with credentials:', error)
     return NextResponse.json(
-      { error: 'Failed to create credentials', details: String(error) },
+      { error: 'Failed to process credentials', details: String(error) },
       { status: 500 }
     )
   }
