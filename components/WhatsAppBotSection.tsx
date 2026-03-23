@@ -10,6 +10,7 @@ import WhatsAppBotCreationForm from './WhatsAppBotCreationForm'
 import WhatsAppBotLinkingPanel from './WhatsAppBotLinkingPanel'
 import WhatsAppBotConfigPanel from './WhatsAppBotConfigPanel'
 import WhatsAppBotDeploymentPanel from './WhatsAppBotDeploymentPanel'
+import WhatsAppPairingPage from './WhatsAppPairingPage'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface Template {
@@ -33,7 +34,7 @@ interface Props {
   token?: string
 }
 
-type ViewMode = 'list' | 'select_template' | 'create_bot' | 'link_account' | 'configure' | 'deploy'
+type ViewMode = 'list' | 'pair_whatsapp' | 'select_template' | 'create_bot' | 'link_account' | 'configure' | 'deploy'
 
 export default function WhatsAppBotSection({ token }: Props) {
   const [viewMode, setViewMode] = useState<ViewMode>('list')
@@ -131,6 +132,25 @@ export default function WhatsAppBotSection({ token }: Props) {
       </div>
 
       <AnimatePresence mode="wait">
+        {/* Pair WhatsApp Account View */}
+        {viewMode === 'pair_whatsapp' && (
+          <motion.div
+            key="pair"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <WhatsAppPairingPage
+              token={token}
+              onBack={handleBackToList}
+              onPaired={() => {
+                fetchBots()
+                setViewMode('list')
+              }}
+            />
+          </motion.div>
+        )}
+
         {/* Main List View */}
         {viewMode === 'list' && (
           <motion.div
@@ -162,33 +182,53 @@ export default function WhatsAppBotSection({ token }: Props) {
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
             ) : bots.length === 0 ? (
-              <Card className="p-12 text-center space-y-4">
-                <div className="text-5xl">🤖</div>
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">
-                    No WhatsApp Bots Yet
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Create your first WhatsApp bot to get started
-                  </p>
-                </div>
+              <div className="space-y-4">
                 <Button
-                  onClick={() => setViewMode('select_template')}
-                  className="mx-auto"
+                  onClick={() => setViewMode('pair_whatsapp')}
+                  className="w-full h-12 bg-cyan-600 hover:bg-cyan-700"
                 >
                   <Plus className="mr-2 h-4 w-4" />
-                  Create Bot
+                  Pair WhatsApp Account
                 </Button>
-              </Card>
+                <Card className="p-12 text-center space-y-4">
+                  <div className="text-5xl">🤖</div>
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold">
+                      No WhatsApp Bots Yet
+                    </h3>
+                    <p className="text-muted-foreground">
+                      First, pair your WhatsApp account to get started
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => setViewMode('select_template')}
+                    className="mx-auto"
+                    variant="outline"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Bot
+                  </Button>
+                </Card>
+              </div>
             ) : (
               <>
-                <Button
-                  onClick={() => setViewMode('select_template')}
-                  className="w-full"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create New Bot
-                </Button>
+                <div className="flex gap-3">
+                  <Button
+                    onClick={() => setViewMode('pair_whatsapp')}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Pair WhatsApp
+                  </Button>
+                  <Button
+                    onClick={() => setViewMode('select_template')}
+                    className="flex-1"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create New Bot
+                  </Button>
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {bots.map((bot) => (
