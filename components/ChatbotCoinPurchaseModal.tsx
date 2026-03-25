@@ -145,9 +145,14 @@ export default function ChatbotCoinPurchaseModal({
                       </motion.div>
                     </div>
                     <p className="text-white font-semibold mb-2">Payment In Progress</p>
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-gray-400 text-sm mb-4">
                       Complete the M-Pesa prompt on your phone
                     </p>
+                    <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-3 mb-4 text-left">
+                      <p className="text-xs text-gray-300">
+                        <span className="text-cyan-400 font-semibold">✓</span> Your coins will be added immediately after payment is confirmed
+                      </p>
+                    </div>
                     <button
                       onClick={() => {
                         setPaymentInitiated(false)

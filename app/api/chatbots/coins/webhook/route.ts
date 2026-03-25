@@ -62,15 +62,27 @@ export async function POST(request: Request) {
 
       console.log('[v0] Transaction updated successfully:', updatedTransaction.id)
 
-      // Coins should already be added during the initial purchase request
-      // but we can verify the user has them
-      console.log('[v0] Payment confirmed for user, coins should be in balance')
+      // NOW add coins to user balance after payment is confirmed
+      console.log('[v0] Adding coins to user balance after payment confirmation:', { userId: updatedTransaction.user_id, coins: updatedTransaction.amount })
+      const updatedUser = await updateCoinBalance(updatedTransaction.user_id, updatedTransaction.amount)
+      
+      if (!updatedUser) {
+        console.error('[v0] Failed to add coins after payment confirmation')
+        return NextResponse.json(
+          { error: 'Failed to add coins to balance' },
+          { status: 500 }
+        )
+      }
+
+      console.log('[v0] Coins successfully added to user:', { userId: updatedUser.id, newBalance: updatedUser.coin_balance })
 
       return NextResponse.json({
         success: true,
-        message: 'Payment processed successfully',
+        message: 'Payment processed successfully and coins added',
         transactionId: updatedTransaction.id,
         status: 'completed',
+        coinsAdded: updatedTransaction.amount,
+        newBalance: updatedUser.coin_balance,
       })
     } else {
       console.log('[v0] Payment failed with code:', result_code, 'description:', result_desc)
@@ -82,20 +94,13 @@ export async function POST(request: Request) {
         reference
       )
 
-      if (failedTransaction) {
-        // Deduct coins if they were already added
-        const user = await getChatbotUser(failedTransaction.user_id)
-        if (user) {
-          console.log('[v0] Deducting coins from user due to payment failure:', failedTransaction.user_id)
-          // Deduct the coins by adding negative amount
-          await updateCoinBalance(failedTransaction.user_id, -failedTransaction.amount)
-        }
-      }
+      console.log('[v0] Payment failed for transaction:', failedTransaction?.id)
 
       return NextResponse.json({
         success: false,
         message: `Payment failed: ${result_desc || 'Unknown error'}`,
         resultCode: result_code,
+        transactionId: failedTransaction?.id,
       })
     }
   } catch (error) {
