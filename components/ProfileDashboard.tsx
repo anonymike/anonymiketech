@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Mail, User, Copy, Check, AlertCircle, Loader, Link as LinkIcon } from 'lucide-react'
+import { Mail, User, Copy, Check, AlertCircle, Loader, Link as LinkIcon, Gift } from 'lucide-react'
 
 interface ProfileDashboardProps {
   isOpen: boolean
@@ -39,6 +39,7 @@ export default function ProfileDashboard({ isOpen, onClose, authToken }: Profile
   const [copiedCode, setCopiedCode] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [showWelcomeBonus, setShowWelcomeBonus] = useState(true)
 
   useEffect(() => {
     if (isOpen && authToken) {
@@ -237,6 +238,28 @@ export default function ProfileDashboard({ isOpen, onClose, authToken }: Profile
                   <User className="w-5 h-5" />
                   Account Information
                 </h2>
+
+                {/* Welcome Bonus Alert */}
+                {showWelcomeBonus && userData?.coin_balance === 50 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    className="mb-4 p-4 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/50 rounded-lg flex items-start gap-3"
+                  >
+                    <Gift className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-green-400 font-semibold">Welcome Gift! 🎁</p>
+                      <p className="text-green-300 text-sm mt-1">You&apos;ve received 50 free coins to get you started. Use them to deploy your first chatbot!</p>
+                    </div>
+                    <button
+                      onClick={() => setShowWelcomeBonus(false)}
+                      className="text-green-400 hover:text-green-300 text-sm font-medium"
+                    >
+                      ✕
+                    </button>
+                  </motion.div>
+                )}
 
                 {/* Coin Balance */}
                 <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 mb-4">
