@@ -19,11 +19,13 @@ interface Template {
 interface Props {
   onSelect: (template: Template) => void
   isLoading?: boolean
+  onQRAuthClick?: () => void
 }
 
 export default function WhatsAppBotTemplateSelector({
   onSelect,
   isLoading = false,
+  onQRAuthClick,
 }: Props) {
   const [templates, setTemplates] = useState<Template[]>([])
   const [loading, setLoading] = useState(true)
@@ -94,6 +96,7 @@ export default function WhatsAppBotTemplateSelector({
                 size="sm"
                 variant="outline"
                 className="text-xs h-7"
+                onClick={onQRAuthClick}
               >
                 📱 Start QR Auth
               </Button>
@@ -101,6 +104,7 @@ export default function WhatsAppBotTemplateSelector({
                 size="sm"
                 variant="ghost"
                 className="text-xs h-7 text-muted-foreground"
+                onClick={() => window.open('https://www.whatsapp.com/business/', '_blank')}
               >
                 Learn More
               </Button>

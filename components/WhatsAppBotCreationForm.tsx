@@ -42,6 +42,8 @@ export default function WhatsAppBotCreationForm({
   const [error, setError] = useState<string | null>(null)
   const [credentials, setCredentials] = useState<Array<{ id: string; phoneNumber: string }>>([])
   const [loadingCredentials, setLoadingCredentials] = useState(true)
+  const [validatedSessionId, setValidatedSessionId] = useState<string | null>(null)
+  const [validatingSession, setValidatingSession] = useState(false)
 
   useEffect(() => {
     fetchCredentials()
@@ -65,12 +67,52 @@ export default function WhatsAppBotCreationForm({
     }
   }
 
+  const handleValidateSession = async (e: React.FormEvent) => {
+    e.preventDefault()
+    const sessionInput = (document.querySelector('input[placeholder*="TRUTH-MD"]') as HTMLInputElement)?.value
+    
+    if (!sessionInput?.trim()) {
+      setError('Please enter a session ID')
+      return
+    }
+
+    try {
+      setValidatingSession(true)
+      setError(null)
+
+      // In production, validate with backend
+      const response = await fetch('/api/chatbots/whatsapp/validate-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ sessionId: sessionInput.trim() }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setValidatedSessionId(sessionInput.trim())
+        setCredentialId(data.credential_id || sessionInput.trim())
+        // Auto-dismiss the banner by clearing error state
+      } else {
+        const data = await response.json()
+        setError(data.error || 'Failed to validate session ID')
+      }
+    } catch (err) {
+      console.error('[v0] Error validating session:', err)
+      setError('Failed to validate session ID')
+    } finally {
+      setValidatingSession(false)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
 
-    if (!botName.trim() || !phoneNumber.trim() || !credentialId) {
-      setError('Please fill in all required fields including selecting a WhatsApp credential')
+    if (!botName.trim() || !phoneNumber.trim() || (!credentialId && !validatedSessionId)) {
+      setError('Please fill in all required fields including selecting a WhatsApp credential or validating a session ID')
       return
     }
 
@@ -93,7 +135,7 @@ export default function WhatsAppBotCreationForm({
           template_id: template.id,
           bot_name: botName.trim(),
           phone_number: phoneNumber.trim(),
-          credential_id: credentialId,
+          credential_id: credentialId || validatedSessionId,
           deployment_method: deploymentMethod,
         }),
       })
@@ -169,7 +211,7 @@ export default function WhatsAppBotCreationForm({
             <div className="flex items-center justify-center p-3 bg-muted rounded-lg">
               <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
             </div>
-          ) : credentials.length === 0 ? (
+          ) : credentials.length === 0 && !validatedSessionId ? (
             <div className="space-y-4">
               <div className="p-3 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg">
                 <p className="text-sm text-yellow-900 dark:text-yellow-100">
@@ -195,25 +237,34 @@ export default function WhatsAppBotCreationForm({
                   </p>
                 </div>
 
-                <div className="space-y-2">
-                  <Input
-                    placeholder="Paste your session ID (TRUTH-MD:~...)"
-                    defaultValue=""
-                    className="bg-background text-xs font-mono"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Your session ID is encrypted and secure. It will only be used to authenticate your WhatsApp connection.
-                  </p>
-                </div>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="w-full text-xs"
-                >
-                  Validate Session
-                </Button>
+                {!validatedSessionId ? (
+                  <div className="space-y-2">
+                    <Input
+                      placeholder="Paste your session ID (TRUTH-MD:~...)"
+                      defaultValue=""
+                      className="bg-background text-xs font-mono"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Your session ID is encrypted and secure. It will only be used to authenticate your WhatsApp connection.
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="w-full text-xs"
+                      onClick={handleValidateSession}
+                      disabled={validatingSession}
+                    >
+                      {validatingSession ? 'Validating...' : 'Validate Session'}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
+                    <p className="text-sm text-green-900 dark:text-green-100">
+                      ✓ Session validated successfully! You can now create your bot.
+                    </p>
+                  </div>
+                )}
               </motion.div>
             </div>
           ) : (

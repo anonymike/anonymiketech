@@ -32,6 +32,7 @@ export default function ChatbotDeploymentForm({
     botName: "",
     webhookUrl: "",
   })
+  const [showFormFields, setShowFormFields] = useState(false)
 
   const token = typeof window !== "undefined" ? localStorage.getItem("chatbot_token") : null
   const selectedBotType = botTypes.find((b) => b.id === formData.botTypeId)
@@ -152,10 +153,13 @@ export default function ChatbotDeploymentForm({
                 type="button"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() =>
+                onClick={() => {
                   setFormData((prev) => ({ ...prev, botTypeId: bot.id }))
-                }
-                className={`p-4 rounded-lg border transition-all text-left ${
+                  setShowFormFields(true)
+                  // Navigate to WhatsApp pairing
+                  window.location.href = '/chatbots-ai/dashboard?tab=whatsapp'
+                }}
+                className={`p-4 rounded-lg border transition-all text-left cursor-pointer ${
                   formData.botTypeId === bot.id
                     ? "border-cyan-400 bg-cyan-500/20"
                     : "border-cyan-500/20 bg-slate-800/50 hover:border-cyan-500/50"
@@ -181,110 +185,114 @@ export default function ChatbotDeploymentForm({
           </div>
         </div>
 
-        {/* Bot Name */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-300 mb-2">
-            Bot Name
-          </label>
-          <input
-            type="text"
-            value={formData.botName}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, botName: e.target.value }))
-            }
-            placeholder="e.g., My Customer Support Bot"
-            className="w-full px-4 py-2 rounded-lg bg-slate-800 border border-cyan-500/30 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors"
-            required
-          />
-        </div>
-
-        {/* Webhook URL (Optional) */}
-        <div>
-          <label className="block text-sm font-semibold text-gray-300 mb-2">
-            Webhook URL (Optional)
-          </label>
-          <input
-            type="url"
-            value={formData.webhookUrl}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, webhookUrl: e.target.value }))
-            }
-            placeholder="https://your-api.com/webhook"
-            className="w-full px-4 py-2 rounded-lg bg-slate-800 border border-cyan-500/30 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors"
-          />
-          <p className="text-xs text-gray-400 mt-1">
-            URL where we'll send bot events and messages
-          </p>
-        </div>
-
-        {/* Cost Summary */}
-        {selectedBotType && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="p-4 rounded-lg bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/30"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-gray-300">Deployment Cost</span>
-              <span className="text-2xl font-bold text-cyan-400">
-                {selectedBotType.cost_in_coins}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-gray-300">Your Balance</span>
-              <span
-                className={`text-lg font-semibold ${
-                  coinBalance >= selectedBotType.cost_in_coins
-                    ? "text-green-400"
-                    : "text-red-400"
-                }`}
-              >
-                {coinBalance}
-              </span>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Insufficient Coins Warning */}
-        {selectedBotType && coinBalance < selectedBotType.cost_in_coins && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="p-4 rounded-lg bg-red-500/10 border border-red-500/30 flex items-start gap-3"
-          >
-            <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+        {showFormFields && (
+          <>
+            {/* Bot Name */}
             <div>
-              <p className="text-red-400 font-semibold">Insufficient Coins</p>
-              <p className="text-red-300/70 text-sm">
-                You need {selectedBotType.cost_in_coins - coinBalance} more coins to
-                deploy this bot.
+              <label className="block text-sm font-semibold text-gray-300 mb-2">
+                Bot Name
+              </label>
+              <input
+                type="text"
+                value={formData.botName}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, botName: e.target.value }))
+                }
+                placeholder="e.g., My Customer Support Bot"
+                className="w-full px-4 py-2 rounded-lg bg-slate-800 border border-cyan-500/30 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors"
+                required
+              />
+            </div>
+
+            {/* Webhook URL (Optional) */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-300 mb-2">
+                Webhook URL (Optional)
+              </label>
+              <input
+                type="url"
+                value={formData.webhookUrl}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, webhookUrl: e.target.value }))
+                }
+                placeholder="https://your-api.com/webhook"
+                className="w-full px-4 py-2 rounded-lg bg-slate-800 border border-cyan-500/30 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 transition-colors"
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                URL where we'll send bot events and messages
               </p>
             </div>
-          </motion.div>
-        )}
 
-        {/* Error */}
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400"
-          >
-            {error}
-          </motion.div>
-        )}
+            {/* Cost Summary */}
+            {selectedBotType && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 rounded-lg bg-gradient-to-br from-cyan-500/10 to-blue-500/10 border border-cyan-500/30"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-gray-300">Deployment Cost</span>
+                  <span className="text-2xl font-bold text-cyan-400">
+                    {selectedBotType.cost_in_coins}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-300">Your Balance</span>
+                  <span
+                    className={`text-lg font-semibold ${
+                      coinBalance >= selectedBotType.cost_in_coins
+                        ? "text-green-400"
+                        : "text-red-400"
+                    }`}
+                  >
+                    {coinBalance}
+                  </span>
+                </div>
+              </motion.div>
+            )}
 
-        {/* Deploy Button */}
-        <motion.button
-          whileHover={canDeploy ? { scale: 1.02 } : {}}
-          whileTap={canDeploy ? { scale: 0.98 } : {}}
-          type="submit"
-          disabled={!canDeploy || deploying}
-          className="w-full py-4 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold transition-all duration-300 flex items-center justify-center gap-2"
-        >
-          <Zap className="w-5 h-5" />
-          {deploying ? "Deploying..." : "Deploy Bot"}
-        </motion.button>
+            {/* Insufficient Coins Warning */}
+            {selectedBotType && coinBalance < selectedBotType.cost_in_coins && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 rounded-lg bg-red-500/10 border border-red-500/30 flex items-start gap-3"
+              >
+                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-red-400 font-semibold">Insufficient Coins</p>
+                  <p className="text-red-300/70 text-sm">
+                    You need {selectedBotType.cost_in_coins - coinBalance} more coins to
+                    deploy this bot.
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Error */}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400"
+              >
+                {error}
+              </motion.div>
+            )}
+
+            {/* Deploy Button */}
+            <motion.button
+              whileHover={canDeploy ? { scale: 1.02 } : {}}
+              whileTap={canDeploy ? { scale: 0.98 } : {}}
+              type="submit"
+              disabled={!canDeploy || deploying}
+              className="w-full py-4 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold transition-all duration-300 flex items-center justify-center gap-2"
+            >
+              <Zap className="w-5 h-5" />
+              {deploying ? "Deploying..." : "Deploy Bot"}
+            </motion.button>
+          </>
+        )}
       </form>
     </motion.div>
   )
