@@ -62,15 +62,35 @@ export async function POST(request: Request) {
 
       console.log('[v0] Transaction updated successfully:', updatedTransaction.id)
 
-      // Coins should already be added during the initial purchase request
-      // but we can verify the user has them
-      console.log('[v0] Payment confirmed for user, coins should be in balance')
+      // NOW add coins to user balance after payment is confirmed
+      const user = await getChatbotUser(updatedTransaction.user_id)
+      if (!user) {
+        console.error('[v0] User not found for transaction:', updatedTransaction.id)
+        return NextResponse.json(
+          { error: 'User not found' },
+          { status: 500 }
+        )
+      }
+
+      console.log('[v0] Adding coins to user after successful payment:', { userId: user.id, coins: updatedTransaction.amount })
+      const updatedUser = await updateCoinBalance(user.id, updatedTransaction.amount)
+      
+      if (!updatedUser) {
+        console.error('[v0] Failed to add coins to user balance after payment')
+        return NextResponse.json(
+          { error: 'Failed to add coins after payment confirmation' },
+          { status: 500 }
+        )
+      }
+
+      console.log('[v0] Payment confirmed and coins added to user balance:', { userId: user.id, newBalance: updatedUser.coin_balance })
 
       return NextResponse.json({
         success: true,
-        message: 'Payment processed successfully',
+        message: 'Payment processed successfully and coins added',
         transactionId: updatedTransaction.id,
         status: 'completed',
+        coinsAdded: updatedTransaction.amount,
       })
     } else {
       console.log('[v0] Payment failed with code:', result_code, 'description:', result_desc)

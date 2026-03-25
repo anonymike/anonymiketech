@@ -109,16 +109,9 @@ export async function POST(request: Request) {
       )
     }
 
-    // Add coins immediately (optimistic approach - deduct if payment fails)
-    console.log('[v0] Adding coins to user balance for purchase:', { userId: user.id, coins: coinPackage.coins })
-    const updatedUser = await updateCoinBalance(user.id, coinPackage.coins)
-    if (!updatedUser) {
-      console.error('[v0] Failed to add coins to user balance')
-      return NextResponse.json(
-        { error: 'Failed to add coins to balance' },
-        { status: 500 }
-      )
-    }
+    // DO NOT add coins yet - wait for webhook confirmation of payment
+    // Coins will only be added when the webhook confirms the payment is successful
+    console.log('[v0] Transaction created, awaiting payment confirmation for:', { userId: user.id, coins: coinPackage.coins, reference })
 
     // Initiate M-Pesa STK Push (reusing same Payflow API)
     const payflowBaseUrl = 'https://payflow.top/api/v2'

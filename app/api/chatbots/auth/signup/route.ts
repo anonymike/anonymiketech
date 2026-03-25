@@ -53,8 +53,9 @@ export async function POST(request: Request) {
       )
     }
 
-    // Create chatbot user profile using admin client
+    // Create chatbot user profile using admin client with 50 free welcome coins
     console.log('[v0] Creating chatbot user profile for:', data.user.id)
+    const FREE_WELCOME_COINS = 50
     const { data: chatbotUser, error: profileError } = await supabaseAdmin
       .from('chatbot_users')
       .insert([
@@ -63,7 +64,7 @@ export async function POST(request: Request) {
           email,
           username,
           phone_number: phoneNumber,
-          coin_balance: 0,
+          coin_balance: FREE_WELCOME_COINS,
           total_coins_purchased: 0,
         },
       ])
@@ -136,6 +137,11 @@ export async function POST(request: Request) {
         id: chatbotUser.id,
         email: chatbotUser.email,
         username: chatbotUser.username,
+        coin_balance: FREE_WELCOME_COINS,
+      },
+      welcomeBonus: {
+        coins: FREE_WELCOME_COINS,
+        message: `Welcome! You've received ${FREE_WELCOME_COINS} free coins as a gift to get you started.`,
       },
     }, { status: 201 })
   } catch (error: any) {

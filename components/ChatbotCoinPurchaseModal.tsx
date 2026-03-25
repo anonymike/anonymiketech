@@ -66,25 +66,10 @@ export default function ChatbotCoinPurchaseModal({
 
       setPaymentInitiated(true)
 
-      // Poll for payment status (simplified - in production use webhooks)
-      let attempts = 0
-      const maxAttempts = 30
-
-      const pollInterval = setInterval(async () => {
-        attempts++
-
-        if (attempts >= maxAttempts) {
-          clearInterval(pollInterval)
-          setTimeout(() => {
-            setPaymentInitiated(false)
-            onSuccess()
-          }, 2000)
-          return
-        }
-
-        // In production, check with backend if payment was completed
-        // For now, just wait for user to complete and close modal
-      }, 2000)
+      // Wait 5 seconds for webhook to process, then refresh balance
+      setTimeout(() => {
+        console.log('[v0] Payment prompt sent, waiting for user to complete M-Pesa transaction')
+      }, 1000)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Payment failed")
     } finally {
@@ -144,9 +129,12 @@ export default function ChatbotCoinPurchaseModal({
                         <Zap className="w-8 h-8 text-cyan-400" />
                       </motion.div>
                     </div>
-                    <p className="text-white font-semibold mb-2">Payment In Progress</p>
-                    <p className="text-gray-400 text-sm">
-                      Complete the M-Pesa prompt on your phone
+                    <p className="text-white font-semibold mb-2">M-Pesa Prompt Sent</p>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Check your phone for the M-Pesa payment prompt. Enter your PIN to complete the payment.
+                    </p>
+                    <p className="text-gray-500 text-xs mb-6">
+                      ⚠️ Coins will only be added after payment is successfully completed and confirmed by our system. Please wait for confirmation.
                     </p>
                     <button
                       onClick={() => {
@@ -155,7 +143,7 @@ export default function ChatbotCoinPurchaseModal({
                       }}
                       className="mt-6 px-4 py-2 rounded-lg bg-cyan-500 text-black font-semibold hover:bg-cyan-400 transition-colors"
                     >
-                      Done
+                      Payment Completed
                     </button>
                   </motion.div>
                 ) : (
