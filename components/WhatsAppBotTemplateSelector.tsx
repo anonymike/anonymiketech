@@ -74,6 +74,41 @@ export default function WhatsAppBotTemplateSelector({
         </p>
       </div>
 
+      {/* QR Authentication Quick Start */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="p-4 border border-primary/30 rounded-lg bg-gradient-to-r from-primary/5 to-primary/10 space-y-3"
+      >
+        <div className="flex items-start gap-3">
+          <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0">
+            <span className="text-lg">🔐</span>
+          </div>
+          <div className="flex-1">
+            <h4 className="font-medium text-sm mb-1">Quick Start: QR Code Authentication</h4>
+            <p className="text-xs text-muted-foreground mb-3">
+              Before deploying a bot, you'll authenticate your WhatsApp account using a secure QR code. This establishes a session between your bot and WhatsApp Web.
+            </p>
+            <div className="flex gap-2 flex-wrap">
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs h-7"
+              >
+                📱 Start QR Auth
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-xs h-7 text-muted-foreground"
+              >
+                Learn More
+              </Button>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
       {error && (
         <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 flex gap-3">
           <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
@@ -91,7 +126,9 @@ export default function WhatsAppBotTemplateSelector({
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <h4 className="text-sm font-semibold mb-4">Select Your Bot Type</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {templates.map((template, index) => (
           <motion.div
             key={template.id}
@@ -160,6 +197,7 @@ export default function WhatsAppBotTemplateSelector({
             </Card>
           </motion.div>
         ))}
+        </div>
       </div>
     </div>
   )

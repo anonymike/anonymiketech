@@ -170,10 +170,51 @@ export default function WhatsAppBotCreationForm({
               <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
             </div>
           ) : credentials.length === 0 ? (
-            <div className="p-3 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-              <p className="text-sm text-yellow-900 dark:text-yellow-100">
-                No WhatsApp accounts linked. Please link your WhatsApp account first before creating a bot.
-              </p>
+            <div className="space-y-4">
+              <div className="p-3 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                <p className="text-sm text-yellow-900 dark:text-yellow-100">
+                  No WhatsApp accounts linked. Please link your WhatsApp account first before creating a bot.
+                </p>
+              </div>
+
+              {/* Session ID Validation Section */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 border border-primary/30 rounded-lg bg-primary/5 space-y-3"
+              >
+                <div>
+                  <Label className="text-sm font-medium text-primary mb-2 flex items-center gap-2">
+                    <span className="h-5 w-5 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold">
+                      ✓
+                    </span>
+                    Validate Session ID (Optional)
+                  </Label>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    If you have an existing TRUTH-MD session ID, you can validate it here before linking:
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Input
+                    placeholder="Paste your session ID (TRUTH-MD:~...)"
+                    defaultValue=""
+                    className="bg-background text-xs font-mono"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Your session ID is encrypted and secure. It will only be used to authenticate your WhatsApp connection.
+                  </p>
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs"
+                >
+                  Validate Session
+                </Button>
+              </motion.div>
             </div>
           ) : (
             <Select value={credentialId} onValueChange={setCredentialId}>
