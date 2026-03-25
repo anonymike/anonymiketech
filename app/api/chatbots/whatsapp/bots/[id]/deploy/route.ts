@@ -1,14 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import {
-  getBotById,
-  updateBotStatus,
-  createDeploymentConfig,
-  getDeploymentConfig,
-  updateDeploymentConfig,
-  logActivity,
-} from '@/lib/whatsapp-bot-service'
-import { getChatbotUserByAuthId } from '@/lib/supabase-chatbots-service'
+import BotRunner from '@/lib/bot-runner'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,6 +12,7 @@ export async function POST(
   { params }: { params: { id: string } }
 ) {
   try {
+    const botId = params.id
     const token = request.headers.get('authorization')?.split('Bearer ')[1]
 
     if (!token) {
@@ -28,130 +21,101 @@ export async function POST(
 
     // Verify token
     const { data, error: authError } = await supabaseAdmin.auth.getUser(token)
-
     if (authError || !data.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get user
-    const user = await getChatbotUserByAuthId(data.user.id)
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
-    // Verify bot ownership
-    const bot = await getWhatsappBot(params.id)
-    if (!bot || bot.user_id !== user.id) {
+    const { action } = await request.json()
+    if (!action) {
       return NextResponse.json(
-        { error: 'Bot not found or not owned by user' },
-        { status: 404 }
-      )
-    }
-
-    const {
-      method,
-      environmentVariables,
-      dockerImage,
-      herokuAppName,
-      railwayProjectId,
-      renderServiceId,
-      serverHost,
-      serverPort,
-    } = await request.json()
-
-    if (!method) {
-      return NextResponse.json(
-        { error: 'Deployment method is required' },
+        { error: 'Action is required (start, stop, restart, status)' },
         { status: 400 }
       )
     }
 
-    // Update bot status
-    await updateWhatsappBotStatus(params.id, 'configuring')
+    console.log(`[v0] Bot deployment request: ${botId}, action: ${action}`)
 
-    // Store environment variables
-    if (environmentVariables) {
-      await updateWhatsappBotEnvironmentVariables(params.id, environmentVariables)
+    // Get bot
+    const { data: bot, error: botError } = await supabaseAdmin
+      .from('chatbots')
+      .select('*')
+      .eq('id', botId)
+      .single()
+
+    if (botError || !bot) {
+      return NextResponse.json({ error: 'Bot not found' }, { status: 404 })
     }
 
-    // Check if deployment config exists
-    let deploymentConfig = await getWhatsappDeploymentConfig(params.id)
+    // Get session
+    const { data: session, error: sessionError } = await supabaseAdmin
+      .from('whatsapp_bot_instances')
+      .select('*')
+      .eq('bot_id', botId)
+      .single()
 
-    const configData = {
-      method,
-      docker_image: dockerImage,
-      heroku_app_name: herokuAppName,
-      railway_project_id: railwayProjectId,
-      render_service_id: renderServiceId,
-      server_host: serverHost,
-      server_port: serverPort,
-    }
-
-    if (deploymentConfig) {
-      await updateWhatsappDeploymentConfig(params.id, configData)
-    } else {
-      deploymentConfig = await createWhatsappDeploymentConfig(
-        params.id,
-        configData
-      )
-    }
-
-    // Log deployment activity
-    await logWhatsappBotActivity(
-      params.id,
-      'info',
-      `Deployment configured for method: ${method}`,
-      { method, timestamp: new Date().toISOString() }
-    )
-
-    // Simulate deployment (in production, this would trigger actual deployment)
-    try {
-      // Set status to deployed
-      await updateWhatsappBotStatus(params.id, 'deployed')
-
-      return NextResponse.json({
-        success: true,
-        data: {
-          bot: bot,
-          deployment: deploymentConfig,
-        },
-        message: `WhatsApp bot deployment configured successfully. The bot is ready to be deployed using ${method}.`,
-      })
-    } catch (deploymentError) {
-      await updateWhatsappBotStatus(
-        params.id,
-        'error',
-        `Deployment failed: ${deploymentError instanceof Error ? deploymentError.message : 'Unknown error'}`
-      )
-
-      await logWhatsappBotActivity(
-        params.id,
-        'error',
-        `Deployment failed: ${deploymentError instanceof Error ? deploymentError.message : 'Unknown error'}`,
-        { error: deploymentError, timestamp: new Date().toISOString() }
-      )
-
+    if (sessionError || !session?.session_id) {
       return NextResponse.json(
-        {
-          error: 'Deployment failed',
-          details: deploymentError instanceof Error ? deploymentError.message : 'Unknown error',
-        },
-        { status: 500 }
+        { error: 'No session configured. Please upload a TRUTH-MD session first.' },
+        { status: 400 }
       )
     }
+
+    // Validate session format
+    if (!session.session_id.startsWith('TRUTH-MD:~')) {
+      return NextResponse.json(
+        { error: 'Invalid session format. Must start with TRUTH-MD:~' },
+        { status: 400 }
+      )
+    }
+
+    let result
+    switch (action) {
+      case 'start': {
+        await BotRunner.startBot({
+          botId,
+          sessionId: session.session_id,
+          databaseUrl: process.env.DATABASE_URL!,
+          relayUrl: process.env.TRUTH_MD_RELAY_URL,
+        })
+        result = { success: true, message: 'Bot deployment started' }
+        break
+      }
+
+      case 'stop': {
+        await BotRunner.stopBot(botId)
+        result = { success: true, message: 'Bot stopped' }
+        break
+      }
+
+      case 'restart': {
+        await BotRunner.restartBot(botId, {
+          botId,
+          sessionId: session.session_id,
+          databaseUrl: process.env.DATABASE_URL!,
+          relayUrl: process.env.TRUTH_MD_RELAY_URL,
+        })
+        result = { success: true, message: 'Bot restarting' }
+        break
+      }
+
+      case 'status': {
+        const health = await BotRunner.getHealth(botId)
+        result = { success: true, ...health }
+        break
+      }
+
+      default:
+        return NextResponse.json(
+          { error: 'Invalid action' },
+          { status: 400 }
+        )
+    }
+
+    return NextResponse.json(result)
   } catch (error) {
-    console.error('[v0] Error deploying WhatsApp bot:', error)
-
-    if (params.id) {
-      await updateWhatsappBotStatus(
-        params.id,
-        'error',
-        `Deployment error: ${error instanceof Error ? error.message : 'Unknown error'}`
-      )
-    }
-
+    console.error('[v0] Deployment error:', error)
     return NextResponse.json(
-      { error: 'Failed to deploy WhatsApp bot' },
+      { error: error instanceof Error ? error.message : 'Deployment failed' },
       { status: 500 }
     )
   }
