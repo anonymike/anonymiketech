@@ -11,6 +11,7 @@ import ProfileDashboard from "@/components/ProfileDashboard"
 import ReferralInviteCard from "@/components/ReferralInviteCard"
 import DashboardNavbar from "@/components/DashboardNavbar"
 import WhatsAppBotSection from "@/components/WhatsAppBotSection"
+import FlowVisualization from "@/components/FlowVisualization"
 import { BarChart3, Zap, Users, TrendingUp } from "lucide-react"
 
 interface User {
@@ -275,8 +276,11 @@ export default function ChatbotsDashboard() {
                 }}
               />
             ) : activeTab === "whatsapp" ? (
-              <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 rounded-xl p-6 sm:p-8">
-                <WhatsAppBotSection token={localStorage.getItem("chatbot_token") || undefined} />
+              <div className="space-y-12">
+                <FlowVisualization />
+                <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-700/50 rounded-xl p-6 sm:p-8">
+                  <WhatsAppBotSection token={localStorage.getItem("chatbot_token") || undefined} />
+                </div>
               </div>
             ) : activeTab === "referral" ? (
               <div className="space-y-6">

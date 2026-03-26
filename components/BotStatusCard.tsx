@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { AlertCircle, Play, Pause, Square, RefreshCw, Trash2 } from 'lucide-react'
+import { AlertCircle, Play, Pause, Square, RefreshCw, Trash2, Info } from 'lucide-react'
+import DeploymentDetailsModal from './DeploymentDetailsModal'
 
 interface BotStatusCardProps {
   botId: string
@@ -26,6 +27,7 @@ export function BotStatusCard({
   const [status, setStatus] = useState<'running' | 'stopped' | 'error' | 'paused' | 'loading'>('loading')
   const [isControlling, setIsControlling] = useState(false)
   const [uptime, setUptime] = useState<number>(0)
+  const [showDeploymentModal, setShowDeploymentModal] = useState(false)
 
   // Fetch initial status
   useEffect(() => {
@@ -134,7 +136,7 @@ export function BotStatusCard({
         )}
 
         {/* Controls */}
-        <div className="flex gap-2 pt-2">
+        <div className="flex gap-2 pt-2 flex-wrap">
           {status === 'running' ? (
             <>
               <Button
@@ -215,7 +217,24 @@ export function BotStatusCard({
           >
             <RefreshCw className="h-4 w-4" />
           </Button>
+
+          <Button
+            onClick={() => setShowDeploymentModal(true)}
+            variant="outline"
+            size="sm"
+            title="Learn about deployment and TRUTH MD integration"
+          >
+            <Info className="h-4 w-4" />
+          </Button>
         </div>
+
+        {/* Deployment Details Modal */}
+        <DeploymentDetailsModal
+          isOpen={showDeploymentModal}
+          onClose={() => setShowDeploymentModal(false)}
+          botName={botName}
+          botId={botId}
+        />
       </CardContent>
     </Card>
   )
