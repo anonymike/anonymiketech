@@ -181,16 +181,17 @@ export default function FlowVisualization() {
       {/* Call to Action */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
         <Button
-          onClick={() => (window.location.href = '/chatbots-ai/pairing')}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold h-12 px-8"
+          onClick={() => window.open('https://truth-md.courtneytech.xyz/', '_blank')}
+          className="bg-orange-600 hover:bg-orange-700 text-white font-semibold h-12 px-8"
         >
-          Start Pairing Process
+          Get Pairing Code Now
         </Button>
         <Button
+          onClick={() => (window.location.href = '/chatbots-ai/validate')}
           variant="outline"
-          className="h-12 px-8"
+          className="h-12 px-8 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950"
         >
-          View Documentation
+          Validate Session
         </Button>
       </div>
     </div>

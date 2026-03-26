@@ -24,7 +24,7 @@ const deploymentSteps = [
   {
     number: 1,
     title: 'Pair Your WhatsApp',
-    description: 'Visit the pairing platform and enter your WhatsApp number to generate a pairing code.',
+    description: 'Visit TRUTH MD pairing platform and enter your WhatsApp number to generate a pairing code. Visit https://truth-md.courtneytech.xyz/',
     icon: '📱',
     color: 'bg-blue-500/10 border-blue-500/30',
   },
@@ -215,22 +215,21 @@ export default function DeploymentDetailsModal({
             <Button
               onClick={() => {
                 onClose()
-                window.location.href = '/chatbots-ai/pairing'
+                window.open('https://truth-md.courtneytech.xyz/', '_blank')
               }}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold h-12"
+              className="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-semibold h-12"
             >
               <Zap className="h-4 w-4 mr-2" />
-              Start Pairing Now
+              Get Pairing Code
             </Button>
             <Button
               onClick={() => {
                 onClose()
                 window.location.href = '/chatbots-ai/validate'
               }}
-              variant="outline"
-              className="flex-1 h-12"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold h-12"
             >
-              Go to Validator
+              Validate Session
             </Button>
             <Button
               onClick={onClose}
