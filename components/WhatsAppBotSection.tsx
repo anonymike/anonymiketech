@@ -140,9 +140,11 @@ export default function WhatsAppBotSection({ token }: Props) {
     <div className="w-full space-y-6">
       {/* Header */}
       <div className="space-y-2">
-        <h2 className="text-2xl font-bold">WhatsApp Bot Builder</h2>
-        <p className="text-muted-foreground">
-          Create, configure, and deploy WhatsApp bots using Baileys
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+          TRUTH MD Bot Hosting Platform
+        </h2>
+        <p className="text-muted-foreground text-lg">
+          Deploy, manage, and scale your WhatsApp bots with enterprise-grade hosting
         </p>
       </div>
 
@@ -155,36 +157,44 @@ export default function WhatsAppBotSection({ token }: Props) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <Card className="p-8 space-y-6 text-center bg-amber-50 dark:bg-amber-950 border-amber-200 dark:border-amber-800">
+            <Card className="p-8 space-y-6 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950 dark:to-orange-950 border-amber-200 dark:border-amber-800">
               <div className="flex justify-center">
-                <AlertTriangle className="h-12 w-12 text-amber-600 dark:text-amber-400" />
+                <AlertTriangle className="h-14 w-14 text-orange-600 dark:text-orange-400" />
               </div>
 
-              <div className="space-y-2">
-                <h3 className="text-xl font-semibold text-amber-900 dark:text-amber-100">
+              <div className="space-y-2 text-center">
+                <h3 className="text-2xl font-bold text-amber-900 dark:text-amber-100">
                   Session Not Validated
                 </h3>
-                <p className="text-amber-800 dark:text-amber-200">
+                <p className="text-amber-800 dark:text-amber-200 text-base">
                   You need to validate your TRUTH MD session before creating bots.
                 </p>
               </div>
 
-              <div className="p-4 bg-white/50 dark:bg-black/30 rounded-lg text-sm text-left space-y-2">
-                <p className="font-semibold text-amber-900 dark:text-amber-100">Steps to validate:</p>
-                <ol className="space-y-2 ml-4 list-decimal text-amber-800 dark:text-amber-200 text-xs">
-                  <li>Get your pairing code from https://truth-md.courtneytech.xyz/</li>
-                  <li>Send the code to TRUTH MD WhatsApp</li>
-                  <li>Receive your session ID</li>
-                  <li>Validate it by going to the validate page</li>
+              <div className="p-6 bg-white/60 dark:bg-black/40 rounded-lg text-sm text-left space-y-4">
+                <p className="font-bold text-amber-900 dark:text-amber-100 text-base">Steps to validate:</p>
+                <ol className="space-y-3 ml-4 list-decimal text-amber-800 dark:text-amber-200">
+                  <li className="text-sm"><span className="font-semibold">Get your pairing code</span> from <a href="https://truth-md.courtneytech.xyz/" target="_blank" rel="noopener noreferrer" className="text-orange-600 dark:text-orange-400 hover:underline font-semibold">https://truth-md.courtneytech.xyz/</a></li>
+                  <li className="text-sm"><span className="font-semibold">Send the code</span> to TRUTH MD WhatsApp</li>
+                  <li className="text-sm"><span className="font-semibold">Receive your session ID</span> from TRUTH MD</li>
+                  <li className="text-sm"><span className="font-semibold">Validate it here</span> using our session validator</li>
                 </ol>
               </div>
 
-              <Button
-                onClick={() => window.location.href = '/chatbots-ai/validate'}
-                className="w-full bg-amber-600 hover:bg-amber-700 text-white h-12"
-              >
-                Go to Session Validator
-              </Button>
+              <div className="flex gap-3 pt-4">
+                <Button
+                  onClick={() => window.open('https://truth-md.courtneytech.xyz/', '_blank')}
+                  className="flex-1 bg-orange-600 hover:bg-orange-700 text-white h-12 font-semibold text-base"
+                >
+                  Get Pairing Code
+                </Button>
+                <Button
+                  onClick={() => window.location.href = '/chatbots-ai/validate'}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white h-12 font-semibold text-base"
+                >
+                  Go to Session Validator
+                </Button>
+              </div>
             </Card>
           </motion.div>
         )}
