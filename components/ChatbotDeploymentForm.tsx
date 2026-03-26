@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { AlertCircle, Zap } from "lucide-react"
+import BotTypeCard from "./BotTypeCard"
+import BotTypeDetailModal from "./BotTypeDetailModal"
 
 interface BotType {
   id: string
@@ -10,6 +12,8 @@ interface BotType {
   description: string
   cost_in_coins: number
   features: string[]
+  icon?: string
+  image?: string
 }
 
 interface ChatbotDeploymentFormProps {
@@ -26,6 +30,8 @@ export default function ChatbotDeploymentForm({
   const [deploying, setDeploying] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [selectedBotDetail, setSelectedBotDetail] = useState<BotType | null>(null)
+  const [showDetailModal, setShowDetailModal] = useState(false)
 
   const [formData, setFormData] = useState({
     botTypeId: "",
@@ -46,13 +52,34 @@ export default function ChatbotDeploymentForm({
     fetchBotTypes()
   }, [])
 
+  const BOT_ICON_MAP: Record<string, string> = {
+    whatsapp_pro: '💬',
+    customer_support: '🎯',
+    ecommerce: '🛍️',
+    marketing: '📢',
+    lead_generation: '⚡',
+  }
+
+  const BOT_IMAGE_MAP: Record<string, string> = {
+    whatsapp_pro: '/images/bots/whatsapp-pro.jpg',
+    customer_support: '/images/bots/customer-support.jpg',
+    ecommerce: '/images/bots/ecommerce.jpg',
+    marketing: '/images/bots/marketing.jpg',
+    lead_generation: '/images/bots/lead-generation.jpg',
+  }
+
   const fetchBotTypes = async () => {
     try {
       const response = await fetch("/api/chatbots/bot-types")
       const data = await response.json()
-      setBotTypes(data.data || [])
-      if (data.data && data.data.length > 0) {
-        setFormData((prev) => ({ ...prev, botTypeId: data.data[0].id }))
+      const botsWithExtras = (data.data || []).map((bot: BotType) => ({
+        ...bot,
+        icon: BOT_ICON_MAP[bot.id] || '🤖',
+        image: BOT_IMAGE_MAP[bot.id] || '/images/bots/default.jpg',
+      }))
+      setBotTypes(botsWithExtras)
+      if (botsWithExtras.length > 0) {
+        setFormData((prev) => ({ ...prev, botTypeId: botsWithExtras[0].id }))
       }
     } catch (err) {
       setError("Failed to load bot types")
@@ -141,49 +168,37 @@ export default function ChatbotDeploymentForm({
       className="max-w-2xl mx-auto"
     >
       <form onSubmit={handleDeploy} className="space-y-6">
-        {/* Bot Type Selection */}
+        {/* Bot Type Selection with Cards */}
         <div>
-          <label className="block text-sm font-semibold text-gray-300 mb-3">
-            Select Bot Type
+          <label className="block text-sm font-semibold text-gray-300 mb-6 text-lg">
+            Select Your Bot Type
           </label>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {botTypes.map((bot) => (
-              <motion.button
+              <BotTypeCard
                 key={bot.id}
-                type="button"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                id={bot.id}
+                name={bot.name}
+                cost={bot.cost_in_coins}
+                description={bot.description}
+                features={bot.features}
+                icon={bot.icon || '🤖'}
+                image={bot.image || '/images/bots/default.jpg'}
                 onClick={() => {
-                  setFormData((prev) => ({ ...prev, botTypeId: bot.id }))
-                  setShowFormFields(true)
-                  // Navigate to WhatsApp pairing
-                  window.location.href = '/chatbots-ai/dashboard?tab=whatsapp'
+                  setSelectedBotDetail(bot)
+                  setShowDetailModal(true)
                 }}
-                className={`p-4 rounded-lg border transition-all text-left cursor-pointer ${
-                  formData.botTypeId === bot.id
-                    ? "border-cyan-400 bg-cyan-500/20"
-                    : "border-cyan-500/20 bg-slate-800/50 hover:border-cyan-500/50"
-                }`}
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-semibold text-white">{bot.name}</h3>
-                  <div className="text-cyan-400 font-bold">{bot.cost_in_coins}</div>
-                </div>
-                <p className="text-xs text-gray-400 mb-3">{bot.description}</p>
-                <div className="flex flex-wrap gap-1">
-                  {bot.features.slice(0, 2).map((feature, i) => (
-                    <span
-                      key={i}
-                      className="text-xs px-2 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30"
-                    >
-                      {feature}
-                    </span>
-                  ))}
-                </div>
-              </motion.button>
+              />
             ))}
           </div>
         </div>
+
+        {/* Bot Type Detail Modal */}
+        <BotTypeDetailModal
+          isOpen={showDetailModal}
+          onClose={() => setShowDetailModal(false)}
+          botType={selectedBotDetail}
+        />
 
         {showFormFields && (
           <>
