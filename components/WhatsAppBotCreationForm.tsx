@@ -46,7 +46,15 @@ export default function WhatsAppBotCreationForm({
   const [validatingSession, setValidatingSession] = useState(false)
 
   useEffect(() => {
-    fetchCredentials()
+    // Get validated session from localStorage
+    const validatedSession = localStorage.getItem('truthmd_session')
+    if (validatedSession) {
+      setValidatedSessionId(validatedSession)
+      setCredentialId(validatedSession)
+      setLoadingCredentials(false)
+    } else {
+      fetchCredentials()
+    }
   }, [token])
 
   const fetchCredentials = async () => {
@@ -206,16 +214,25 @@ export default function WhatsAppBotCreationForm({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="credential">Linked WhatsApp Account *</Label>
+          <Label htmlFor="credential">Session Status *</Label>
           {loadingCredentials ? (
             <div className="flex items-center justify-center p-3 bg-muted rounded-lg">
               <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
             </div>
+          ) : validatedSessionId ? (
+            <div className="p-3 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg">
+              <p className="text-sm font-medium text-green-900 dark:text-green-100">
+                ✓ Session validated and ready to use
+              </p>
+              <p className="text-xs text-green-800 dark:text-green-200 mt-1">
+                Your TRUTH MD session has been verified and will be used for this bot.
+              </p>
+            </div>
           ) : credentials.length === 0 && !validatedSessionId ? (
             <div className="space-y-4">
-              <div className="p-3 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                <p className="text-sm text-yellow-900 dark:text-yellow-100">
-                  No WhatsApp accounts linked. Please link your WhatsApp account first before creating a bot.
+              <div className="p-3 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <p className="text-sm text-blue-900 dark:text-blue-100">
+                  Your validated session will be used to power this bot. Ensure you've completed the session validation before creating.
                 </p>
               </div>
 

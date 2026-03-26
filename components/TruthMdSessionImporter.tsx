@@ -5,35 +5,35 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
-import { AlertCircle, Loader2, CheckCircle, Copy, Zap } from 'lucide-react'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { AlertCircle, Loader2, CheckCircle2, Shield, ArrowLeft } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 interface TruthMdSessionImporterProps {
-  botId: string
   token?: string
-  onSessionImported?: (sessionData: any) => void
-  onDeployed?: () => void
+  onSessionValidated?: (sessionData: { session_id: string }) => void
+  onBack?: () => void
+  showBackButton?: boolean
 }
 
 export default function TruthMdSessionImporter({
-  botId,
   token,
-  onSessionImported,
-  onDeployed,
+  onSessionValidated,
+  onBack,
+  showBackButton = false,
 }: TruthMdSessionImporterProps) {
   const [sessionString, setSessionString] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [showExample, setShowExample] = useState(false)
-  const [deployLoading, setDeployLoading] = useState(false)
 
   const validateSessionFormat = (session: string): boolean => {
     // Validate TRUTH-MD format: should start with "TRUTH-MD:~" and contain JSON
     return session.trim().startsWith('TRUTH-MD:~') && session.length > 20
   }
 
-  const handleImportSession = async (e: React.FormEvent) => {
+  const handleValidateSession = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     setSuccess(false)
@@ -53,104 +53,72 @@ export default function TruthMdSessionImporter({
     try {
       setLoading(true)
 
-      // Save session to bot
-      const response = await fetch(
-        `/api/chatbots/whatsapp/bots/${botId}/session`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            session_string: sessionString.trim(),
-            source: 'truth_md',
-          }),
-        }
-      )
+      // Validate session format on backend
+      const response = await fetch('/api/chatbots/whatsapp/session/validate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: JSON.stringify({
+          session_string: sessionString.trim(),
+          source: 'truth_md',
+        }),
+      })
 
       if (!response.ok) {
         const data = await response.json()
-        throw new Error(data.error || 'Failed to import session')
+        throw new Error(data.error || 'Failed to validate session')
       }
 
       const data = await response.json()
       setSuccess(true)
       setSessionString('')
 
-      if (onSessionImported) {
-        onSessionImported(data.data)
+      // Store session in localStorage for now
+      localStorage.setItem('truthmd_session', sessionString.trim())
+      localStorage.setItem('session_validated', 'true')
+
+      if (onSessionValidated) {
+        onSessionValidated(data.data)
       }
 
-      // Auto-deploy after 1 second
+      // Redirect to dashboard after 2 seconds
       setTimeout(() => {
-        handleAutoDeploy()
-      }, 1000)
+        window.location.href = '/chatbots-ai/dashboard'
+      }, 2000)
     } catch (err) {
-      console.error('[v0] Error importing session:', err)
-      setError(err instanceof Error ? err.message : 'Failed to import session')
+      console.error('[v0] Error validating session:', err)
+      setError(err instanceof Error ? err.message : 'Failed to validate session')
     } finally {
       setLoading(false)
     }
   }
 
-  const handleAutoDeploy = async () => {
-    try {
-      setDeployLoading(true)
-
-      const response = await fetch(
-        `/api/chatbots/whatsapp/bots/${botId}/deploy`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            deployment_method: 'direct_server',
-          }),
-        }
-      )
-
-      if (!response.ok) {
-        const data = await response.json()
-        console.error('[v0] Deployment warning:', data.error)
-      }
-
-      if (onDeployed) {
-        onDeployed()
-      }
-    } catch (err) {
-      console.error('[v0] Auto-deployment attempted:', err)
-      // Don't fail if deployment has an issue - session was imported
-    } finally {
-      setDeployLoading(false)
-    }
-  }
-
-  if (success && !deployLoading) {
+  if (success) {
     return (
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="space-y-4"
+        className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black text-white flex items-center justify-center p-4"
       >
-        <Card className="p-6 bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800">
-          <div className="flex items-start gap-4">
-            <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400 flex-shrink-0 mt-1" />
-            <div className="flex-1">
-              <h3 className="font-semibold text-green-900 dark:text-green-100 mb-1">
-                Session Imported Successfully!
-              </h3>
-              <p className="text-sm text-green-800 dark:text-green-200 mb-4">
-                Your TRUTH MD session has been saved and your bot is being deployed now.
-              </p>
-              <div className="flex items-center gap-2 text-sm">
-                <Loader2 className="h-4 w-4 animate-spin text-green-600 dark:text-green-400" />
-                <span className="text-green-700 dark:text-green-300">
-                  Deploying bot... This may take a few moments.
-                </span>
-              </div>
+        <Card className="p-8 bg-slate-900/60 border-slate-700 shadow-2xl max-w-md w-full">
+          <div className="space-y-4 text-center">
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 200 }}
+              className="flex justify-center"
+            >
+              <CheckCircle2 className="h-16 w-16 text-emerald-400" />
+            </motion.div>
+            <h3 className="text-xl font-bold text-white">Session Validated!</h3>
+            <p className="text-sm text-gray-300">
+              Your session has been verified successfully. Redirecting to dashboard...
+            </p>
+            <div className="flex items-center justify-center gap-2 text-sm text-emerald-400">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Processing
             </div>
           </div>
         </Card>
@@ -159,140 +127,126 @@ export default function TruthMdSessionImporter({
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
-    >
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-foreground">
-          Import TRUTH MD Session
-        </h3>
-        <p className="text-sm text-muted-foreground">
-          Paste your TRUTH MD session to automatically deploy your bot
-        </p>
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-blue-950 to-slate-900 text-white flex items-center justify-center p-4">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute w-96 h-96 bg-blue-500/5 rounded-full blur-3xl top-10 left-10"></div>
+        <div className="absolute w-96 h-96 bg-blue-400/5 rounded-full blur-3xl bottom-20 right-20"></div>
       </div>
 
-      <Card className="p-6 bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
-        <div className="flex items-start gap-3">
-          <Zap className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
-              How to get your TRUTH MD session:
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="w-full max-w-2xl relative z-10"
+      >
+        <Card className="p-8 space-y-6 bg-slate-900/80 backdrop-blur border-slate-700/50 shadow-2xl">
+          {/* Back Button */}
+          {showBackButton && onBack && (
+            <button
+              onClick={onBack}
+              className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Pairing
+            </button>
+          )}
+
+          {/* Header */}
+          <div className="space-y-2 text-center">
+            <div className="flex justify-center mb-2">
+              <Shield className="h-8 w-8 text-blue-400" />
+            </div>
+            <h2 className="text-2xl font-bold text-white">Session Validator</h2>
+            <p className="text-sm text-gray-300">
+              Paste your session ID below to verify it&apos;s valid and ready to use.
             </p>
-            <ol className="text-xs text-blue-800 dark:text-blue-200 space-y-1 ml-4 list-decimal">
-              <li>Go to https://truth-md.courtneytech.xyz/</li>
-              <li>Follow the WhatsApp pairing process</li>
-              <li>Once paired, copy the session string starting with TRUTH-MD:~</li>
-              <li>Paste it below</li>
-            </ol>
           </div>
-        </div>
-      </Card>
 
-      <form onSubmit={handleImportSession} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="session">TRUTH MD Session *</Label>
-          <Textarea
-            id="session"
-            value={sessionString}
-            onChange={(e) => setSessionString(e.target.value)}
-            placeholder="Paste your TRUTH-MD:~ session here..."
-            disabled={loading || deployLoading}
-            className="min-h-32 font-mono text-xs"
-          />
-          <p className="text-xs text-muted-foreground">
-            Paste the entire session string. It should start with TRUTH-MD:~
-          </p>
-        </div>
-
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="p-4 rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 flex gap-3"
-          >
-            <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-red-900 dark:text-red-100">
-                Invalid Session
+          {/* Form */}
+          <form onSubmit={handleValidateSession} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="session" className="text-gray-200 flex items-center gap-2">
+                <span>🔐 Session ID</span>
+              </Label>
+              <Textarea
+                id="session"
+                value={sessionString}
+                onChange={(e) => setSessionString(e.target.value)}
+                placeholder="TRUTH-MD:~eyJ..."
+                disabled={loading}
+                className="min-h-32 font-mono text-xs bg-slate-800 border-slate-600 text-white placeholder-gray-500 focus:border-blue-500"
+              />
+              <p className="text-xs text-gray-400">
+                Paste the entire session string you received from TRUTH MD
               </p>
-              <p className="text-xs text-red-800 dark:text-red-200 mt-1">{error}</p>
             </div>
-          </motion.div>
-        )}
 
-        <div className="flex gap-2">
-          <Button
-            type="submit"
-            disabled={loading || deployLoading || !sessionString.trim()}
-            className="flex-1"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Importing...
-              </>
-            ) : deployLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Deploying...
-              </>
-            ) : (
-              <>
-                <Zap className="mr-2 h-4 w-4" />
-                Import & Deploy
-              </>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 rounded-lg bg-red-500/10 border border-red-500/50 flex gap-3"
+              >
+                <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-red-400">Validation Failed</p>
+                  <p className="text-xs text-red-300 mt-1">{error}</p>
+                </div>
+              </motion.div>
             )}
-          </Button>
 
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setShowExample(!showExample)}
-            disabled={loading || deployLoading}
-          >
-            {showExample ? 'Hide' : 'Show'} Example
-          </Button>
-        </div>
-      </form>
+            <Button
+              type="submit"
+              disabled={loading || !sessionString.trim()}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold h-12"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Validating...
+                </>
+              ) : (
+                <>
+                  <CheckCircle2 className="mr-2 h-4 w-4" />
+                  Validate Session
+                </>
+              )}
+            </Button>
+          </form>
 
-      {showExample && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-4 bg-muted rounded-lg border border-muted-foreground/20"
-        >
-          <div className="space-y-2">
-            <p className="text-xs font-semibold text-foreground mb-2">
-              Example Format:
-            </p>
-            <div className="bg-background p-3 rounded border border-muted-foreground/10 overflow-x-auto">
-              <code className="text-xs text-muted-foreground break-all">
-                TRUTH-MD:~eyJub2lzZUtleSI6eyJwcml2YXRlIjp7InR5cGUiOiJCdWZmZXIiLCJkYXRhIjpbNTYsMTAxLDEwNyw2NiwxNzAsNDYsMTgxLDE1MSwxMjgsMjExLDE5NSwxODYsMjQ3LDc4LDE3NywxMzksM...
-              </code>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Your session will be much longer than this example
-            </p>
+          {/* Info Cards */}
+          <div className="space-y-3">
+            <Alert className="bg-blue-500/10 border-blue-500/30">
+              <AlertCircle className="h-4 w-4 text-blue-400" />
+              <AlertDescription className="text-blue-300 text-xs">
+                Your session must be in the TRUTH-MD:~ format. It will be validated for proper format and authenticity.
+              </AlertDescription>
+            </Alert>
+
+            <button
+              type="button"
+              onClick={() => setShowExample(!showExample)}
+              className="text-xs text-blue-400 hover:text-blue-300 underline"
+            >
+              {showExample ? 'Hide' : 'Show'} example format
+            </button>
+
+            {showExample && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 bg-slate-800/50 rounded-lg border border-slate-700 space-y-2"
+              >
+                <p className="text-xs font-semibold text-white">Example Format:</p>
+                <code className="text-xs text-gray-400 break-all block overflow-x-auto">
+                  TRUTH-MD:~eyJub2lzZUtleSI6eyJwcml2YXRlIjp7InR5cGUiOiJCdWZmZXIiLCJkYXRhIjpbNTYsMTAxLDEwNyw2NiwxNzAsNDYsMTgxLDE1MSwxMjgsMjEx...
+                </code>
+              </motion.div>
+            )}
           </div>
-        </motion.div>
-      )}
-
-      <Card className="p-4 bg-amber-50 dark:bg-amber-950 border-amber-200 dark:border-amber-800">
-        <div className="flex gap-3">
-          <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="text-xs font-medium text-amber-900 dark:text-amber-100 mb-1">
-              Secure & Private
-            </p>
-            <p className="text-xs text-amber-800 dark:text-amber-200">
-              Your session is encrypted and stored securely. It's never shared with third parties.
-            </p>
-          </div>
-        </div>
-      </Card>
-    </motion.div>
+        </Card>
+      </motion.div>
+    </div>
   )
 }
