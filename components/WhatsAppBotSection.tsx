@@ -4,13 +4,12 @@ import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { AlertCircle, Plus, Settings, Rocket, Loader2 } from 'lucide-react'
+import { AlertCircle, Plus, Settings, Rocket, Loader2, AlertTriangle } from 'lucide-react'
 import WhatsAppBotTemplateSelector from './WhatsAppBotTemplateSelector'
 import WhatsAppBotCreationForm from './WhatsAppBotCreationForm'
 import WhatsAppBotLinkingPanel from './WhatsAppBotLinkingPanel'
 import WhatsAppBotConfigPanel from './WhatsAppBotConfigPanel'
 import WhatsAppBotDeploymentPanel from './WhatsAppBotDeploymentPanel'
-import WhatsAppPairingPage from './WhatsAppPairingPage'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface Template {
@@ -34,7 +33,7 @@ interface Props {
   token?: string
 }
 
-type ViewMode = 'list' | 'pair_whatsapp' | 'select_template' | 'create_bot' | 'link_account' | 'configure' | 'deploy'
+type ViewMode = 'list' | 'validate_session' | 'select_template' | 'create_bot' | 'link_account' | 'configure' | 'deploy'
 
 export default function WhatsAppBotSection({ token }: Props) {
   const [viewMode, setViewMode] = useState<ViewMode>('list')
@@ -44,10 +43,26 @@ export default function WhatsAppBotSection({ token }: Props) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isCreatingBot, setIsCreatingBot] = useState(false)
+  const [sessionValidated, setSessionValidated] = useState(false)
 
   useEffect(() => {
-    fetchBots()
+    checkSessionAndFetchBots()
   }, [token])
+
+  const checkSessionAndFetchBots = async () => {
+    const validated = localStorage.getItem('session_validated') === 'true'
+    const hasSession = localStorage.getItem('truthmd_session')
+
+    if (!validated || !hasSession) {
+      setViewMode('validate_session')
+      setSessionValidated(false)
+      setLoading(false)
+      return
+    }
+
+    setSessionValidated(true)
+    fetchBots()
+  }
 
   const fetchBots = async () => {
     try {
@@ -132,22 +147,45 @@ export default function WhatsAppBotSection({ token }: Props) {
       </div>
 
       <AnimatePresence mode="wait">
-        {/* Pair WhatsApp Account View */}
-        {viewMode === 'pair_whatsapp' && (
+        {/* Validate Session View */}
+        {viewMode === 'validate_session' && !sessionValidated && (
           <motion.div
-            key="pair"
+            key="validate"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <WhatsAppPairingPage
-              token={token}
-              onBack={handleBackToList}
-              onPaired={() => {
-                fetchBots()
-                setViewMode('list')
-              }}
-            />
+            <Card className="p-8 space-y-6 text-center bg-amber-50 dark:bg-amber-950 border-amber-200 dark:border-amber-800">
+              <div className="flex justify-center">
+                <AlertTriangle className="h-12 w-12 text-amber-600 dark:text-amber-400" />
+              </div>
+
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold text-amber-900 dark:text-amber-100">
+                  Session Not Validated
+                </h3>
+                <p className="text-amber-800 dark:text-amber-200">
+                  You need to validate your TRUTH MD session before creating bots.
+                </p>
+              </div>
+
+              <div className="p-4 bg-white/50 dark:bg-black/30 rounded-lg text-sm text-left space-y-2">
+                <p className="font-semibold text-amber-900 dark:text-amber-100">Steps to validate:</p>
+                <ol className="space-y-2 ml-4 list-decimal text-amber-800 dark:text-amber-200 text-xs">
+                  <li>Get your pairing code from https://truth-md.courtneytech.xyz/</li>
+                  <li>Send the code to TRUTH MD WhatsApp</li>
+                  <li>Receive your session ID</li>
+                  <li>Validate it by going to the validate page</li>
+                </ol>
+              </div>
+
+              <Button
+                onClick={() => window.location.href = '/chatbots-ai/validate'}
+                className="w-full bg-amber-600 hover:bg-amber-700 text-white h-12"
+              >
+                Go to Session Validator
+              </Button>
+            </Card>
           </motion.div>
         )}
 
@@ -183,13 +221,6 @@ export default function WhatsAppBotSection({ token }: Props) {
               </div>
             ) : bots.length === 0 ? (
               <div className="space-y-4">
-                <Button
-                  onClick={() => setViewMode('pair_whatsapp')}
-                  className="w-full h-12 bg-cyan-600 hover:bg-cyan-700"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Pair WhatsApp Account
-                </Button>
                 <Card className="p-12 text-center space-y-4">
                   <div className="text-5xl">🤖</div>
                   <div className="space-y-2">
@@ -197,30 +228,21 @@ export default function WhatsAppBotSection({ token }: Props) {
                       No WhatsApp Bots Yet
                     </h3>
                     <p className="text-muted-foreground">
-                      First, pair your WhatsApp account to get started
+                      Create your first TRUTH MD bot with a single click
                     </p>
                   </div>
                   <Button
                     onClick={() => setViewMode('select_template')}
                     className="mx-auto"
-                    variant="outline"
                   >
                     <Plus className="mr-2 h-4 w-4" />
-                    Create Bot
+                    Create New Bot
                   </Button>
                 </Card>
               </div>
             ) : (
               <>
                 <div className="flex gap-3">
-                  <Button
-                    onClick={() => setViewMode('pair_whatsapp')}
-                    variant="outline"
-                    className="flex-1"
-                  >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Pair WhatsApp
-                  </Button>
                   <Button
                     onClick={() => setViewMode('select_template')}
                     className="flex-1"
