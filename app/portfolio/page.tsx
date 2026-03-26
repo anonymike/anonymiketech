@@ -40,7 +40,7 @@ export default function PortfolioPage() {
     name: 'MICHAEL MSHILA',
     role: 'Full Stack Developer & Tech Innovator',
     bio: 'Passionate developer specializing in web development, AI integration, and digital transformation. Currently pursuing a Bachelor of Science in Information Technology with a Diploma in ICT (2024). I create innovative digital solutions that drive business growth and technological advancement.',
-    image: '/michael-profile.jpg',
+    image: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/PHOTO%20%28PASS%29%20%281%29-SAzY5EygBAm0QDE2E3ZizN3lFjNNZJ.jpg',
   }
 
   const socials = [
@@ -176,7 +176,7 @@ export default function PortfolioPage() {
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 via-cyan-400 to-blue-500 rounded-3xl blur-2xl opacity-40 animate-pulse" />
                 <div className="relative bg-gradient-to-br from-emerald-400/30 to-cyan-400/30 rounded-3xl p-3 border-2 border-emerald-400/50 overflow-hidden shadow-2xl">
                   <Image
-                    src="/michael-profile.jpg"
+                    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/PHOTO%20%28PASS%29%20%281%29-SAzY5EygBAm0QDE2E3ZizN3lFjNNZJ.jpg"
                     alt="MICHAEL MSHILA"
                     width={320}
                     height={320}
