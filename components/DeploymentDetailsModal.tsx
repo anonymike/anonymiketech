@@ -37,7 +37,7 @@ const deploymentSteps = [
   },
   {
     number: 3,
-    title: 'Receive Session ID',
+    title: 'Receive Session ID - It Will be sent to Your Whatsapp[Message Yourself]',
     description: 'Get your unique session ID from TRUTH MD after successful pairing verification.',
     icon: '🔐',
     color: 'bg-emerald-500/10 border-emerald-500/30',
@@ -133,11 +133,10 @@ export default function DeploymentDetailsModal({
                   className="text-left transition-all"
                 >
                   <Card
-                    className={`p-4 cursor-pointer transition-all border ${
-                      selectedStep === index
+                    className={`p-4 cursor-pointer transition-all border ${selectedStep === index
                         ? 'bg-blue-500/20 border-blue-500/50'
                         : `${step.color} hover:border-opacity-50`
-                    }`}
+                      }`}
                   >
                     <div className="flex items-start gap-4">
                       <div className="flex items-center justify-center w-12 h-12 rounded-full bg-slate-800 text-2xl flex-shrink-0">

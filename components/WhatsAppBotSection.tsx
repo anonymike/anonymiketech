@@ -175,7 +175,7 @@ export default function WhatsAppBotSection({ token }: Props) {
                 <p className="font-bold text-amber-900 dark:text-amber-100 text-base">Steps to validate:</p>
                 <ol className="space-y-3 ml-4 list-decimal text-amber-800 dark:text-amber-200">
                   <li className="text-sm"><span className="font-semibold">Get your pairing code</span> from <a href="https://truth-md.courtneytech.xyz/" target="_blank" rel="noopener noreferrer" className="text-orange-600 dark:text-orange-400 hover:underline font-semibold">https://truth-md.courtneytech.xyz/</a></li>
-                  <li className="text-sm"><span className="font-semibold">Send the code</span> to TRUTH MD WhatsApp</li>
+                  <li className="text-sm"><span className="font-semibold">You Will be Required</span> to enter the code and link on Your WhatsApp</li>
                   <li className="text-sm"><span className="font-semibold">Receive your session ID</span> from TRUTH MD</li>
                   <li className="text-sm"><span className="font-semibold">Validate it here</span> using our session validator</li>
                 </ol>
