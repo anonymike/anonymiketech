@@ -12,7 +12,7 @@
 
 🌍 Based in Nairobi, Kenya | 💼 Serving Global Clients | 🔧 Full-Stack Development
 
-[Live Website](https://anonymiketech.com) • [Services](#services) • [Features](#features) • [Get Started](#quick-start)
+[Live Website](https://anonymiketech.online) • [Services](#services) • [Features](#features) • [Get Started](#quick-start)
 
 </div>
 
