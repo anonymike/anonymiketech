@@ -63,6 +63,7 @@ export default function DesktopNavbar() {
     { href: '/social-media-boosting', label: 'Social Media' },
     { href: '/chatbots-ai', label: 'AI & Chatbots' },
     { href: '/internet-services', label: 'Internet Services' },
+    { href: '/vps', label: 'VPS Hosting', badge: 'NEW' },
     { href: '/premium-apps', label: 'Premium Apps' },
   ]
 
