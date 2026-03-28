@@ -82,15 +82,13 @@ function CheckoutContent() {
     const newErrors: Record<string, string> = {}
 
     if (step === 4) {
-      if (!hostname.trim()) newErrors.hostname = "Hostname is required"
+      // Hostname is optional but validate format if provided
       if (hostname.trim() && !hostname.match(/^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/)) {
         newErrors.hostname = "Invalid hostname format"
       }
     }
 
-    if (step === 4) {
-      if (!sshKey.trim()) newErrors.sshKey = "SSH public key is required"
-    }
+    // SSH key is optional - can be added later
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -333,7 +331,9 @@ function CheckoutContent() {
                   <h2 className="text-2xl font-bold">Server Configuration</h2>
 
                   <div>
-                    <label className="block text-sm font-semibold mb-2">Hostname</label>
+                    <label className="block text-sm font-semibold mb-2">
+                      Hostname <span className="text-slate-400 font-normal">(Optional)</span>
+                    </label>
                     <input
                       type="text"
                       value={hostname}
@@ -344,22 +344,23 @@ function CheckoutContent() {
                       }`}
                     />
                     {errors.hostname && <p className="text-red-400 text-sm mt-1">{errors.hostname}</p>}
+                    <p className="text-slate-400 text-xs mt-2">
+                      You can change this later from your VPS dashboard
+                    </p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold mb-2">SSH Public Key</label>
+                    <label className="block text-sm font-semibold mb-2">
+                      SSH Public Key <span className="text-slate-400 font-normal">(Optional)</span>
+                    </label>
                     <textarea
                       value={sshKey}
                       onChange={(e) => setSSHKey(e.target.value)}
                       placeholder="Paste your SSH public key here (ssh-rsa AAAA...)"
-                      className={`w-full bg-slate-700 border rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors resize-none h-32 ${
-                        errors.sshKey ? "border-red-500" : "border-slate-600"
-                      }`}
+                      className={`w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors resize-none h-32`}
                     />
-                    {errors.sshKey && <p className="text-red-400 text-sm mt-1">{errors.sshKey}</p>}
                     <p className="text-slate-400 text-xs mt-2">
-                      <AlertCircle className="w-3 h-3 inline mr-1" />
-                      SSH key is required for secure access to your server
+                      You can add or change your SSH key later from your VPS dashboard
                     </p>
                   </div>
                 </div>
@@ -388,7 +389,7 @@ function CheckoutContent() {
                       </div>
                       <div className="flex justify-between">
                         <span className="text-slate-400">Hostname:</span>
-                        <span className="text-right font-mono text-xs">{hostname}</span>
+                        <span className="text-right font-mono text-xs">{hostname || <span className="text-slate-500 italic">Auto-generated</span>}</span>
                       </div>
                     </div>
                   </div>
