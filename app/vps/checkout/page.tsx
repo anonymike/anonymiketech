@@ -14,11 +14,11 @@ const VPS_PLANS = {
 }
 
 const LOCATIONS = [
-  { id: "us-dallas", name: "US (Dallas)", flag: "🇺🇸" },
-  { id: "de-frankfurt", name: "Germany (Frankfurt)", flag: "🇩🇪" },
-  { id: "za-johannesburg", name: "South Africa (Johannesburg)", flag: "🇿🇦" },
-  { id: "ae-dubai", name: "UAE (Dubai)", flag: "🇦🇪" },
-  { id: "sg-singapore", name: "Singapore", flag: "🇸🇬" },
+  { id: "us-dallas", name: "US (Dallas)", flag: "🇺🇸", active: true },
+  { id: "de-frankfurt", name: "Germany (Frankfurt)", flag: "🇩🇪", active: true },
+  { id: "za-johannesburg", name: "South Africa (Johannesburg)", flag: "🇿🇦", active: true },
+  { id: "ae-dubai", name: "UAE (Dubai)", flag: "🇦🇪", active: false },
+  { id: "sg-singapore", name: "Singapore", flag: "🇸🇬", active: false },
 ]
 
 const BILLING_CYCLES = [
@@ -81,9 +81,9 @@ function CheckoutContent() {
   const validateStep = (step: number) => {
     const newErrors: Record<string, string> = {}
 
-    if (step === 3) {
+    if (step === 4) {
       if (!hostname.trim()) newErrors.hostname = "Hostname is required"
-      if (!hostname.match(/^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/)) {
+      if (hostname.trim() && !hostname.match(/^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/)) {
         newErrors.hostname = "Invalid hostname format"
       }
     }
@@ -225,10 +225,12 @@ function CheckoutContent() {
                     {LOCATIONS.map((loc) => (
                       <label
                         key={loc.id}
-                        className={`flex items-center p-4 rounded-lg cursor-pointer transition-all border-2 ${
-                          location === loc.id
-                            ? "border-blue-500 bg-blue-500/10"
-                            : "border-slate-600 bg-slate-700/30 hover:border-slate-500"
+                        className={`flex items-center p-4 rounded-lg transition-all border-2 ${
+                          !loc.active
+                            ? "border-slate-700 bg-slate-800/30 opacity-50 cursor-not-allowed"
+                            : location === loc.id
+                            ? "border-blue-500 bg-blue-500/10 cursor-pointer"
+                            : "border-slate-600 bg-slate-700/30 hover:border-slate-500 cursor-pointer"
                         }`}
                       >
                         <input
@@ -236,11 +238,17 @@ function CheckoutContent() {
                           name="location"
                           value={loc.id}
                           checked={location === loc.id}
-                          onChange={(e) => setLocation(e.target.value)}
+                          onChange={(e) => { if (loc.active) setLocation(e.target.value) }}
+                          disabled={!loc.active}
                           className="w-4 h-4"
                         />
                         <span className="text-2xl ml-4">{loc.flag}</span>
-                        <span className="ml-4 font-semibold">{loc.name}</span>
+                        <span className={`ml-4 font-semibold ${!loc.active ? "text-slate-500" : ""}`}>{loc.name}</span>
+                        {!loc.active && (
+                          <span className="ml-auto text-xs bg-slate-700 text-slate-400 px-2 py-1 rounded-full font-medium">
+                            Coming Soon
+                          </span>
+                        )}
                       </label>
                     ))}
                   </div>
@@ -435,6 +443,12 @@ function CheckoutContent() {
                         <span>-{currencySymbol}{getDisplayPrice(promoDiscount)}</span>
                       </div>
                     )}
+                    <div className="flex justify-between text-sm mb-2 text-green-400">
+                      <span className="flex items-center gap-1">
+                        <Check className="w-3 h-3" /> Set Up Fee:
+                      </span>
+                      <span className="font-semibold">FREE</span>
+                    </div>
                     <div className="flex justify-between text-xl font-bold">
                       <span>Total:</span>
                       <span>{currencySymbol}{getDisplayPrice(finalPrice)}</span>
@@ -528,6 +542,12 @@ function CheckoutContent() {
                       <span>-{currencySymbol}{getDisplayPrice(promoDiscount)}</span>
                     </div>
                   )}
+                  <div className="flex justify-between text-sm mb-3 text-green-400">
+                    <span className="flex items-center gap-1">
+                      <Check className="w-3 h-3" /> Set Up Fee:
+                    </span>
+                    <span className="font-semibold">FREE</span>
+                  </div>
                   <div className="border-t border-slate-600 pt-3 flex justify-between font-bold text-lg">
                     <span>Total:</span>
                     <span>{currencySymbol}{getDisplayPrice(finalPrice)}</span>
