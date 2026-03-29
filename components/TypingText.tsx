@@ -29,10 +29,10 @@ export default function TypingText({
             <motion.span
               animate={{ opacity: [1, 0] }}
               transition={{ duration: 0.6, repeat: Number.POSITIVE_INFINITY }}
-              className="inline-block w-2 h-4 ml-0.5 bg-current"
+              className="inline-block w-1 h-4 bg-current"
             />
           )}
-          {index < displayedWords.length - 1 && ' '}
+          {index < displayedWords.length - 1 && <span> </span>}
         </span>
       ))}
     </span>
