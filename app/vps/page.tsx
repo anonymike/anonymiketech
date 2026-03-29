@@ -110,7 +110,7 @@ export default function VPSPage() {
             transition={{ duration: 0.8 }}
             className="text-center mb-12"
           >
-            <div className="flex items-center justify-center gap-2 sm:gap-3 mb-4">
+            <div className="flex flex-row-reverse md:flex-row items-center justify-center gap-2 sm:gap-3 mb-4">
               <Server className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">ANONYMIKETECH VPS</h1>
             </div>
