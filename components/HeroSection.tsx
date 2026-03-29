@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react"
 import { motion } from "framer-motion"
 import dynamic from "next/dynamic"
+import TypingText from "./TypingText"
 
 const GlobeAnimation = dynamic(() => import("./GlobeAnimation"), {
   ssr: false,
@@ -126,7 +127,12 @@ export default function HeroSection() {
               transition={{ delay: 0.6, duration: 0.8 }}
               className="text-xs sm:text-sm md:text-base text-gray-400 mb-6 md:mb-8 max-w-md leading-relaxed"
             >
-              Experience cutting-edge technology solutions with global reach and uncompromising security. Connect to our innovation lab and explore the future of digital transformation.
+              <TypingText
+                words={['Experience', 'cutting-edge', 'technology', 'solutions', 'with', 'global', 'reach', 'and', 'uncompromising', 'security.', 'Connect', 'to', 'our', 'innovation', 'lab', 'and', 'explore', 'the', 'future', 'of', 'digital', 'transformation.']}
+                startDelay={600}
+                typingSpeed={30}
+                className="text-xs sm:text-sm md:text-base text-gray-400"
+              />
             </motion.p>
 
             <motion.div
@@ -235,7 +241,12 @@ export default function HeroSection() {
             transition={{ delay: 0.6, duration: 0.8 }}
             className="text-xs sm:text-sm text-gray-400 mb-6 max-w-md leading-relaxed"
           >
-            Experience cutting-edge technology solutions with global reach and uncompromising security. Connect to our innovation lab and explore the future of digital transformation.
+            <TypingText
+              words={['Experience', 'cutting-edge', 'technology', 'solutions', 'with', 'global', 'reach', 'and', 'uncompromising', 'security.', 'Connect', 'to', 'our', 'innovation', 'lab', 'and', 'explore', 'the', 'future', 'of', 'digital', 'transformation.']}
+              startDelay={600}
+              typingSpeed={30}
+              className="text-xs sm:text-sm text-gray-400"
+            />
           </motion.p>
 
           <motion.div
