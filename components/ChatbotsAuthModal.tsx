@@ -4,6 +4,7 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X } from "lucide-react"
 import { useRouter } from "next/navigation"
+import ForgotPasswordModal from "./ForgotPasswordModal"
 
 interface ChatbotsAuthModalProps {
   isOpen: boolean
@@ -15,6 +16,7 @@ export default function ChatbotsAuthModal({ isOpen, onClose }: ChatbotsAuthModal
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
   const router = useRouter()
 
   const [formData, setFormData] = useState({
@@ -204,7 +206,18 @@ export default function ChatbotsAuthModal({ isOpen, onClose }: ChatbotsAuthModal
 
                     {/* Password */}
                     <div>
-                      <label className="block text-sm text-gray-300 mb-2">Password</label>
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="block text-sm text-gray-300">Password</label>
+                        {mode === "login" && (
+                          <button
+                            type="button"
+                            onClick={() => setShowForgotPassword(true)}
+                            className="text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
+                          >
+                            Forgot password?
+                          </button>
+                        )}
+                      </div>
                       <input
                         type="password"
                         name="password"
@@ -288,6 +301,12 @@ export default function ChatbotsAuthModal({ isOpen, onClose }: ChatbotsAuthModal
           </motion.div>
         </>
       )}
+
+      <ForgotPasswordModal
+        isOpen={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+        onBackToSignIn={() => setShowForgotPassword(false)}
+      />
     </AnimatePresence>
   )
 }
