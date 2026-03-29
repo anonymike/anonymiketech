@@ -44,7 +44,7 @@ export default function ChatbotsWelcomeAlert({ onClose }: ChatbotsWelcomeAlertPr
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md mx-4"
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100%-2rem)] max-w-md"
           >
             <div className="relative glow-border rounded-xl bg-gradient-to-br from-hacker-terminal/95 to-hacker-bg/95 backdrop-blur-xl p-8 border border-hacker-green/30 overflow-hidden">
               {/* Animated background elements */}
