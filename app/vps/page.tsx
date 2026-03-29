@@ -110,11 +110,11 @@ export default function VPSPage() {
             transition={{ duration: 0.8 }}
             className="text-center mb-12"
           >
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <Server className="w-8 h-8 text-blue-400" />
-              <h1 className="text-5xl font-bold">ANONYMIKETECH VPS</h1>
+            <div className="flex flex-row-reverse md:flex-row items-center justify-center gap-2 sm:gap-3 mb-4">
+              <Server className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400" />
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">ANONYMIKETECH VPS</h1>
             </div>
-            <p className="text-xl text-slate-300 mb-6">Cloud hosting built for speed, flexibility, and reliability</p>
+            <p className="text-lg sm:text-xl md:text-2xl text-slate-300 mb-6">Cloud hosting built for speed, flexibility, and reliability</p>
 
             {/* Currency Toggle */}
             <div className="flex items-center justify-center gap-4 mb-8">

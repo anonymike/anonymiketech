@@ -83,8 +83,12 @@ function CheckoutContent() {
 
     if (step === 4) {
       // Hostname is optional but validate format if provided
-      if (hostname.trim() && !hostname.match(/^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/)) {
-        newErrors.hostname = "Invalid hostname format"
+      if (hostname.trim()) {
+        // Allow valid hostnames with dots (FQDN), hyphens, and alphanumeric characters
+        const hostnameRegex = /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/
+        if (!hostnameRegex.test(hostname)) {
+          newErrors.hostname = "Invalid hostname format"
+        }
       }
     }
 

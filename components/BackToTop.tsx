@@ -56,7 +56,7 @@ export default function BackToTop() {
             rotate: { duration: 0.3 },
           }}
           onClick={scrollToTop}
-          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 p-5 bg-gradient-to-br from-gray-900 to-black rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all duration-300 group border-2 border-orange-500/30 hover:border-orange-500"
+          className="fixed bottom-8 left-8 z-40 p-3 bg-gradient-to-br from-gray-900 to-black rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all duration-300 group border-2 border-orange-500/30 hover:border-orange-500"
           aria-label="Back to top"
         >
           <motion.div
@@ -69,7 +69,7 @@ export default function BackToTop() {
               ease: "easeInOut",
             }}
           >
-            <ChevronUp className="w-7 h-7 text-orange-500 group-hover:text-orange-400 transition-colors duration-300" />
+            <ChevronUp className="w-5 h-5 text-orange-500 group-hover:text-orange-400 transition-colors duration-300" />
           </motion.div>
 
           {/* Rotating Border Effect */}
