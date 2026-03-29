@@ -134,8 +134,9 @@ export default function Home() {
           </motion.section>
 
           <motion.section
-            initial={{ opacity: 0 }}
-            animate={{ opacity: showContent ? 1 : 0 }}
+            id="services"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: showContent ? 1 : 0, y: showContent ? 0 : 50 }}
             transition={{ delay: 3, duration: 1 }}
             className="container mx-auto px-4 mb-16"
           >
