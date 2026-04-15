@@ -190,7 +190,7 @@ export default function ChatbotsAI() {
           icon={<Bot />}
           backgroundPattern="<>"
           ctaText="Get Started Now"
-          onCtaClick={() => setShowAuthModal(true)}
+          onCtaClick={() => window.location.href = 'https://platform.anonymiketech.online/'}
         />
 
         <section className="w-full py-12 sm:py-16 px-4 sm:px-6 lg:px-8 overflow-x-hidden">
@@ -309,11 +309,13 @@ export default function ChatbotsAI() {
               <p className="text-base sm:text-lg lg:text-xl text-hacker-green-dim mb-8 max-w-2xl mx-auto">
                 Join thousands using our platform to automate WhatsApp interactions, boost sales, and improve customer support.
               </p>
-              <motion.button
+              <motion.a
+                href="https://platform.anonymiketech.online/"
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => setShowAuthModal(true)}
-                className="relative px-8 sm:px-10 py-3 sm:py-4 font-tech font-bold text-base sm:text-lg text-hacker-bg rounded-lg overflow-hidden group"
+                className="relative px-8 sm:px-10 py-3 sm:py-4 font-tech font-bold text-base sm:text-lg text-hacker-bg rounded-lg overflow-hidden group inline-block"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-hacker-green via-hacker-green-bright to-hacker-green opacity-100 group-hover:opacity-110 transition-all duration-300"></div>
                 <div className="absolute inset-0 bg-hacker-green shadow-lg shadow-hacker-green/80 group-hover:shadow-hacker-green/100 blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
@@ -326,7 +328,7 @@ export default function ChatbotsAI() {
                     →
                   </motion.span>
                 </span>
-              </motion.button>
+              </motion.a>
             </div>
           </div>
         </motion.section>
