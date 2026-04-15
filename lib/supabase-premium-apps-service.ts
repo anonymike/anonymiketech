@@ -82,6 +82,9 @@ export async function createPremiumAppInDB(app: Omit<PremiumApp, 'id'>): Promise
           is_new: app.isNew || false,
           is_offer: app.isOffer || false,
           offer_price: app.offerPrice || null,
+          installation_instructions: app.installation_instructions || null,
+          system_requirements: app.system_requirements || null,
+          version_history: app.version_history || null,
         }
       ])
       .select()
@@ -118,6 +121,9 @@ export async function updatePremiumAppInDB(id: string, updates: Partial<PremiumA
     if (updates.isNew !== undefined) updateData.is_new = updates.isNew
     if (updates.isOffer !== undefined) updateData.is_offer = updates.isOffer
     if (updates.offerPrice !== undefined) updateData.offer_price = updates.offerPrice
+    if (updates.installation_instructions !== undefined) updateData.installation_instructions = updates.installation_instructions
+    if (updates.system_requirements !== undefined) updateData.system_requirements = updates.system_requirements
+    if (updates.version_history !== undefined) updateData.version_history = updates.version_history
 
     const supabase = getSupabaseClient()
     const { data, error } = await supabase
@@ -174,5 +180,8 @@ function formatDBPremiumApp(data: any): PremiumApp {
     isNew: data.is_new || false,
     isOffer: data.is_offer || false,
     offerPrice: data.offer_price || undefined,
+    installation_instructions: data.installation_instructions || undefined,
+    system_requirements: data.system_requirements || undefined,
+    version_history: data.version_history || undefined,
   }
 }
