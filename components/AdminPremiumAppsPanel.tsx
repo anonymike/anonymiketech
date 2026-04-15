@@ -62,6 +62,9 @@ export default function AdminPremiumAppsPanel() {
       isNew: false,
       isOffer: false,
       offerPrice: undefined,
+      installation_instructions: undefined,
+      system_requirements: undefined,
+      version_history: undefined,
     })
     setIsAddingNew(false)
     setEditingId(null)
@@ -154,6 +157,33 @@ export default function AdminPremiumAppsPanel() {
   const handleFeaturesChange = (value: string) => {
     const features = value.split('\n').filter(f => f.trim())
     setFormData({ ...formData, features })
+  }
+
+  const handleInstallationInstructionsChange = (value: string) => {
+    try {
+      const instructions = JSON.parse(value)
+      setFormData({ ...formData, installation_instructions: instructions })
+    } catch (error) {
+      // Keep as-is for typing
+    }
+  }
+
+  const handleSystemRequirementsChange = (value: string) => {
+    try {
+      const requirements = JSON.parse(value)
+      setFormData({ ...formData, system_requirements: requirements })
+    } catch (error) {
+      // Keep as-is for typing
+    }
+  }
+
+  const handleVersionHistoryChange = (value: string) => {
+    try {
+      const history = JSON.parse(value)
+      setFormData({ ...formData, version_history: history })
+    } catch (error) {
+      // Keep as-is for typing
+    }
   }
 
   return (
@@ -395,6 +425,48 @@ export default function AdminPremiumAppsPanel() {
                   />
                 </div>
               )}
+            </div>
+
+            {/* Installation Instructions */}
+            <div>
+              <label className="block text-sm font-bold text-hacker-green-bright mb-2">
+                Installation Instructions (JSON)
+              </label>
+              <textarea
+                value={formData.installation_instructions ? JSON.stringify(formData.installation_instructions, null, 2) : ''}
+                onChange={(e) => handleInstallationInstructionsChange(e.target.value)}
+                className="w-full px-3 py-2 rounded bg-hacker-terminal border border-hacker-green/30 text-hacker-green-bright placeholder-hacker-green-dim focus:outline-none focus:border-hacker-green font-mono text-xs"
+                placeholder='[{"step": 1, "title": "Download", "description": "...", "details": "..."}]'
+                rows={4}
+              />
+            </div>
+
+            {/* System Requirements */}
+            <div>
+              <label className="block text-sm font-bold text-hacker-green-bright mb-2">
+                System Requirements (JSON)
+              </label>
+              <textarea
+                value={formData.system_requirements ? JSON.stringify(formData.system_requirements, null, 2) : ''}
+                onChange={(e) => handleSystemRequirementsChange(e.target.value)}
+                className="w-full px-3 py-2 rounded bg-hacker-terminal border border-hacker-green/30 text-hacker-green-bright placeholder-hacker-green-dim focus:outline-none focus:border-hacker-green font-mono text-xs"
+                placeholder='[{"name": "Android Version", "value": "5.0 and above"}]'
+                rows={4}
+              />
+            </div>
+
+            {/* Version History */}
+            <div>
+              <label className="block text-sm font-bold text-hacker-green-bright mb-2">
+                Version History (JSON)
+              </label>
+              <textarea
+                value={formData.version_history ? JSON.stringify(formData.version_history, null, 2) : ''}
+                onChange={(e) => handleVersionHistoryChange(e.target.value)}
+                className="w-full px-3 py-2 rounded bg-hacker-terminal border border-hacker-green/30 text-hacker-green-bright placeholder-hacker-green-dim focus:outline-none focus:border-hacker-green font-mono text-xs"
+                placeholder='[{"version": "1.0", "date": "2026-04-13", "changes": ["..."], "size": "50 MB"}]'
+                rows={4}
+              />
             </div>
 
             {/* Save Button */}
