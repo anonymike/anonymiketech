@@ -4,40 +4,40 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Modern tech theme color palette */
-  --background: 0 0% 6%;
-  --foreground: 0 0% 95%;
-  --card: 0 0% 12%;
-  --card-foreground: 0 0% 95%;
-  --popover: 0 0% 12%;
-  --popover-foreground: 0 0% 95%;
+  /* Modern tech landing page theme */
+  --background: 0 0% 3%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 8%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 8%;
+  --popover-foreground: 0 0% 98%;
 
-  /* Primary: Cyan/Blue accent */
-  --primary: 180 85% 48%;
-  --primary-foreground: 0 0% 100%;
+  /* Primary: Vibrant Cyan */
+  --primary: 180 100% 50%;
+  --primary-foreground: 0 0% 0%;
 
-  /* Secondary: Purple accent */
-  --secondary: 260 80% 55%;
+  /* Secondary: Electric Purple */
+  --secondary: 280 90% 55%;
   --secondary-foreground: 0 0% 100%;
 
-  /* Accent: Orange/Red for CTAs */
-  --accent: 25 95% 53%;
-  --accent-foreground: 0 0% 15%;
+  /* Accent: Lime Green (like Holo design) */
+  --accent: 90 95% 50%;
+  --accent-foreground: 0 0% 10%;
 
-  --muted: 0 0% 45%;
-  --muted-foreground: 0 0% 75%;
+  --muted: 0 0% 40%;
+  --muted-foreground: 0 0% 70%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
-  --border: 0 0% 20%;
-  --input: 0 0% 20%;
-  --ring: 180 85% 48%;
+  --border: 0 0% 15%;
+  --input: 0 0% 12%;
+  --ring: 180 100% 50%;
 
   /* Chart colors for data viz */
-  --chart-1: 180 85% 48%;
-  --chart-2: 260 80% 55%;
-  --chart-3: 25 95% 53%;
-  --chart-4: 140 75% 48%;
-  --chart-5: 320 85% 60%;
+  --chart-1: 180 100% 50%;
+  --chart-2: 280 90% 55%;
+  --chart-3: 90 95% 50%;
+  --chart-4: 40 95% 50%;
+  --chart-5: 320 90% 60%;
 
   --radius: 0.625rem;
   --sidebar: 0 0% 12%;
@@ -132,6 +132,15 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  
+  /* Tech background gradients */
+  .tech-bg {
+    @apply bg-slate-950;
+  }
+  
+  .tech-bg-dark {
+    @apply bg-slate-900;
   }
 }
 
