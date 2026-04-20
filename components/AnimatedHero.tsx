@@ -166,21 +166,25 @@ export default function AnimatedHero() {
                 animate="visible"
                 className="flex flex-col sm:flex-row gap-4 pt-8"
               >
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-cyan-500/50 transition-all"
-                >
-                  Discover Innovations
-                  <ArrowRight className="w-5 h-5" />
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 rounded-lg border-2 border-cyan-400/50 text-cyan-300 font-semibold hover:bg-cyan-500/10 transition-all"
-                >
-                  Contact Us
-                </motion.button>
+                <a href="/portfolio" className="w-full sm:w-auto">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="w-full px-8 py-4 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-cyan-500/50 transition-all"
+                  >
+                    Discover Innovations
+                    <ArrowRight className="w-5 h-5" />
+                  </motion.button>
+                </a>
+                <a href="/contact" className="w-full sm:w-auto">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="w-full px-8 py-4 rounded-lg border-2 border-cyan-400/50 text-cyan-300 font-semibold hover:bg-cyan-500/10 transition-all"
+                  >
+                    Contact Us
+                  </motion.button>
+                </a>
               </motion.div>
 
               {/* Stats section */}

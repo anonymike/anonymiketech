@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { ArrowRight, Code, Bot, TrendingUp, Shield, Wifi, MessageSquare } from "lucide-react"
+import { ArrowRight, Code, Bot, TrendingUp, Shield, Wifi, MessageSquare, Zap, Globe } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import AnimatedHero from "./AnimatedHero"
 
@@ -70,19 +70,23 @@ export default function ModernLandingPage() {
           variants={itemVariants}
           className="flex flex-col sm:flex-row gap-4 justify-center mb-16"
         >
-          <Button
-            size="lg"
-            className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full px-8 py-6 text-lg font-semibold group"
-          >
-            Start Building <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="border-primary/50 hover:border-primary rounded-full px-8 py-6 text-lg font-semibold"
-          >
-            View Our Services
-          </Button>
+          <a href="/contact" className="inline-block">
+            <Button
+              size="lg"
+              className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full px-8 py-6 text-lg font-semibold group"
+            >
+              Start Building <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </a>
+          <a href="/portfolio" className="inline-block">
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-primary/50 hover:border-primary rounded-full px-8 py-6 text-lg font-semibold"
+            >
+              View Our Services
+            </Button>
+          </a>
         </motion.div>
 
         {/* Stats Section */}
@@ -236,12 +240,14 @@ export default function ModernLandingPage() {
           <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
             Join hundreds of successful businesses using our solutions
           </p>
-          <Button
-            size="lg"
-            className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full px-10 py-6 text-lg font-semibold group"
-          >
-            Get Started Today <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Button>
+          <a href="/contact" className="inline-block">
+            <Button
+              size="lg"
+              className="bg-accent hover:bg-accent/90 text-accent-foreground rounded-full px-10 py-6 text-lg font-semibold group"
+            >
+              Get Started Today <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </a>
         </div>
       </motion.section>
 
@@ -253,17 +259,41 @@ export default function ModernLandingPage() {
             <p className="text-sm text-muted-foreground">Innovation at the speed of thought</p>
           </div>
           {[
-            { title: "Services", items: ["Web Dev", "AI Chatbots", "Internet", "Social Media"] },
-            { title: "Company", items: ["About", "Contact", "Blog", "Careers"] },
-            { title: "Resources", items: ["Documentation", "Support", "Pricing", "FAQ"] },
+            { 
+              title: "Services", 
+              items: [
+                { name: "Web Dev", href: "/portfolio" },
+                { name: "AI Chatbots", href: "/chatbots-ai" },
+                { name: "Internet", href: "/internet-services" },
+                { name: "Social Media", href: "/social-media-boosting" }
+              ] 
+            },
+            { 
+              title: "Company", 
+              items: [
+                { name: "About", href: "/portfolio" },
+                { name: "Contact", href: "/contact" },
+                { name: "Premium Apps", href: "/premium-apps" },
+                { name: "Careers", href: "/contact" }
+              ] 
+            },
+            { 
+              title: "Resources", 
+              items: [
+                { name: "Privacy Policy", href: "/privacy-policy" },
+                { name: "Cookie Policy", href: "/cookie-policy" },
+                { name: "Portfolio", href: "/portfolio" },
+                { name: "Contact Us", href: "/contact" }
+              ] 
+            },
           ].map((section, idx) => (
             <div key={idx}>
               <h4 className="font-bold text-lg mb-4">{section.title}</h4>
               <ul className="space-y-2">
                 {section.items.map((item, i) => (
                   <li key={i}>
-                    <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                      {item}
+                    <a href={item.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                      {item.name}
                     </a>
                   </li>
                 ))}
