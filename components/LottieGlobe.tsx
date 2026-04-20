@@ -10,8 +10,8 @@ export default function LottieGlobe() {
         loop
         autoplay
         style={{
-          width: "100%",
-          height: "100%",
+          width: "500%",
+          height: "500%",
           maxWidth: "600px",
           maxHeight: "600px",
         }}
