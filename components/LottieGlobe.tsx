@@ -12,8 +12,8 @@ export default function LottieGlobe() {
         style={{
           width: "500%",
           height: "500%",
-          maxWidth: "600px",
-          maxHeight: "600px",
+          maxWidth: "1000px",
+          maxHeight: "1000px",
         }}
       />
     </div>
