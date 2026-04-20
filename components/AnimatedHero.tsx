@@ -1,16 +1,27 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { TypeAnimation } from "react-type-animation"
-import Globe3D from "./Globe3D"
 import { useState, useEffect } from "react"
-import { ArrowRight, Code2, Zap } from "lucide-react"
+import { ArrowRight, Code2 } from "lucide-react"
+import LottieGlobe from "./LottieGlobe"
 
 export default function AnimatedHero() {
   const [showContent, setShowContent] = useState(false)
+  const [displayText, setDisplayText] = useState("Innovate Your")
 
   useEffect(() => {
     setShowContent(true)
+
+    // Stable text animation that doesn't shift layout
+    const textSequence = ["Innovate Your", "Transform Your"]
+    let currentIndex = 0
+
+    const interval = setInterval(() => {
+      currentIndex = (currentIndex + 1) % textSequence.length
+      setDisplayText(textSequence[currentIndex])
+    }, 3000) // Change text every 3 seconds
+
+    return () => clearInterval(interval)
   }, [])
 
   const containerVariants = {
@@ -107,25 +118,24 @@ export default function AnimatedHero() {
                 <span className="text-xl font-bold text-white">AnonymikeTech</span>
               </motion.div>
 
-              {/* Main heading with typing effect */}
+              {/* Main heading with stable animation */}
               <motion.div
                 initial="hidden"
                 animate="visible"
                 variants={containerVariants}
                 className="space-y-4"
               >
-                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-white">
-                  <TypeAnimation
-                    sequence={[
-                      "Innovate Your",
-                      1000,
-                      "Transform Your",
-                      1000,
-                    ]}
-                    speed={50}
-                    style={{ fontSize: "inherit", fontWeight: "inherit" }}
-                    repeat={Infinity}
-                  />
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-white h-auto">
+                  <motion.span
+                    key={displayText}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="block"
+                  >
+                    {displayText}
+                  </motion.span>
                   <span className="block mt-2">
                     <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
                       Digital Future.
@@ -187,137 +197,42 @@ export default function AnimatedHero() {
                 </a>
               </motion.div>
 
-              {/* Stats section */}
+              {/* Stats */}
               <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
-                className="flex gap-12 pt-8 border-t border-white/10"
+                className="grid grid-cols-3 gap-4 pt-8 border-t border-cyan-400/20"
               >
-                <motion.div variants={itemVariants}>
-                  <div className="text-3xl font-bold text-cyan-400">500+</div>
-                  <div className="text-sm text-gray-400">Projects Delivered</div>
-                </motion.div>
-                <motion.div variants={itemVariants}>
-                  <div className="text-3xl font-bold text-cyan-400">99%</div>
-                  <div className="text-sm text-gray-400">Client Satisfaction</div>
-                </motion.div>
-                <motion.div variants={itemVariants}>
-                  <div className="text-3xl font-bold text-cyan-400">10+</div>
-                  <div className="text-sm text-gray-400">Years Experience</div>
-                </motion.div>
+                <div>
+                  <motion.div variants={itemVariants} className="text-3xl font-bold text-cyan-400">
+                    500+
+                  </motion.div>
+                  <p className="text-sm text-gray-400">Projects Done</p>
+                </div>
+                <div>
+                  <motion.div variants={itemVariants} className="text-3xl font-bold text-cyan-400">
+                    99%
+                  </motion.div>
+                  <p className="text-sm text-gray-400">Satisfaction</p>
+                </div>
+                <div>
+                  <motion.div variants={itemVariants} className="text-3xl font-bold text-cyan-400">
+                    10+
+                  </motion.div>
+                  <p className="text-sm text-gray-400">Years XP</p>
+                </div>
               </motion.div>
             </motion.div>
 
-            {/* Right side - 3D Globe */}
+            {/* Right side - Lottie Globe */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.8, x: 50 }}
-              animate={showContent ? { opacity: 1, scale: 1, x: 0 } : { opacity: 0, scale: 0.8, x: 50 }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={showContent ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
               transition={{ duration: 1, delay: 0.3 }}
-              className="relative h-full min-h-96 md:min-h-screen flex items-center justify-center"
+              className="hidden lg:flex items-center justify-center h-[600px]"
             >
-              {/* Glow ring around globe */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <motion.div
-                  className="absolute w-96 h-96 rounded-full border-2 border-cyan-400/30"
-                  animate={{
-                    rotate: 360,
-                  }}
-                  transition={{
-                    duration: 20,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                />
-                <motion.div
-                  className="absolute w-80 h-80 rounded-full border border-blue-400/20"
-                  animate={{
-                    rotate: -360,
-                  }}
-                  transition={{
-                    duration: 30,
-                    repeat: Infinity,
-                    ease: "linear",
-                  }}
-                />
-              </div>
-
-              {/* 3D Globe */}
-              <div className="relative w-full h-full max-w-lg max-h-96">
-                <Globe3D />
-              </div>
-
-              {/* Connection lines visualization */}
-              <svg
-                className="absolute inset-0 w-full h-full pointer-events-none"
-                style={{ filter: "drop-shadow(0 0 20px rgba(34, 211, 238, 0.3))" }}
-              >
-                <defs>
-                  <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.8" />
-                    <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.3" />
-                  </linearGradient>
-                </defs>
-                <motion.line
-                  x1="10%"
-                  y1="30%"
-                  x2="60%"
-                  y2="50%"
-                  stroke="url(#lineGradient)"
-                  strokeWidth="2"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 2, delay: 0.5 }}
-                />
-                <motion.line
-                  x1="20%"
-                  y1="70%"
-                  x2="70%"
-                  y2="40%"
-                  stroke="url(#lineGradient)"
-                  strokeWidth="2"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 2, delay: 0.7 }}
-                />
-              </svg>
-
-              {/* Floating UI cards */}
-              <motion.div
-                className="absolute bottom-10 right-10 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4 max-w-xs"
-                animate={{
-                  y: [0, -10, 0],
-                }}
-                transition={{
-                  duration: 4,
-                  repeat: Infinity,
-                  delay: 0.5,
-                }}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <Zap className="w-4 h-4 text-yellow-400" />
-                  <span className="text-white font-semibold text-sm">99.9% Uptime</span>
-                </div>
-                <p className="text-gray-300 text-xs">Enterprise-grade reliability guaranteed</p>
-              </motion.div>
-
-              <motion.div
-                className="absolute top-1/4 left-0 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg p-4 max-w-xs"
-                animate={{
-                  y: [0, 10, 0],
-                }}
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                  delay: 0.3,
-                }}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <Code2 className="w-4 h-4 text-cyan-400" />
-                  <span className="text-white font-semibold text-sm">Latest Tech Stack</span>
-                </div>
-                <p className="text-gray-300 text-xs">Built with Next.js, React & TypeScript</p>
-              </motion.div>
+              <LottieGlobe />
             </motion.div>
           </div>
         </div>
@@ -325,15 +240,19 @@ export default function AnimatedHero() {
 
       {/* Scroll indicator */}
       <motion.div
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20"
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
       >
         <div className="text-center">
-          <p className="text-gray-400 text-sm mb-2">Scroll to explore</p>
-          <svg className="w-6 h-6 mx-auto text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
+          <p className="text-sm text-gray-400 mb-2">Scroll to explore</p>
+          <div className="w-6 h-10 border-2 border-cyan-400/50 rounded-full flex items-start justify-center p-2 mx-auto">
+            <motion.div
+              className="w-1 h-2 bg-cyan-400 rounded-full"
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+          </div>
         </div>
       </motion.div>
     </div>

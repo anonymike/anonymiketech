@@ -13,6 +13,7 @@
     "@emotion/is-prop-valid": "latest",
     "@formspree/react": "^3.0.0",
     "@hookform/resolvers": "^3.9.1",
+    "@lottiefiles/dotlottie-react": "^0.19.0",
     "@opentelemetry/api": "latest",
     "@radix-ui/react-accordion": "latest",
     "@radix-ui/react-alert-dialog": "latest",
