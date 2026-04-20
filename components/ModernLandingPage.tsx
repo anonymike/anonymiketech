@@ -1,8 +1,9 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { ArrowRight, Zap, Code, Bot, TrendingUp, Shield, Wifi, Globe, MessageSquare } from "lucide-react"
+import { ArrowRight, Code, Bot, TrendingUp, Shield, Wifi, MessageSquare } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import AnimatedHero from "./AnimatedHero"
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -36,29 +37,12 @@ const floatVariants = {
 export default function ModernLandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-tech-bg via-tech-bg-dark to-tech-bg text-foreground overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute -top-40 -right-40 w-80 h-80 bg-accent/5 rounded-full blur-3xl"
-          animate={{
-            y: [0, 30, 0],
-            x: [0, 20, 0],
-          }}
-          transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY }}
-        />
-        <motion.div
-          className="absolute -bottom-40 -left-40 w-96 h-96 bg-primary/5 rounded-full blur-3xl"
-          animate={{
-            y: [0, -30, 0],
-            x: [0, -20, 0],
-          }}
-          transition={{ duration: 10, repeat: Number.POSITIVE_INFINITY }}
-        />
-      </div>
+      {/* Animated Hero Section */}
+      <AnimatedHero />
 
-      {/* Hero Section */}
+      {/* Services Section */}
       <motion.section
-        className="relative z-10 container mx-auto px-4 pt-32 pb-24"
+        className="relative z-10 container mx-auto px-4 py-24"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -66,30 +50,20 @@ export default function ModernLandingPage() {
         {/* Badge */}
         <motion.div variants={itemVariants} className="flex justify-center mb-8">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/30 backdrop-blur-sm">
-            <Zap className="w-4 h-4 text-accent" />
-            <span className="text-sm font-medium text-accent">Next-Gen Tech Solutions</span>
+            <span className="text-sm font-medium text-accent">Services & Solutions</span>
           </div>
         </motion.div>
 
-        {/* Main Title */}
-        <motion.h1
+        {/* Services Title */}
+        <motion.h2
           variants={itemVariants}
-          className="text-5xl md:text-7xl font-bold text-center mb-6 text-balance leading-tight"
+          className="text-5xl md:text-6xl font-bold text-center mb-12 text-balance leading-tight"
         >
-          Innovate.{" "}
+          What We{" "}
           <span className="bg-gradient-to-r from-accent via-accent to-primary bg-clip-text text-transparent">
-            Build.
-          </span>{" "}
-          Automate.
-        </motion.h1>
-
-        {/* Subtitle */}
-        <motion.p
-          variants={itemVariants}
-          className="text-xl text-muted-foreground text-center mb-12 max-w-2xl mx-auto text-pretty"
-        >
-          Transform your business with cutting-edge web development, intelligent AI chatbots, and secure internet solutions built for the modern digital era.
-        </motion.p>
+            Offer
+          </span>
+        </motion.h2>
 
         {/* CTA Buttons */}
         <motion.div

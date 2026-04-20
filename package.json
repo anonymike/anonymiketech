@@ -86,6 +86,7 @@
     "react-hook-form": "latest",
     "react-resizable-panels": "latest",
     "react-router-dom": "latest",
+    "react-type-animation": "^3.2.0",
     "recharts": "latest",
     "resend": "^6.9.4",
     "sass": "latest",

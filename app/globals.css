@@ -142,6 +142,11 @@
   .tech-bg-dark {
     @apply bg-slate-900;
   }
+  
+  /* Radial gradient utility */
+  .bg-gradient-radial {
+    background: radial-gradient(ellipse at center, var(--tw-gradient-stops));
+  }
 }
 
 /* Added new eye-catching animations for tech sections */
