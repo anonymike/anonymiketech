@@ -98,7 +98,19 @@ export default function AnimatedHero() {
 
       {/* Main content */}
       <div className="relative z-10 min-h-screen flex items-center">
-        <div className="container mx-auto px-4 md:px-8 py-20">
+        {/* Background Lottie Globe - positioned behind on mobile, left on desktop */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={showContent ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+          transition={{ duration: 1, delay: 0.3 }}
+          className="absolute inset-0 z-0 lg:relative lg:z-10 flex items-center justify-center lg:justify-start"
+        >
+          <div className="w-full h-full lg:w-[400px] lg:h-[500px] opacity-30 lg:opacity-100">
+            <LottieGlobe />
+          </div>
+        </motion.div>
+
+        <div className="container mx-auto px-4 md:px-8 py-20 relative z-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left side - Text content */}
             <motion.div
@@ -225,15 +237,7 @@ export default function AnimatedHero() {
               </motion.div>
             </motion.div>
 
-            {/* Right side - Lottie Globe */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={showContent ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-              transition={{ duration: 1, delay: 0.3 }}
-              className="hidden lg:flex items-center justify-center h-[600px]"
-            >
-              <LottieGlobe />
-            </motion.div>
+
           </div>
         </div>
       </div>
