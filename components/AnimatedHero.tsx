@@ -98,23 +98,23 @@ export default function AnimatedHero() {
 
       {/* Main content */}
       <div className="relative z-10 min-h-screen flex items-center">
-        {/* Background Lottie Globe - positioned behind on mobile, left on desktop */}
+        {/* Background Lottie Globe - positioned behind on mobile/tablet, left side on desktop */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={showContent ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="absolute inset-0 z-0 lg:relative lg:z-10 flex items-center justify-center lg:justify-start"
+          className="absolute inset-0 z-0 md:absolute md:left-0 md:top-1/2 md:-translate-y-1/2 md:w-1/2 lg:relative lg:z-10 lg:left-auto lg:top-auto lg:translate-y-0 lg:w-auto flex items-center justify-center md:justify-start"
         >
           {/* Glow effect behind globe */}
-          <div className="absolute inset-0 bg-radial-gradient from-cyan-500/20 via-blue-500/10 to-transparent rounded-full blur-3xl opacity-70 lg:opacity-100" />
+          <div className="absolute inset-0 bg-radial-gradient from-cyan-500/20 via-blue-500/10 to-transparent rounded-full blur-3xl opacity-60 md:opacity-75 lg:opacity-100" />
           
-          <div className="w-full h-full lg:w-[400px] lg:h-[500px] opacity-50 lg:opacity-100 relative z-10">
+          <div className="w-72 h-72 md:w-80 md:h-80 lg:w-[450px] lg:h-[500px] opacity-45 md:opacity-60 lg:opacity-100 relative z-10">
             <LottieGlobe />
           </div>
         </motion.div>
 
-        <div className="container mx-auto px-4 md:px-8 py-20 relative z-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="container mx-auto px-4 md:px-8 py-20 relative z-20 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center w-full">
             {/* Left side - Text content */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
