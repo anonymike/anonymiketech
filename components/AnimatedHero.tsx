@@ -105,7 +105,10 @@ export default function AnimatedHero() {
           transition={{ duration: 1, delay: 0.3 }}
           className="absolute inset-0 z-0 lg:relative lg:z-10 flex items-center justify-center lg:justify-start"
         >
-          <div className="w-full h-full lg:w-[400px] lg:h-[500px] opacity-30 lg:opacity-100">
+          {/* Glow effect behind globe */}
+          <div className="absolute inset-0 bg-radial-gradient from-cyan-500/20 via-blue-500/10 to-transparent rounded-full blur-3xl opacity-70 lg:opacity-100" />
+          
+          <div className="w-full h-full lg:w-[400px] lg:h-[500px] opacity-50 lg:opacity-100 relative z-10">
             <LottieGlobe />
           </div>
         </motion.div>
