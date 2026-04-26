@@ -97,18 +97,18 @@ export default function AnimatedHero() {
       />
 
       {/* Main content */}
-      <div className="relative z-10 min-h-screen flex items-center">
+      <div className="relative z-10 min-h-screen flex items-center overflow-hidden">
         {/* Background Lottie Globe - only on large screens, positioned right */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={showContent ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 z-5 pointer-events-none"
+          className="hidden lg:absolute lg:right-0 lg:top-1/2 lg:-translate-y-1/2 lg:w-[600px] lg:h-[600px] lg:pointer-events-none"
         >
           {/* Glow effect behind globe */}
           <div className="absolute -inset-32 bg-radial-gradient from-cyan-500/20 via-blue-500/10 to-transparent rounded-full blur-3xl" />
           
-          <div className="w-[500px] h-[500px] xl:w-[600px] xl:h-[600px] opacity-100 relative z-10">
+          <div className="w-full h-full">
             <LottieGlobe />
           </div>
         </motion.div>
