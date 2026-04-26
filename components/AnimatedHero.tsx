@@ -97,21 +97,23 @@ export default function AnimatedHero() {
       />
 
       {/* Main content */}
-      <div className="relative z-10 min-h-screen flex items-center overflow-hidden">
-        {/* Background Lottie Globe - only on large screens, positioned right */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={showContent ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
-          transition={{ duration: 1, delay: 0.3 }}
-          className="hidden lg:absolute lg:right-0 lg:top-1/2 lg:-translate-y-1/2 lg:w-[600px] lg:h-[600px] lg:pointer-events-none"
-        >
-          {/* Glow effect behind globe */}
-          <div className="absolute -inset-32 bg-radial-gradient from-cyan-500/20 via-blue-500/10 to-transparent rounded-full blur-3xl" />
-          
-          <div className="w-full h-full">
-            <LottieGlobe />
-          </div>
-        </motion.div>
+      <div className="relative z-10 min-h-screen flex items-center">
+        {/* Right side Lottie Globe - Desktop only */}
+        <div className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 w-[700px] h-[700px] pointer-events-none">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={showContent ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+            transition={{ duration: 1, delay: 0.3 }}
+            className="w-full h-full"
+          >
+            {/* Glow effect behind globe */}
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/30 via-blue-500/20 to-transparent rounded-full blur-3xl" />
+            
+            <div className="w-full h-full relative">
+              <LottieGlobe />
+            </div>
+          </motion.div>
+        </div>
 
         <div className="container mx-auto px-4 md:px-8 py-20 relative z-20 w-full">
           <div className="grid grid-cols-1 md:grid-cols-1 gap-8 md:gap-12 items-center w-full">
